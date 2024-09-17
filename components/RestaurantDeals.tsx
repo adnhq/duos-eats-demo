@@ -15,13 +15,13 @@ const RestaurantDeals: React.FC<DealsProps> = ({ deals }) => (
       {deals.map((deal, index) => (
         <Card
           key={index}
-          className={deal.type === "PRO" ? "bg-purple-100" : "bg-pink-100"}
+          className={deal.type === "DUO" ? "bg-purple-100" : "bg-pink-100"}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {deal.type === "PRO" && (
+              {deal.type === "DUO" && (
                 <span className="bg-purple-700 text-white text-xs font-bold px-2 py-1 rounded">
-                  PRO
+                  DUO
                 </span>
               )}
               {deal.discount}

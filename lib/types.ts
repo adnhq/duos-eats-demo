@@ -1,5 +1,5 @@
 export type Deal = {
-  type: "PRO" | "REGULAR";
+  type: "DUO" | "REGULAR";
   discount: string;
   description: string;
 };
@@ -15,10 +15,11 @@ export type MenuItem = {
 
 export type RestaurantData = {
   name: string;
+  image: string;
   category: string;
   rating: number;
   reviews: number;
-  freeDelivery: boolean;
+  instagramVideo: string,
   minOrder: number;
   deals: Deal[];
   menu: {
@@ -39,7 +40,7 @@ export const restaurantData = {
   minOrder: 50,
   deals: [
     {
-      type: "PRO",
+      type: "DUO",
       discount: "15% off",
       description: "Min. order Tk 50, and special savings for pandapro members",
     },

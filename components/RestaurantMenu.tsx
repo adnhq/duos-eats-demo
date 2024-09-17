@@ -4,6 +4,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,7 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Instagram, Search } from "lucide-react";
 import MenuHeader from "@/components/MenuHeader";
 
 import MenuCategory from "@/components/MenuCategory";
@@ -30,21 +31,17 @@ import RestaurantDeals from "./RestaurantDeals";
 // Note: You would typically fetch this data from an API
 const restaurantData: RestaurantData = {
   name: "The Tehari Ghor- Banani",
+  image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",
   category: "Rice Dishes",
   rating: 4.7,
   reviews: 176,
-  freeDelivery: true,
   minOrder: 50,
+  instagramVideo: "https://www.instagram.com/reel/AbCdEfGhIjK/",
   deals: [
     {
-      type: "PRO",
-      discount: "15% off",
-      description: "Min. order Tk 50, and special savings for pandapro members",
-    },
-    {
-      type: "REGULAR",
-      discount: "12% off",
-      description: "Min. order Tk 50. Valid for all items. Auto applied.",
+      type: "DUO",
+      discount: "10% off",
+      description: "Special discount for dine-in orders through our platform",
     },
   ],
   menu: {
@@ -54,20 +51,16 @@ const restaurantData: RestaurantData = {
         name: "Beef Tehari",
         price: 141,
         originalPrice: 160,
-        description:
-          "Flavorful rice dish prepared with beef cubes, rice & aromatic spices",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        description: "Flavorful rice dish prepared with beef cubes, rice & aromatic spices",
+        image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=2072&auto=format&fit=crop",
       },
       {
         id: 2,
         name: "Morog Polao",
         price: 158,
         originalPrice: 180,
-        description:
-          "Full- Tender chicken mixed with flavor-ful deshi masalas & aromatic rice",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        description: "Full- Tender chicken mixed with flavor-ful deshi masalas & aromatic rice",
+        image: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?q=80&w=2070&auto=format&fit=crop",
       },
     ],
     Rice: [
@@ -76,16 +69,21 @@ const restaurantData: RestaurantData = {
         name: "Plain Rice",
         price: 40,
         description: "Steamed white rice",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "https://images.unsplash.com/photo-1516684732162-798a0062be99?q=80&w=2070&auto=format&fit=crop",
       },
       {
         id: 4,
         name: "Vegetable Fried Rice",
         price: 120,
         description: "Rice stir-fried with mixed vegetables",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=2025&auto=format&fit=crop",
+      },
+      {
+        id: 7,
+        name: "Biryani",
+        price: 180,
+        description: "Aromatic rice dish with tender meat and spices",
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",
       },
     ],
     Beverage: [
@@ -94,16 +92,21 @@ const restaurantData: RestaurantData = {
         name: "Coca Cola",
         price: 40,
         description: "330ml can",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "https://images.unsplash.com/photo-1629203851288-7ececa5f05c4?q=80&w=2072&auto=format&fit=crop",
       },
       {
         id: 6,
         name: "Mineral Water",
         price: 25,
         description: "500ml bottle",
-        image:
-          "https://images.unsplash.com/photo-1655673653795-f608f4b9dced?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "https://images.unsplash.com/photo-1560023907-5f335c9cd15f?q=80&w=2070&auto=format&fit=crop",
+      },
+      {
+        id: 8,
+        name: "Mango Lassi",
+        price: 60,
+        description: "Refreshing yogurt-based drink with mango",
+        image: "https://images.unsplash.com/photo-1624781748172-7151704a42b3?q=80&w=2070&auto=format&fit=crop",
       },
     ],
   },
@@ -153,12 +156,42 @@ export default function RestaurantMenu() {
 
   return (
     <div className="container mx-auto p-4">
+      <div className="mb-6 flex items-center gap-4">
+        <div className="relative w-28 h-28 overflow-hidden rounded-full">
+          <Image
+            src={restaurantData.image}
+            alt={restaurantData.name}
+            layout="fill"
+            objectFit="cover"
+          />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold">{restaurantData.name}</h1>
+          <p className="text-muted-foreground">{restaurantData.category}</p>
+          <div className="flex items-center mt-2">
+            <span className="text-yellow-500 mr-1">★</span>
+            <span>{restaurantData.rating}</span>
+            <span className="mx-2">•</span>
+            <span>{restaurantData.reviews} reviews</span>
+          </div>
+        </div>
+      </div>
 
-      <MenuHeader restaurantData={restaurantData} />
-      <RestaurantDeals deals={restaurantData.deals} />
+      <div className="mb-6 flex justify-between items-center">
+        <div className="text-sm">
+          <RestaurantDeals deals={restaurantData.deals} />
+        </div>
+        <Link href={restaurantData.instagramVideo} target="_blank" rel="noopener noreferrer">
+          <Button variant="outline" size="lg" className="flex items-center gap-2">
+            <Instagram className="h-5 w-5" />
+            Watch on Instagram
+          </Button>
+        </Link>
+      </div>
 
-      <div className="mb-6">
-        <Input type="text" placeholder="Search in menu" className="w-full" />
+      <div className="mb-6 relative">
+        <Input type="text" placeholder="Search in menu" className="w-full pl-10" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
       </div>
 
       <Tabs defaultValue="Popular" className="mb-6">
@@ -169,7 +202,7 @@ export default function RestaurantMenu() {
             </TabsTrigger>
           ))}
         </TabsList>
-        <ScrollArea className="h-full w-full rounded-md border p-4">
+        <ScrollArea className="h-[calc(100vh-300px)] w-full rounded-md border p-4">
           {Object.entries(restaurantData.menu).map(([category, items]) => (
             <TabsContent key={category} value={category}>
               <MenuCategory
@@ -187,7 +220,7 @@ export default function RestaurantMenu() {
           <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 shadow-lg">
             <ShoppingBag className="h-6 w-6" />
             {totalItems > 0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
+              <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">
                 {totalItems}
               </span>
             )}
@@ -199,7 +232,7 @@ export default function RestaurantMenu() {
           </SheetHeader>
           <ScrollArea className="flex-grow">
             {cart.length === 0 ? (
-              <p className="text-center text-gray-500 mt-4">
+              <p className="text-center text-muted-foreground mt-4">
                 Your cart is empty.
               </p>
             ) : (

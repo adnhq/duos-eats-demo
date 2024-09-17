@@ -153,15 +153,6 @@ export default function RestaurantMenu() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <Button asChild variant="outline">
-          <Link href="/">&larr; Go back</Link>
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline">Log in</Button>
-          <Button>Sign up</Button>
-        </div>
-      </div>
 
       <MenuHeader restaurantData={restaurantData} />
       <RestaurantDeals deals={restaurantData.deals} />

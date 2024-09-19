@@ -27,12 +27,15 @@ import {
   MenuItem,
 } from "@/lib/types";
 import RestaurantDeals from "./RestaurantDeals";
+import { Spline_Sans } from "next/font/google";
+
+const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
 // Note: You would typically fetch this data from an API
 const restaurantData: RestaurantData = {
-  name: "The Tehari Ghor- Banani",
+  name: "The Tehari Ghor - Banani",
   image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",
-  category: "Rice Dishes",
+  category: "Bengali Cuisine",
   rating: 4.7,
   reviews: 176,
   minOrder: 50,
@@ -62,6 +65,20 @@ const restaurantData: RestaurantData = {
         description: "Full- Tender chicken mixed with flavor-ful deshi masalas & aromatic rice",
         image: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?q=80&w=2070&auto=format&fit=crop",
       },
+      {
+        id: 4,
+        name: "Vegetable Fried Rice",
+        price: 120,
+        description: "Rice stir-fried with mixed vegetables",
+        image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=2025&auto=format&fit=crop",
+      },
+      {
+        id: 7,
+        name: "Biryani",
+        price: 180,
+        description: "Aromatic rice dish with tender meat and spices",
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",
+      }
     ],
     Rice: [
       {
@@ -155,54 +172,62 @@ export default function RestaurantMenu() {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-6 flex items-center gap-4">
-        <div className="relative w-28 h-28 overflow-hidden rounded-full">
+    <div className="container mx-auto p-8">
+      <div className="mb-8">
+        <div className="relative h-64 w-full overflow-hidden rounded-xl mb-6">
           <Image
             src={restaurantData.image}
             alt={restaurantData.name}
             layout="fill"
             objectFit="cover"
           />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold">{restaurantData.name}</h1>
-          <p className="text-muted-foreground">{restaurantData.category}</p>
-          <div className="flex items-center mt-2">
-            <span className="text-yellow-500 mr-1">★</span>
-            <span>{restaurantData.rating}</span>
-            <span className="mx-2">•</span>
-            <span>{restaurantData.reviews} reviews</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute bottom-0 left-0 p-6 text-white">
+            <h1 className={`text-4xl font-semibold mb-2 ${splineSans.className}`}>{restaurantData.name}</h1>
+            <p className="text-lg opacity-90 mb-2">{restaurantData.category}</p>
+            <div className="flex items-center">
+              <span className="text-yellow-400 mr-1">★</span>
+              <span className="font-semibold">{restaurantData.rating}</span>
+              <span className="mx-2">•</span>
+              <span>{restaurantData.reviews} reviews</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mb-6 flex justify-between items-center">
-        <div className="text-sm">
-          <RestaurantDeals deals={restaurantData.deals} />
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          <div className="flex-grow">
+            <RestaurantDeals deals={restaurantData.deals} />
+          </div>
+          <Link href={restaurantData.instagramVideo} target="_blank" rel="noopener noreferrer">
+            <Button variant="secondary" size="lg" className="flex items-center gap-2 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <Instagram className="h-5 w-5" />
+              Watch on Instagram
+            </Button>
+          </Link>
         </div>
-        <Link href={restaurantData.instagramVideo} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="lg" className="flex items-center gap-2">
-            <Instagram className="h-5 w-5" />
-            Watch on Instagram
-          </Button>
-        </Link>
       </div>
 
       <div className="mb-6 relative">
-        <Input type="text" placeholder="Search in menu" className="w-full pl-10" />
+        <Input 
+          type="text" 
+          placeholder="Search in menu" 
+          className="w-full pl-10 shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md" 
+        />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
       </div>
 
       <Tabs defaultValue="Popular" className="mb-6">
         <TabsList className="mb-4">
           {Object.keys(restaurantData.menu).map((category) => (
-            <TabsTrigger key={category} value={category}>
+            <TabsTrigger 
+              key={category} 
+              value={category}
+            >
               {category} ({restaurantData.menu[category].length})
             </TabsTrigger>
           ))}
         </TabsList>
-        <ScrollArea className="h-[calc(100vh-300px)] w-full rounded-md border p-4">
+        <ScrollArea className="h-[calc(100vh-400px)] w-full rounded-md border p-4">
           {Object.entries(restaurantData.menu).map(([category, items]) => (
             <TabsContent key={category} value={category}>
               <MenuCategory
@@ -217,7 +242,7 @@ export default function RestaurantMenu() {
 
       <Sheet>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 shadow-lg">
+          <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 transition-all duration-300  hover:scale-105">
             <ShoppingBag className="h-6 w-6" />
             {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">
@@ -251,7 +276,7 @@ export default function RestaurantMenu() {
               <span className="font-semibold">Total:</span>
               <span className="font-semibold">Tk {totalPrice.toFixed(2)}</span>
             </div>
-            <Button className="w-full" disabled={cart.length === 0}>
+            <Button className="w-full shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105" disabled={cart.length === 0}>
               Checkout
             </Button>
           </div>

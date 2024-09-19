@@ -35,13 +35,13 @@ export default function HeroSection() {
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <motion.h1
-            className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-700 mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-800 mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             Save on every order with <br></br>
-            <span className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800">Duos Eats</span>
+            <span className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-gray-900">Duos Eats</span>
           </motion.h1>
           <motion.p
             className="text-lg text-gray-600 mb-8"

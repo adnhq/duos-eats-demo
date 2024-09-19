@@ -8,7 +8,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <UtensilsCrossed className="h-6 w-6 text-primary" />
-          <span className="text-2xl font-bold text-zinc-700">DUOS</span>
+          <span className="text-2xl font-extrabold text-zinc-800">DUOS</span>
         </div>
         <div className="hidden md:flex space-x-6">
           <a href="#" className="hover:text-primary transition-colors">Restaurants</a>

@@ -41,7 +41,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8 }}
           >
             Save on every order with <br></br>
-            <span className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-gray-900">Duos Eats</span>
+            <span className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">Duos Eats</span>
           </motion.h1>
           <motion.p
             className="text-lg text-gray-600 mb-8"

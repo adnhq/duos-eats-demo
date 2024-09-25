@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Instagram } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const locations = [
   "Uttara", "Mirpur", "Pallabi", "Kazipara", "Kafrul", "Agargaon", "Banani", 
@@ -37,11 +39,34 @@ const locations = [
   "Rampura", "Badda", "Khilgaon"
 ];
 
-export function AuthModal() {
+export function AuthModal({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (email === 'admin@duos.com' && password === 'duos') {
+      onLogin();
+      setIsOpen(false);
+      toast({
+        title: "Logged in successfully",
+        description: "Welcome back, Wasif!",
+      });
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Invalid email or password",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">Sign In</Button>
+        <Button variant="default" className="w-full md:w-auto">Sign In</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -54,20 +79,32 @@ export function AuthModal() {
           </TabsList>
           <TabsContent value="signin">
             <Card>
+              <form onSubmit={handleLogin}>
                 <CardContent className="space-y-2 pt-4">
-                    <div className="space-y-1">
+                  <div className="space-y-1">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" />
-                    </div>
-                    <div className="space-y-1">
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" />
-                    </div>
+                    <Input 
+                      id="password" 
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
                 </CardContent>
                 <CardFooter>
-                    <Button className="w-full">Sign In</Button>
+                  <Button type="submit" className="w-full">Sign In</Button>
                 </CardFooter>
-                </Card>
+              </form>
+            </Card>
           </TabsContent>
           <TabsContent value="signup">
             <Card>
@@ -96,7 +133,6 @@ export function AuthModal() {
                       id="phone" 
                       type="tel" 
                       className="flex-1 rounded-l-none" 
-                      placeholder="1234567890"
                     />
                   </div>
                 </div>

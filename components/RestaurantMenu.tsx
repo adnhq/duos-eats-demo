@@ -106,24 +106,10 @@ const restaurantData: RestaurantData = {
     Beverage: [
       {
         id: 5,
-        name: "Coca Cola",
+        name: "Pepsi",
         price: 40,
         description: "330ml can",
         image: "https://images.unsplash.com/photo-1629203851288-7ececa5f05c4?q=80&w=2072&auto=format&fit=crop",
-      },
-      {
-        id: 6,
-        name: "Mineral Water",
-        price: 25,
-        description: "500ml bottle",
-        image: "https://images.unsplash.com/photo-1560023907-5f335c9cd15f?q=80&w=2070&auto=format&fit=crop",
-      },
-      {
-        id: 8,
-        name: "Mango Lassi",
-        price: 60,
-        description: "Refreshing yogurt-based drink with mango",
-        image: "https://images.unsplash.com/photo-1624781748172-7151704a42b3?q=80&w=2070&auto=format&fit=crop",
       },
     ],
   },
@@ -172,9 +158,9 @@ export default function RestaurantMenu() {
   );
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="mb-8">
-        <div className="relative h-64 w-full overflow-hidden rounded-xl mb-6">
+    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <div className="relative h-48 sm:h-64 w-full overflow-hidden rounded-xl mb-4">
           <Image
             src={restaurantData.image}
             alt={restaurantData.name}
@@ -182,10 +168,10 @@ export default function RestaurantMenu() {
             objectFit="cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <div className="absolute bottom-0 left-0 p-6 text-white">
-            <h1 className={`text-4xl font-semibold mb-2 ${splineSans.className}`}>{restaurantData.name}</h1>
-            <p className="text-lg opacity-90 mb-2">{restaurantData.category}</p>
-            <div className="flex items-center">
+          <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white">
+            <h1 className={`text-2xl sm:text-4xl font-semibold mb-1 sm:mb-2 ${splineSans.className}`}>{restaurantData.name}</h1>
+            <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2">{restaurantData.category}</p>
+            <div className="flex items-center text-sm sm:text-base">
               <span className="text-yellow-400 mr-1">★</span>
               <span className="font-semibold">{restaurantData.rating}</span>
               <span className="mx-2">•</span>
@@ -194,13 +180,15 @@ export default function RestaurantMenu() {
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-between items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-primary/10 rounded-lg p-4">
           <div className="flex-grow">
-            <RestaurantDeals deals={restaurantData.deals} />
+            <h2 className="text-lg font-semibold mb-1">Duos Eats Special</h2>
+            <p className="text-2xl font-bold text-primary">10% OFF</p>
+            <p className="text-sm text-muted-foreground">Exclusive discount when you order through our platform</p>
           </div>
           <Link href={restaurantData.instagramVideo} target="_blank" rel="noopener noreferrer">
-            <Button variant="secondary" size="lg" className="flex items-center gap-2 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105">
-              <Instagram className="h-5 w-5" />
+            <Button variant="secondary" size="sm" className="w-full sm:w-auto flex items-center gap-2 rounded-full shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105">
+              <Instagram className="h-4 w-4" />
               Watch on Instagram
             </Button>
           </Link>
@@ -211,23 +199,26 @@ export default function RestaurantMenu() {
         <Input 
           type="text" 
           placeholder="Search in menu" 
-          className="w-full pl-10 shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md" 
+          className="w-full pl-10 pr-4 py-2 rounded-full shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md" 
         />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
       </div>
 
       <Tabs defaultValue="Popular" className="mb-6">
-        <TabsList className="mb-4">
-          {Object.keys(restaurantData.menu).map((category) => (
-            <TabsTrigger 
-              key={category} 
-              value={category}
-            >
-              {category} ({restaurantData.menu[category].length})
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <ScrollArea className="h-[calc(100vh-400px)] w-full rounded-md border p-4">
+        <ScrollArea className="w-full pb-4">
+          <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">
+            {Object.keys(restaurantData.menu).map((category) => (
+              <TabsTrigger 
+                key={category} 
+                value={category}
+                className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </ScrollArea>
+        <div className="mt-6 space-y-6">
           {Object.entries(restaurantData.menu).map(([category, items]) => (
             <TabsContent key={category} value={category}>
               <MenuCategory
@@ -237,15 +228,15 @@ export default function RestaurantMenu() {
               />
             </TabsContent>
           ))}
-        </ScrollArea>
+        </div>
       </Tabs>
 
       <Sheet>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 transition-all duration-300  hover:scale-105">
+          <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
             <ShoppingBag className="h-6 w-6" />
             {totalItems > 0 && (
-              <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
                 {totalItems}
               </span>
             )}
@@ -283,5 +274,5 @@ export default function RestaurantMenu() {
         </SheetContent>
       </Sheet>
     </div>
-  );
+  )
 }

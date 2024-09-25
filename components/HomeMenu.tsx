@@ -1,6 +1,5 @@
 "use client";
 import { Spline_Sans } from 'next/font/google';
-import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import Restaurants from "./Restaurants";
 import Cart from "./Cart";

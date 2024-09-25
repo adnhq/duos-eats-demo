@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingBag, Instagram, Search } from "lucide-react";
-import MenuHeader from "@/components/MenuHeader";
 
 import MenuCategory from "@/components/MenuCategory";
 import CartItem from "@/components/CartItem";
@@ -26,12 +25,11 @@ import {
   CartItem as CartItemType,
   MenuItem,
 } from "@/lib/types";
-import RestaurantDeals from "./RestaurantDeals";
+
 import { Spline_Sans } from "next/font/google";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
-// Note: You would typically fetch this data from an API
 const restaurantData: RestaurantData = {
   name: "The Tehari Ghor - Banani",
   image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",

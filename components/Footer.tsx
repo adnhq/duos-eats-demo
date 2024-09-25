@@ -4,15 +4,11 @@ import { useState } from 'react'
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, ArrowRight, Send } from "lucide-react"
 import { motion } from "framer-motion"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from '@/components/ui/textarea';
-import { Spline_Sans } from 'next/font/google'
-const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400"] });
+
 export default function Footer() {
-  
   const [email, setEmail] = useState('')
-  let message = 'hello';
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle newsletter signup
@@ -71,7 +67,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xl font-semibold mb-6 text-gray-800">Get in Touch</h4>
             <p className="text-gray-600 mb-4">
-              Have questions or feedback? We'd love to hear from you!
+              Have questions or feedback? We&apos;d love to hear from you!
             </p>
             <Button
               onClick={() => window.location.href = 'mailto:contact@duoseats.com'}

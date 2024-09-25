@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
@@ -85,7 +85,7 @@ const pendingRestaurants = [
 ]
 
 // Dummy data for all restaurants
-const generateRestaurantData = (days: number) => {
+const generateRestaurantData = () => {
   return [
     { id: '1', name: 'Pizza Palace', cuisine: 'Italian', location: 'New York', joinedDate: '2023-01-15', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
     { id: '2', name: 'Noodle House', cuisine: 'Chinese', location: 'San Francisco', joinedDate: '2023-02-20', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState('7d')
   const [revenueData, setRevenueData] = useState(allRevenueData.slice(-7))
   const [searchTerm, setSearchTerm] = useState('')
-  const [restaurantData, setRestaurantData] = useState(generateRestaurantData(7))
+  const [restaurantData, setRestaurantData] = useState(generateRestaurantData())
   const [animationKey, setAnimationKey] = useState(0)
 
   const handleTimeRangeChange = (value: string) => {
@@ -108,29 +108,22 @@ export default function AdminDashboard() {
     switch (value) {
       case '7d':
         newData = allRevenueData.slice(-7)
-        setRestaurantData(generateRestaurantData(7))
         break
       case '1m':
         newData = allRevenueData.slice(-30)
-        setRestaurantData(generateRestaurantData(30))
         break
       case '6m':
         newData = allRevenueData.slice(-180)
-        setRestaurantData(generateRestaurantData(180))
         break
       case '1y':
-        newData = allRevenueData
-        setRestaurantData(generateRestaurantData(365))
-        break
       case 'all':
         newData = allRevenueData
-        setRestaurantData(generateRestaurantData(365))
         break
       default:
         newData = allRevenueData.slice(-7)
-        setRestaurantData(generateRestaurantData(7))
     }
     setRevenueData(newData)
+    setRestaurantData(generateRestaurantData())
     setAnimationKey(prevKey => prevKey + 1)
   }
 

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TrendingUp, DollarSign, ShoppingCart, Users, ChevronUp } from 'lucide-react'
 
 // Dummy data for the sales chart
-const generateSalesData = (days: any) => {
+const generateSalesData = (days: number) => {
   return Array.from({ length: days }, (_, i) => ({
     date: new Date(Date.now() - (days - i - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     sales: Math.floor(Math.random() * 10000) + 1000,
@@ -38,7 +38,7 @@ export default function RestaurantDashboard() {
   const [timeRange, setTimeRange] = useState('7d')
   const [salesData, setSalesData] = useState(allSalesData.slice(-7))
 
-  const handleTimeRangeChange = (value: any) => {
+  const handleTimeRangeChange = (value: string) => {
     setTimeRange(value)
     switch (value) {
       case '7d':

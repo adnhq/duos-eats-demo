@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
@@ -9,16 +9,38 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { TrendingUp, DollarSign, Store, Users, ChevronUp, CheckCircle, XCircle, Search, FileText } from 'lucide-react'
+import { motion } from 'framer-motion'
 
-// Dummy data for the revenue chart
-const generateRevenueData = (days: number) => {
-  return Array.from({ length: days }, (_, i) => ({
-    date: new Date(Date.now() - (days - i - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    revenue: Math.floor(Math.random() * 5000) + 1000,
-  }))
+// Seeded random number generator
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed++) * 10000
+  return x - Math.floor(x)
 }
 
-const allRevenueData = generateRevenueData(365) // Generate a year's worth of data
+// Generate consistent data
+const generateData = (seed: number) => {
+  const generateRevenueData = (days: number) => {
+    return Array.from({ length: days }, (_, i) => ({
+      date: new Date(Date.now() - (days - i - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      revenue: Math.floor(seededRandom(seed + i) * 5000) + 1000,
+    }))
+  }
+
+  const generateRestaurantData = () => {
+    return [
+      { id: '1', name: 'Pizza Palace', cuisine: 'Italian', location: 'New York', joinedDate: '2023-01-15', orders: Math.floor(seededRandom(seed + 1) * 1000) + 500, revenue: Math.floor(seededRandom(seed + 2) * 15000) + 5000 },
+      { id: '2', name: 'Noodle House', cuisine: 'Chinese', location: 'San Francisco', joinedDate: '2023-02-20', orders: Math.floor(seededRandom(seed + 3) * 1000) + 500, revenue: Math.floor(seededRandom(seed + 4) * 15000) + 5000 },
+      { id: '3', name: 'Steak & Grill', cuisine: 'American', location: 'Chicago', joinedDate: '2023-03-10', orders: Math.floor(seededRandom(seed + 5) * 1000) + 500, revenue: Math.floor(seededRandom(seed + 6) * 15000) + 5000 },
+      { id: '4', name: 'Seafood Delight', cuisine: 'Seafood', location: 'Boston', joinedDate: '2023-04-05', orders: Math.floor(seededRandom(seed + 7) * 1000) + 500, revenue: Math.floor(seededRandom(seed + 8) * 15000) + 5000 },
+      { id: '5', name: 'Vegan Vibes', cuisine: 'Vegan', location: 'Los Angeles', joinedDate: '2023-05-01', orders: Math.floor(seededRandom(seed + 9) * 1000) + 500, revenue: Math.floor(seededRandom(seed + 10) * 15000) + 5000 },
+    ]
+  }
+
+  return {
+    allRevenueData: generateRevenueData(365),
+    restaurantData: generateRestaurantData(),
+  }
+}
 
 // Dummy data for restaurants awaiting approval
 const pendingRestaurants = [
@@ -84,46 +106,42 @@ const pendingRestaurants = [
   },
 ]
 
-// Dummy data for all restaurants
-const generateRestaurantData = () => {
-  return [
-    { id: '1', name: 'Pizza Palace', cuisine: 'Italian', location: 'New York', joinedDate: '2023-01-15', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
-    { id: '2', name: 'Noodle House', cuisine: 'Chinese', location: 'San Francisco', joinedDate: '2023-02-20', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
-    { id: '3', name: 'Steak & Grill', cuisine: 'American', location: 'Chicago', joinedDate: '2023-03-10', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
-    { id: '4', name: 'Seafood Delight', cuisine: 'Seafood', location: 'Boston', joinedDate: '2023-04-05', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
-    { id: '5', name: 'Vegan Vibes', cuisine: 'Vegan', location: 'Los Angeles', joinedDate: '2023-05-01', orders: Math.floor(Math.random() * 1000) + 500, revenue: Math.floor(Math.random() * 15000) + 5000 },
-  ]
-}
-
 export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState('7d')
-  const [revenueData, setRevenueData] = useState(allRevenueData.slice(-7))
   const [searchTerm, setSearchTerm] = useState('')
-  const [restaurantData, setRestaurantData] = useState(generateRestaurantData())
   const [animationKey, setAnimationKey] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  const initialData = generateData(12345) // Use a fixed seed
+  const [revenueData, setRevenueData] = useState(initialData.allRevenueData.slice(-7))
+  const [restaurantData, setRestaurantData] = useState(initialData.restaurantData)
+
+  useEffect(() => {
+    setIsLoaded(true)
+  }, [])
 
   const handleTimeRangeChange = (value: string) => {
     setTimeRange(value)
     let newData
     switch (value) {
       case '7d':
-        newData = allRevenueData.slice(-7)
+        newData = initialData.allRevenueData.slice(-7)
         break
       case '1m':
-        newData = allRevenueData.slice(-30)
+        newData = initialData.allRevenueData.slice(-30)
         break
       case '6m':
-        newData = allRevenueData.slice(-180)
+        newData = initialData.allRevenueData.slice(-180)
         break
       case '1y':
       case 'all':
-        newData = allRevenueData
+        newData = initialData.allRevenueData
         break
       default:
-        newData = allRevenueData.slice(-7)
+        newData = initialData.allRevenueData.slice(-7)
     }
     setRevenueData(newData)
-    setRestaurantData(generateRestaurantData())
+    setRestaurantData(initialData.restaurantData)
     setAnimationKey(prevKey => prevKey + 1)
   }
 
@@ -134,244 +152,247 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
-        
-        {/* Key metrics */}
-        <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-blue-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-              <DollarSign className="h-5 w-5 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">$123,456</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                12.5% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-green-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Restaurants</CardTitle>
-              <Store className="h-5 w-5 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">256</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                8.2% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-yellow-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Orders</CardTitle>
-              <TrendingUp className="h-5 w-5 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">15,234</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                15.3% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-purple-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
-              <Users className="h-5 w-5 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">45,678</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                5.7% from last month
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-8">Admin Dashboard</h1>
+          
+          {/* Key metrics */}
+          <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { title: 'Total Revenue', value: '$123,456', icon: DollarSign, color: 'blue', increase: '12.5%' },
+              { title: 'Total Restaurants', value: '256', icon: Store, color: 'green', increase: '8.2%' },
+              { title: 'Total Orders', value: '15,234', icon: TrendingUp, color: 'yellow', increase: '15.3%' },
+              { title: 'Total Users', value: '45,678', icon: Users, color: 'purple', increase: '5.7%' },
+            ].map((metric, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className={`bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-${metric.color}-500`}>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">{metric.title}</CardTitle>
+                    <metric.icon className={`h-5 w-5 text-${metric.color}-500`} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-gray-900">{metric.value}</div>
+                    <p className="text-xs text-gray-500 flex items-center mt-1">
+                      <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
+                      {metric.increase} from last month
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-        {/* Revenue chart */}
-        <Card className="mb-8 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl font-bold text-gray-800">Revenue Overview</CardTitle>
-            <Select value={timeRange} onValueChange={handleTimeRangeChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select time range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="1m">Last month</SelectItem>
-                <SelectItem value="6m">Last 6 months</SelectItem>
-                <SelectItem value="1y">Last year</SelectItem>
-                <SelectItem value="all">Lifetime</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={revenueData} key={animationKey}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#64748B"
-                  tickFormatter={(value) => new Date(value).toLocaleDateString()}
-                />
-                <YAxis stroke="#64748B" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#FFF', borderColor: '#E2E8F0' }}
-                  labelStyle={{ color: '#1E293B' }}
-                  formatter={(value) => [`$${value}`, 'Revenue']}
-                  labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#FFC107" 
-                  strokeWidth={3}
-                  dot={false}
-                  animationDuration={1000}
-                  animationEasing="ease-in-out"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          {/* Revenue chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+                <CardTitle className="text-xl md:text-2xl font-bold text-gray-800">Revenue Overview</CardTitle>
+                <Select value={timeRange} onValueChange={handleTimeRangeChange}>
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Select time range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7d">Last 7 days</SelectItem>
+                    <SelectItem value="1m">Last month</SelectItem>
+                    <SelectItem value="6m">Last 6 months</SelectItem>
+                    <SelectItem value="1y">Last year</SelectItem>
+                    <SelectItem value="all">Lifetime</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] sm:h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={revenueData} key={animationKey}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#64748B"
+                        tickFormatter={(value) => new Date(value).toLocaleDateString()}
+                      />
+                      <YAxis stroke="#64748B" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#FFF', borderColor: '#E2E8F0' }}
+                        labelStyle={{ color: '#1E293B' }}
+                        formatter={(value) => [`$${value}`, 'Revenue']}
+                        labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="revenue" 
+                        stroke="#ffa200" 
+                        strokeWidth={3}
+                        dot={false}
+                        animationDuration={1000}
+                        animationEasing="ease-in-out"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Pending restaurants */}
-        <Card className="mb-8 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-800">Restaurants Awaiting Approval</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-600">Name</TableHead>
-                  <TableHead className="text-gray-600">Cuisine</TableHead>
-                  <TableHead className="text-gray-600">Location</TableHead>
-                  <TableHead className="text-gray-600">Applied Date</TableHead>
-                  <TableHead className="text-gray-600">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingRestaurants.map((restaurant) => (
-                  <TableRow key={restaurant.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <TableCell className="font-medium text-gray-900">{restaurant.name}</TableCell>
-                    <TableCell>{restaurant.cuisine}</TableCell>
-                    <TableCell>{restaurant.location}</TableCell>
-                    <TableCell>{restaurant.appliedDate}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">View Details</Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                              <DialogTitle>{restaurant.name} - Application Details</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Owner:</label>
-                                <span className="col-span-3">{restaurant.owner}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Email:</label>
-                                <span className="col-span-3">{restaurant.email}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Phone:</label>
-                                <span className="col-span-3">{restaurant.phone}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Cuisine:</label>
-                                <span className="col-span-3">{restaurant.cuisine}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Location:</label>
-                                <span className="col-span-3">{restaurant.location}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Description:</label>
-                                <span className="col-span-3">{restaurant.description}</span>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <label className="text-right font-medium">Menu:</label>
-                                <div className="col-span-3">
-                                  <Button variant="outline" size="sm" onClick={() => window.open(restaurant.menuPdf, '_blank')}>
-                                    <FileText className="w-4 h-4 mr-2" />
-                                    View Menu PDF
+          {/* Pending restaurants */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Card className="mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-xl md:text-2xl font-bold text-gray-800">Restaurants Awaiting Approval</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-gray-600">Name</TableHead>
+                        <TableHead className="text-gray-600">Cuisine</TableHead>
+                        <TableHead className="text-gray-600 hidden md:table-cell">Location</TableHead>
+                        <TableHead className="text-gray-600 hidden lg:table-cell">Applied Date</TableHead>
+                        <TableHead className="text-gray-600">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingRestaurants.map((restaurant) => (
+                        <TableRow key={restaurant.id} className="hover:bg-gray-50 transition-colors duration-150">
+                          <TableCell className="font-medium text-gray-900">{restaurant.name}</TableCell>
+                          <TableCell>{restaurant.cuisine}</TableCell>
+                          <TableCell className="hidden md:table-cell">{restaurant.location}</TableCell>
+                          <TableCell className="hidden lg:table-cell">{restaurant.appliedDate}</TableCell>
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm">View Details</Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>{restaurant.name} - Application Details</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Owner:</label>
+                                    <span className="col-span-3">{restaurant.owner}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Email:</label>
+                                    <span className="col-span-3">{restaurant.email}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Phone:</label>
+                                    <span className="col-span-3">{restaurant.phone}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Cuisine:</label>
+                                    <span className="col-span-3">{restaurant.cuisine}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Location:</label>
+                                    <span className="col-span-3">{restaurant.location}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Description:</label>
+                                    <span className="col-span-3">{restaurant.description}</span>
+                                  </div>
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <label className="text-right font-medium">Menu:</label>
+                                    <div className="col-span-3">
+                                      <Button variant="outline" size="sm" onClick={() => window.open(restaurant.menuPdf, '_blank')}>
+                                        <FileText className="w-4 h-4 mr-2" />
+                                        View Menu PDF
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex justify-end space-x-2">
+                                  <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Approve
+                                  </Button>
+                                  <Button size="sm" variant="destructive">
+                                    <XCircle className="h-4 w-4 mr-1" />
+                                    Reject
                                   </Button>
                                 </div>
-                              </div>
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                              <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                Approve
-                              </Button>
-                              <Button size="sm" variant="destructive">
-                                <XCircle className="h-4 w-4 mr-1" />
-                                Reject
-                              </Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* All restaurants */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-800">All Restaurants</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search restaurants..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full md:w-1/2 lg:w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-600">Name</TableHead>
-                  <TableHead className="text-gray-600">Cuisine</TableHead>
-                  <TableHead className="text-gray-600">Location</TableHead>
-                  <TableHead className="text-gray-600">Orders ({timeRange})</TableHead>
-                  <TableHead className="text-gray-600">Revenue ({timeRange})</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRestaurants.map((restaurant) => (
-                  <TableRow key={restaurant.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <TableCell className="font-medium text-gray-900">{restaurant.name}</TableCell>
-                    <TableCell>{restaurant.cuisine}</TableCell>
-                    <TableCell>{restaurant.location}</TableCell>
-                    <TableCell>{restaurant.orders}</TableCell>
-                    <TableCell>${restaurant.revenue.toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+          {/* All restaurants */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Card className="shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-xl md:text-2xl font-bold text-gray-800">All Restaurants</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search restaurants..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-gray-600">Name</TableHead>
+                        <TableHead className="text-gray-600 hidden sm:table-cell">Cuisine</TableHead>
+                        <TableHead className="text-gray-600 hidden md:table-cell">Location</TableHead>
+                        <TableHead className="text-gray-600">Orders ({timeRange})</TableHead>
+                        <TableHead className="text-gray-600">Revenue ({timeRange})</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredRestaurants.map((restaurant) => (
+                        <TableRow key={restaurant.id} className="hover:bg-gray-50 transition-colors duration-150">
+                          <TableCell className="font-medium text-gray-900">{restaurant.name}</TableCell>
+                          <TableCell className="hidden sm:table-cell">{restaurant.cuisine}</TableCell>
+                          <TableCell className="hidden md:table-cell">{restaurant.location}</TableCell>
+                          <TableCell>{restaurant.orders}</TableCell>
+                          <TableCell>${restaurant.revenue.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
       </main>
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef  } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -127,7 +127,7 @@ const allRestaurants = [
     image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
   },
 ];
-const popularRestaurants = allRestaurants.slice(6, 9)
+const popularRestaurants = allRestaurants.slice(3, 11)
 const locations = [
   "Uttara", "Mirpur", "Pallabi", "Kazipara", "Kafrul", "Agargaon", "Banani", 
   "Gulshan", "Niketan", "Shahjadpur", "Mohakhali", "Bashundhara", "Banasree", 
@@ -140,8 +140,11 @@ export default function Restaurants() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('all')
   const [filteredRestaurants, setFilteredRestaurants] = useState(allRestaurants)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
   const restaurantsPerPage = 9
   const totalPages = Math.ceil(filteredRestaurants.length / restaurantsPerPage)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const filtered = allRestaurants.filter(restaurant => 
@@ -152,6 +155,20 @@ export default function Restaurants() {
     setCurrentPage(1)
   }, [searchTerm, selectedLocation])
 
+  useEffect(() => {
+    const checkScroll = () => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+        setCanScrollLeft(scrollLeft > 0)
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth)
+      }
+    }
+
+    checkScroll()
+    window.addEventListener('resize', checkScroll)
+    return () => window.removeEventListener('resize', checkScroll)
+  }, [])
+
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage)
   }
@@ -161,19 +178,66 @@ export default function Restaurants() {
     currentPage * restaurantsPerPage
   )
 
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' })
+    }
+  }
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-6">Popular Restaurants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {popularRestaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-          ))}
+        <div className="relative">
+          <div 
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 space-x-4"
+            onScroll={handleScroll}
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {popularRestaurants.map((restaurant) => (
+              <div key={restaurant.id} className="snap-start shrink-0 w-64 sm:w-72">
+                <RestaurantCard restaurant={restaurant} />
+              </div>
+            ))}
+          </div>
+          {canScrollLeft && (
+            <button 
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+          {canScrollRight && (
+            <button 
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
         </div>
       </section>
 
       <section className="mb-12">
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-grow">
             <Input
               type="text"

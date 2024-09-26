@@ -27,7 +27,7 @@ export default function Footer() {
               transition={{ duration: 0.5 }}
               className="text-4xl font-bold"
             >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
                 DUOS EATS
               </span>
             </motion.h3>

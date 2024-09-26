@@ -32,14 +32,6 @@ const MenuHeader: React.FC<MenuHeaderProps> = ({ restaurantData }) => (
           More info
         </Button>
       </div>
-      <div className="mt-2">
-        {restaurantData.freeDelivery && (
-          <span className="text-green-600 font-semibold mr-2">
-            Free delivery
-          </span>
-        )}
-        <span>Min. order Tk {restaurantData.minOrder}</span>
-      </div>
     </div>
   </div>
 );

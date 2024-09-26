@@ -39,13 +39,17 @@ const locations = [
   "Rampura", "Badda", "Khilgaon"
 ];
 
-export function AuthModal({ onLogin }) {
+interface AuthModalProps {
+  onLogin: () => void;
+}
+
+export function AuthModal({ onLogin }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (email === 'admin@duos.com' && password === 'duos') {
       onLogin();

@@ -36,11 +36,11 @@ export default function Navbar() {
     setIsMenuOpen(false);
   };
 
-  const handleNavigation = (route) => {
+  const handleNavigation = (route: string): void => {
     window.location.href = route;
     setIsMenuOpen(false);
   };
-
+  
   return (
     <nav className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">

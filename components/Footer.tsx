@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import Link from "next/link"
+import Image from "next/image"
 import { Facebook, Instagram, Twitter, ArrowRight, Send } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import duosLogo from '../duos-lg.png'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
@@ -21,16 +23,20 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           <div className="space-y-6">
-            <motion.h3 
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold"
+              className="relative w-48 h-32"
             >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
-                DUOS EATS
-              </span>
-            </motion.h3>
+              <Image 
+                src={duosLogo}
+                alt="DUOS EATS Logo" 
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </motion.div>
             <p className="text-gray-600 leading-relaxed">
               Discover and book the best dine-in experiences at your favorite local restaurants.
             </p>

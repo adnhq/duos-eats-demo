@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { UtensilsCrossed, Menu, X, User } from "lucide-react";
+import {  Menu, X, User } from "lucide-react";
 import { AuthModal } from "./AuthModal";
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import duosLogo from '../duos-lg.png';  // Adjust the path as needed
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,9 +48,16 @@ export default function Navbar() {
     <nav className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-2 group">
-            <UtensilsCrossed className="h-6 w-6 text-primary group-hover:text-primary/80 transition-colors duration-300" />
-            <span className="text-2xl font-bold text-zinc-800 group-hover:text-zinc-600 transition-colors duration-300">DUOS</span>
+        <Link href="/" className="flex items-center">
+            <div className="relative w-32 h-14">
+              <Image 
+                src={duosLogo}
+                alt="DUOS Logo" 
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </div>
           </Link>
           <div className="hidden md:flex items-center space-x-6">
             <div className="flex space-x-6">

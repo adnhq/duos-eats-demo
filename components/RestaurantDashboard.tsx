@@ -80,7 +80,7 @@ export default function RestaurantDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className={`bg-white border-t-4 border-${metric.color}-500 shadow-lg hover:shadow-xl transition-shadow`}>
+              <Card className={`bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-${metric.color}-500 transform hover:-translate-y-1`}>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium text-gray-700">{metric.title}</CardTitle>
                   <metric.icon className={`h-5 w-5 text-${metric.color}-500`} />

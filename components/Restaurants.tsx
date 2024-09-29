@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef  } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useRouter } from 'next/router'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react'
 import RestaurantCard from "./RestaurantCard";
@@ -198,7 +199,6 @@ export default function Restaurants() {
     }
   }
 
-  
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
       <section className="mb-8">
@@ -206,12 +206,12 @@ export default function Restaurants() {
         <div className="relative">
           <div 
             ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 space-x-3 sm:space-x-4"
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 space-x-4 sm:space-x-5"
             onScroll={handleScroll}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {popularRestaurants.map((restaurant) => (
-              <div key={restaurant.id} className="snap-start shrink-0 w-48 sm:w-56 md:w-64 lg:w-72">
+            {allRestaurants.slice(0, 10).map((restaurant, index) => (
+              <div key={index} className="snap-start shrink-0 w-52 sm:w-60 md:w-68 lg:w-76">
                 <RestaurantCard restaurant={restaurant} />
               </div>
             ))}
@@ -245,7 +245,7 @@ export default function Restaurants() {
               placeholder="Search restaurants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border-2 rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-lg focus:shadow-lg"
+              className="w-full pl-10 pr-4 py-2 rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg focus:shadow-lg"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
           </div>
@@ -257,7 +257,7 @@ export default function Restaurants() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Locations</SelectItem>
-              {locations.map((location) => (
+              {Array.from(new Set(allRestaurants.map(r => r.location))).map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
                 </SelectItem>
@@ -266,9 +266,9 @@ export default function Restaurants() {
           </Select>
         </div>
         <h2 className="text-2xl font-semibold mb-6">All Restaurants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {paginatedRestaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {paginatedRestaurants.map((restaurant, index) => (
+            <RestaurantCard key={index} restaurant={restaurant} />
           ))}
         </div>
         {filteredRestaurants.length === 0 && (

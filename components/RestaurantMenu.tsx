@@ -16,7 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag, Instagram, Search } from "lucide-react";
+import { ShoppingBag, Instagram, Search, Sparkles } from "lucide-react";
 
 import MenuCategory from "@/components/MenuCategory";
 import CartItem from "@/components/CartItem";
@@ -31,7 +31,7 @@ import { Spline_Sans } from "next/font/google";
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
 const restaurantData: RestaurantData = {
-  name: "The Tehari Ghor - Banani",
+  name: "Curry House",
   image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop",
   category: "Bengali Cuisine",
   rating: 4.7,
@@ -178,18 +178,46 @@ export default function RestaurantMenu() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-primary/10 rounded-lg p-4">
-          <div className="flex-grow">
-            <h2 className="text-lg font-semibold mb-1">Duos Eats Special</h2>
-            <p className="text-2xl font-bold text-primary">10% OFF</p>
-            <p className="text-sm text-muted-foreground">Exclusive discount when you order through our platform</p>
+        <div className="flex flex-col sm:flex-row items-center sm:items-stretch justify-between gap-4">
+          <div className="bg-gradient-to-r from-yellow-400/30 to-orange-400/30 rounded-lg p-4 sm:p-6 shadow-lg max-w-md w-full">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-yellow-500" />
+                <h2 className={`text-lg font-semibold ${splineSans.className} text-primary-foreground`}>Duos Eats Exclusive</h2>
+              </div>
+              <p className={`text-3xl font-bold text-primary-foreground ${splineSans.className}`}>
+                Get a 10% Discount
+              </p>
+              <p className="text-sm text-primary-foreground/80">
+                Applied to all orders made through our platform
+              </p>
+            </div>
           </div>
-          <Link href={restaurantData.instagramVideo} target="_blank" rel="noopener noreferrer">
-            <Button variant="secondary" size="sm" className="w-full sm:w-auto flex items-center gap-2 rounded-full shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105">
-              <Instagram className="h-4 w-4" />
-              Watch on Instagram
-            </Button>
-          </Link>
+          <div className="flex items-center w-full sm:w-auto">
+            <Link
+              href={restaurantData.instagramVideo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
+              <Button
+  variant="secondary"
+  size="sm"
+  className="w-full sm:w-auto flex items-center justify-center gap-2 
+             px-4 py-2 rounded-md 
+             shadow-md
+             bg-gradient-to-r from-gray-50 to-gray-100 
+             text-gray-700 font-medium
+             border border-gray-200
+             transition-all duration-300 
+             hover:shadow-lg hover:border-pink-200 hover:text-pink-500
+             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-200"
+>
+  <Instagram className="h-4 w-4 text-pink-500" />
+  Watch on Instagram
+</Button>
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import {  Menu, X, User } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { AuthModal } from "./AuthModal";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import duosLogo from '../duos-lg.png';  // Adjust the path as needed
+import duosLogo from '../duos-lg.png';
 import Image from 'next/image';
 
 export default function Navbar() {
@@ -23,13 +23,11 @@ export default function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check localStorage for login state when component mounts
     const loginState = localStorage.getItem('isLoggedIn');
     if (loginState === 'true') {
       setIsLoggedIn(true);
     }
 
-    // Close the mobile menu when the pathname changes
     setIsMenuOpen(false);
   }, [pathname]);
 
@@ -44,11 +42,13 @@ export default function Navbar() {
     setIsMenuOpen(false);
   };
 
+  const gradientTextClass = "bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 font-semibold hover:from-yellow-500 hover:to-amber-600 transition-all duration-300";
+
   return (
     <nav className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
-        <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <div className="relative w-32 h-14">
               <Image 
                 src={duosLogo}
@@ -64,7 +64,7 @@ export default function Navbar() {
               <Link href="/restaurants" className="hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Restaurants</Link>
               <Link href="/about" className="hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">About</Link>
               <Link href="/contact" className="hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Contact</Link>
-              <Link href="/registration" className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-transparent font-semibold hover:from-yellow-500 hover:to-amber-600 transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-yellow-400 after:to-amber-500 after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Become a Partner</Link>
+              <Link href="/registration" className={`${gradientTextClass} relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-yellow-400 after:to-amber-500 after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100`}>Become a Partner</Link>
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-6">
@@ -103,38 +103,40 @@ export default function Navbar() {
           </div>
         </div>
         {isMenuOpen && (
-          <div className="md:hidden mt-4 space-y-4">
+          <div className="md:hidden mt-4 space-y-6">
             <Link href="/restaurants" className="block hover:text-primary transition-colors">Restaurants</Link>
             <Link href="/about" className="block hover:text-primary transition-colors">About</Link>
             <Link href="/contact" className="block hover:text-primary transition-colors">Contact</Link>
-            <Link href="/registration" className="block bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent font-semibold hover:from-yellow-500 hover:to-amber-600 transition-all duration-300">Become a Partner</Link>
+            <Link href="/registration" className={`${gradientTextClass} block`}>Become a Partner</Link>
             {isLoggedIn ? (
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-2 bg-gray-100 p-4 rounded-lg mt-6">
+                <div className="flex items-center space-x-2 mb-4">
                   <User className="h-5 w-5" />
-                  <span>Wasif</span>
+                  <span className="font-semibold">Wasif</span>
                 </div>
                 <Link href="/account-settings" passHref>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
                     Account Settings
                   </Button>
                 </Link>
                 <Link href="/admin-dashboard" passHref>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
                     Admin Dashboard
                   </Button>
                 </Link>
                 <Link href="/dashboard" passHref>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
                     Restaurant Dashboard
                   </Button>
                 </Link>
-                <Button variant="destructive" className="w-full" onClick={handleLogout}>
+                <Button variant="destructive" className="w-full mt-4" onClick={handleLogout}>
                   Log out
                 </Button>
               </div>
             ) : (
-              <AuthModal onLogin={handleLogin} />
+              <div className="mt-6">
+                <AuthModal onLogin={handleLogin} />
+              </div>
             )}
           </div>
         )}

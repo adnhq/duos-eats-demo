@@ -6,18 +6,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
+  SheetClose,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag, Instagram, Search, Sparkles } from "lucide-react";
-
+import { ShoppingBag, Instagram, Search, Sparkles, Loader2, CheckCircle} from "lucide-react";
 import MenuCategory from "@/components/MenuCategory";
 import CartItem from "@/components/CartItem";
 import {
@@ -26,11 +27,11 @@ import {
   MenuItem,
 } from "@/lib/types";
 
-import { IBM_Plex_Sans, Inter_Tight, Pacifico, Roboto_Condensed, Rubik, Spline_Sans } from "next/font/google";
+import {Pacifico, Spline_Sans } from "next/font/google";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
-const ibm = Pacifico({ subsets: ["latin"], weight: ["400"] });
+const pacificoFont = Pacifico({ subsets: ["latin"], weight: ["400"] });
 
 const restaurantData: RestaurantData = {
   name: "Curry House",
@@ -116,6 +117,22 @@ const restaurantData: RestaurantData = {
 };
 
 export default function RestaurantMenu() {
+  const [checkoutState, setCheckoutState] = useState('idle') // 'idle', 'waiting', 'confirmed'
+  const [orderId, setOrderId] = useState<string | null>(null)
+
+  const handleCheckout = () => {
+    setCheckoutState('waiting')
+    // Simulate a backend process
+    setTimeout(() => {
+      setCheckoutState('confirmed')
+      setOrderId(Math.random().toString(36).substr(2, 9).toUpperCase())
+    }, 3000)
+  }
+  const handleGoBackToMenu = () => {
+    setCheckoutState('idle')
+    setOrderId(null)
+  }
+
   const [cart, setCart] = useState<CartItemType[]>([]);
 
   const handleAddToCart = (item: MenuItem, quantity: number) => {
@@ -142,7 +159,7 @@ export default function RestaurantMenu() {
           : item
       ).filter((item) => item.quantity > 0)
     );
-  };
+  }; 
 
   const handleRemoveItem = (id: number) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
@@ -184,7 +201,7 @@ export default function RestaurantMenu() {
                 <Sparkles className="h-5 w-5 text-yellow-500" />
                 <h2 className={`text-lg ${splineSans.className}`}>Duos Eats Exclusive</h2>
               </div>
-              <p className={`text-3xl font-semibold text-primary-foreground ${ibm.className}`}>
+              <p className={`text-3xl font-semibold text-primary-foreground ${pacificoFont.className}`}>
                 10% Discount
               </p>
               <p className="text-sm text-primary-foreground/80">
@@ -258,47 +275,115 @@ export default function RestaurantMenu() {
       </Tabs>
 
       <Sheet>
-        <SheetTrigger asChild>
-          <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
-            <ShoppingBag className="h-6 w-6" />
+      <SheetTrigger asChild>
+        <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
+          <ShoppingBag className="h-6 w-6" />
+          <AnimatePresence>
             {totalItems > 0 && (
-              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold"
+              >
                 {totalItems}
-              </span>
+              </motion.span>
             )}
-          </Button>
-        </SheetTrigger>
-        <SheetContent className="w-full sm:max-w-md flex flex-col">
-          <SheetHeader>
-            <SheetTitle>Your Cart</SheetTitle>
-          </SheetHeader>
-          <ScrollArea className="flex-grow">
+          </AnimatePresence>
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-md flex flex-col">
+        <SheetHeader>
+          <SheetTitle className="text-2xl font-bold font-spline-sans">Your Cart</SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="flex-grow">
+          <AnimatePresence>
             {cart.length === 0 ? (
-              <p className="text-center text-muted-foreground mt-4">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-center text-muted-foreground mt-4"
+              >
                 Your cart is empty.
-              </p>
+              </motion.p>
             ) : (
               cart.map((item) => (
-                <CartItem
+                <motion.div
                   key={item.id}
-                  item={item}
-                  onUpdateQuantity={handleUpdateQuantity}
-                  onRemove={handleRemoveItem}
-                />
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <CartItem
+                    item={item}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    onRemove={handleRemoveItem}
+                  />
+                </motion.div>
               ))
             )}
-          </ScrollArea>
-          <div className="mt-auto pt-4 border-t">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-semibold">Total:</span>
-              <span className="font-semibold">Tk {totalPrice.toFixed(2)}</span>
-            </div>
-            <Button className="w-full shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105" disabled={cart.length === 0}>
-              Checkout
-            </Button>
+          </AnimatePresence>
+        </ScrollArea>
+        <div className="mt-auto pt-4 border-t">
+          <div className="flex justify-between items-center mb-4">
+            <span className="font-semibold text-lg">Total:</span>
+            <span className="font-bold text-xl">Tk {totalPrice.toFixed(2)}</span>
           </div>
-        </SheetContent>
-      </Sheet>
+          <AnimatePresence mode="wait">
+            {checkoutState === 'idle' && (
+              <motion.div
+                key="checkout"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Button
+                  className="w-full h-12 text-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
+                  disabled={cart.length === 0}
+                  onClick={handleCheckout}
+                >
+                  Checkout
+                </Button>
+              </motion.div>
+            )}
+            {checkoutState === 'waiting' && (
+              <motion.div
+                key="waiting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center"
+              >
+                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-2 text-primary" />
+                <p className="text-lg font-semibold">Waiting for restaurant confirmation...</p>
+              </motion.div>
+            )}
+            {checkoutState === 'confirmed' && (
+              <motion.div
+                key="confirmed"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="text-center"
+              >
+                <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-2" />
+                <h3 className={`text-2xl font-semibold mb-2 ${splineSans.className}`}>Order Confirmed!</h3>
+                <p className="text-lg mb-4">Your order ID is: <span className="font-mono font-bold">{orderId}</span></p>
+                <SheetClose asChild>
+                  <Button
+                    className="w-full h-12 text-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-r from-green-400 to-green-600"
+                    onClick={handleGoBackToMenu}
+                  >
+                    Go Back to Menu
+                  </Button>
+                </SheetClose>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </SheetContent>
+    </Sheet>
     </div>
   )
 }

@@ -56,7 +56,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Button className="bg-amber-500 text-white hover:bg-amber-600 text-lg py-6 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 text-lg py-6 px-8 rounded-2xl shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
               Order Now
             </Button>
           </motion.div>

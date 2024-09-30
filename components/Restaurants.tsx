@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/router'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MapPin, MapPinned, Search } from 'lucide-react'
 import RestaurantCard from "./RestaurantCard";
 
 const allRestaurants = [
@@ -238,25 +238,29 @@ export default function Restaurants() {
       </section>
 
       <section className="mb-12">
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-grow">
-            <Input
-              type="text"
-              placeholder="Search restaurants..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg focus:shadow-lg"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-          </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+        <div className="relative flex-grow w-full">
+          <Input
+            type="text"
+            placeholder="Search restaurants..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg focus:shadow-lg"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+        </div>
 
+        <div className="self-end sm:self-auto">
           <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-            <SelectTrigger className="w-full sm:w-[200px] rounded-lg shadow-sm">
-              <MapPin className="h-5 w-5 text-gray-400 mr-2" />
-              <SelectValue placeholder="Filter by location" />
+            <SelectTrigger className="w-[160px] sm:w-[180px] rounded-lg shadow-md">
+              <MapPinned className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 mr-2" />
+              <SelectValue placeholder="Location" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Locations</SelectItem>
+              <SelectItem value="all">
+                <span className="hidden sm:inline">All Locations</span>
+                <span className="sm:hidden">Location</span>
+              </SelectItem>
               {Array.from(new Set(allRestaurants.map(r => r.location))).map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
@@ -265,41 +269,43 @@ export default function Restaurants() {
             </SelectContent>
           </Select>
         </div>
-        <h2 className="text-2xl font-semibold mb-6">All Restaurants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {paginatedRestaurants.map((restaurant, index) => (
-            <RestaurantCard key={index} restaurant={restaurant} />
-          ))}
+      </div>
+
+      <h2 className="text-2xl font-semibold mb-6">All Restaurants</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        {paginatedRestaurants.map((restaurant, index) => (
+          <RestaurantCard key={index} restaurant={restaurant} />
+        ))}
+      </div>
+      {filteredRestaurants.length === 0 && (
+        <p className="text-center text-gray-500 mt-8">No restaurants found matching your criteria.</p>
+      )}
+      {filteredRestaurants.length > 0 && (
+        <div className="flex justify-center items-center mt-8">
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="mr-2"
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+          <span className="mx-4 text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="ml-2"
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
         </div>
-        {filteredRestaurants.length === 0 && (
-          <p className="text-center text-gray-500 mt-8">No restaurants found matching your criteria.</p>
-        )}
-        {filteredRestaurants.length > 0 && (
-          <div className="flex justify-center items-center mt-8">
-            <Button
-              variant="outline"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="mr-2"
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Previous
-            </Button>
-            <span className="mx-4 text-sm">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="ml-2"
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-        )}
-      </section>
+      )}
+    </section>
     </div>
   )
 }

@@ -33,7 +33,7 @@ const PriceIndicator: React.FC<{ level: number }> = ({ level }) => (
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
     <Link href="/menu" passHref legacyBehavior>
-      <Card className="overflow-hidden transition-all duration-300 shadow-md hover:shadow-lg group
+      <Card className="overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl group
                        hover:-translate-y-1 active:translate-y-0
                        sm:hover:scale-105 sm:active:scale-100
                        cursor-pointer">
@@ -44,7 +44,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
               alt={restaurant.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-110"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
             <div className="absolute top-2 left-2">

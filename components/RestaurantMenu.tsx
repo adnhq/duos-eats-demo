@@ -26,9 +26,11 @@ import {
   MenuItem,
 } from "@/lib/types";
 
-import { Spline_Sans } from "next/font/google";
+import { IBM_Plex_Sans, Spline_Sans } from "next/font/google";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
+
+const ibm = IBM_Plex_Sans({ subsets: ["latin"], weight: ["700"] });
 
 const restaurantData: RestaurantData = {
   name: "Curry House",
@@ -185,8 +187,8 @@ export default function RestaurantMenu() {
                 <Sparkles className="h-5 w-5 text-yellow-500" />
                 <h2 className={`text-lg font-semibold ${splineSans.className} text-primary-foreground`}>Duos Eats Exclusive</h2>
               </div>
-              <p className={`text-3xl font-bold text-primary-foreground ${splineSans.className}`}>
-                Get a 10% Discount
+              <p className={`text-3xl font-semibold text-primary-foreground ${ibm.className}`}>
+                10% Discount
               </p>
               <p className="text-sm text-primary-foreground/80">
                 Applied to all orders made through our platform
@@ -206,14 +208,14 @@ export default function RestaurantMenu() {
   className="w-full sm:w-auto flex items-center justify-center gap-2 
              px-4 py-2 rounded-md 
              shadow-md
-             bg-gradient-to-r from-gray-50 to-gray-100 
-             text-gray-700 font-medium
+             bg-gradient-to-r from-gray-50 to-gray-200 
+             text-gray-700 font-semibold
              border border-gray-200
              transition-all duration-300 
              hover:shadow-lg hover:border-pink-200 hover:text-pink-500
              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-200"
 >
-  <Instagram className="h-4 w-4 text-pink-500" />
+  <Instagram className="h-6 w-6 text-pink-500" />
   Watch on Instagram
 </Button>
             </Link>

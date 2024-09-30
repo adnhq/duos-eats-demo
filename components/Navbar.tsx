@@ -13,11 +13,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
+import { Spline_Sans } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import duosLogo from '../duos-lg.png';
 import Image from 'next/image';
 
+const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400"] });
+
 export default function Navbar() {
+  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
@@ -45,7 +50,7 @@ export default function Navbar() {
   const gradientTextClass = "bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 font-semibold hover:from-yellow-500 hover:to-amber-600 transition-all duration-300";
 
   return (
-    <nav className="bg-background">
+    <nav className={`bg-background ${splineSans.className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center">

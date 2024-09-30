@@ -202,40 +202,40 @@ export default function Restaurants() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4 sm:mb-6">Popular Restaurants</h2>
-        <div className="relative">
-          <div 
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 space-x-4 sm:space-x-5"
-            onScroll={handleScroll}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {allRestaurants.slice(0, 10).map((restaurant, index) => (
-              <div key={index} className="snap-start shrink-0 w-52 sm:w-60 md:w-68 lg:w-76">
-                <RestaurantCard restaurant={restaurant} />
-              </div>
-            ))}
-          </div>
-          {canScrollLeft && (
-            <button 
-              onClick={scrollLeft}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-          )}
-          {canScrollRight && (
-            <button 
-              onClick={scrollRight}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          )}
+  <h2 className="text-2xl font-semibold mb-4 sm:mb-6">Popular Restaurants</h2>
+  <div className="relative">
+    <div 
+      ref={scrollContainerRef}
+      className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-4 sm:space-x-5"
+      onScroll={handleScroll}
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      {allRestaurants.slice(0, 10).map((restaurant, index) => (
+        <div key={index} className="snap-start shrink-0 w-52 sm:w-60 md:w-68 lg:w-76 pt-2 pb-4">
+          <RestaurantCard restaurant={restaurant} />
         </div>
-      </section>
+      ))}
+    </div>
+    {canScrollLeft && (
+      <button 
+        onClick={scrollLeft}
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
+        aria-label="Scroll left"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </button>
+    )}
+    {canScrollRight && (
+      <button 
+        onClick={scrollRight}
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden sm:block"
+        aria-label="Scroll right"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </button>
+    )}
+  </div>
+</section>
 
       <section className="mb-12">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">

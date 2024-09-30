@@ -26,11 +26,11 @@ import {
   MenuItem,
 } from "@/lib/types";
 
-import { IBM_Plex_Sans, Spline_Sans } from "next/font/google";
+import { IBM_Plex_Sans, Inter_Tight, Pacifico, Roboto_Condensed, Rubik, Spline_Sans } from "next/font/google";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
-const ibm = IBM_Plex_Sans({ subsets: ["latin"], weight: ["700"] });
+const ibm = Pacifico({ subsets: ["latin"], weight: ["400"] });
 
 const restaurantData: RestaurantData = {
   name: "Curry House",
@@ -118,33 +118,30 @@ const restaurantData: RestaurantData = {
 export default function RestaurantMenu() {
   const [cart, setCart] = useState<CartItemType[]>([]);
 
-  const handleAddToCart = (item: MenuItem) => {
+  const handleAddToCart = (item: MenuItem, quantity: number) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-      if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
+      const existingItemIndex = prevCart.findIndex((cartItem) => cartItem.id === item.id);
+      if (existingItemIndex !== -1) {
+        const newCart = [...prevCart];
+        newCart[existingItemIndex] = { 
+          ...newCart[existingItemIndex], 
+          quantity: newCart[existingItemIndex].quantity + quantity 
+        };
+        return newCart;
       } else {
-        return [...prevCart, { ...item, quantity: 1 }];
+        return [...prevCart, { ...item, quantity }];
       }
     });
   };
 
   const handleUpdateQuantity = (id: number, change: number) => {
-    setCart((prevCart) => {
-      return prevCart.reduce((newCart, item) => {
-        if (item.id === id) {
-          const newQuantity = item.quantity + change;
-          return newQuantity > 0
-            ? [...newCart, { ...item, quantity: newQuantity }]
-            : newCart;
-        }
-        return [...newCart, item];
-      }, [] as CartItemType[]);
-    });
+    setCart((prevCart) => 
+      prevCart.map((item) => 
+        item.id === id 
+          ? { ...item, quantity: Math.max(0, item.quantity + change) }
+          : item
+      ).filter((item) => item.quantity > 0)
+    );
   };
 
   const handleRemoveItem = (id: number) => {
@@ -169,7 +166,7 @@ export default function RestaurantMenu() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white">
-            <h1 className={`text-2xl sm:text-4xl font-semibold mb-1 sm:mb-2 ${splineSans.className}`}>{restaurantData.name}</h1>
+            <h1 className={`text-3xl sm:text-4xl font-semibold mb-1 sm:mb-2 tracking-wide ${splineSans.className}`}>{restaurantData.name}</h1>
             <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2">{restaurantData.category}</p>
             <div className="flex items-center text-sm sm:text-base">
               <span className="text-yellow-400 mr-1">★</span>
@@ -185,7 +182,7 @@ export default function RestaurantMenu() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-yellow-500" />
-                <h2 className={`text-lg font-semibold ${splineSans.className} text-primary-foreground`}>Duos Eats Exclusive</h2>
+                <h2 className={`text-lg ${splineSans.className}`}>Duos Eats Exclusive</h2>
               </div>
               <p className={`text-3xl font-semibold text-primary-foreground ${ibm.className}`}>
                 10% Discount
@@ -203,21 +200,22 @@ export default function RestaurantMenu() {
               className="w-full sm:w-auto"
             >
               <Button
-  variant="secondary"
-  size="sm"
-  className="w-full sm:w-auto flex items-center justify-center gap-2 
-             px-4 py-2 rounded-md 
-             shadow-md
-             bg-gradient-to-r from-gray-50 to-gray-200 
-             text-gray-700 font-semibold
-             border border-gray-200
-             transition-all duration-300 
-             hover:shadow-lg hover:border-pink-200 hover:text-pink-500
-             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-200"
->
-  <Instagram className="h-6 w-6 text-pink-500" />
-  Watch on Instagram
-</Button>
+                variant="secondary"
+                size="sm"
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 
+                           px-4 py-2 rounded-md 
+                           shadow-md
+                           bg-gradient-to-r from-gray-50 to-gray-100 
+                           border border-gray-200
+                           transition-all duration-300 
+                           hover:shadow-xl hover:scale-105 hover:border-pink-200 hover:text-pink-500
+                           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-200
+                           ${splineSans.className}
+                           `}
+              >
+                <Instagram className="h-6 w-6 text-pink-500" />
+                Watch on Instagram
+              </Button>
             </Link>
           </div>
         </div>
@@ -227,7 +225,7 @@ export default function RestaurantMenu() {
         <Input 
           type="text" 
           placeholder="Search in menu" 
-          className="w-full pl-10 pr-4 py-2 rounded-full shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md" 
+          className="w-full pl-10 pr-4 py-2 rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md" 
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
       </div>

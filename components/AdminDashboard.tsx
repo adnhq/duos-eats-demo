@@ -163,59 +163,59 @@ export default function AdminDashboard() {
           
           {/* Key metrics */}
           <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-blue-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-              <DollarSign className="h-5 w-5 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">$123,456</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                12.5% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-green-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Restaurants</CardTitle>
-              <Store className="h-5 w-5 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">256</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                8.2% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-yellow-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Orders</CardTitle>
-              <TrendingUp className="h-5 w-5 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">15,234</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                15.3% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-purple-500 transform hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
-              <Users className="h-5 w-5 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">45,678</div>
-              <p className="text-xs text-gray-500 flex items-center mt-1">
-                <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
-                5.7% from last month
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+          <DollarSign className="h-5 w-5" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">$123,456</div>
+          <p className="text-xs flex items-center mt-1 text-blue-100">
+            <ChevronUp className="h-4 w-4 mr-1" />
+            12.5% from last month
+          </p>
+        </CardContent>
+      </Card>
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium">Total Restaurants</CardTitle>
+          <Store className="h-5 w-5" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">256</div>
+          <p className="text-xs flex items-center mt-1 text-green-100">
+            <ChevronUp className="h-4 w-4 mr-1" />
+            8.2% from last month
+          </p>
+        </CardContent>
+      </Card>
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+          <TrendingUp className="h-5 w-5" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">15,234</div>
+          <p className="text-xs flex items-center mt-1 text-yellow-100">
+            <ChevronUp className="h-4 w-4 mr-1" />
+            15.3% from last month
+          </p>
+        </CardContent>
+      </Card>
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+          <Users className="h-5 w-5" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">45,678</div>
+          <p className="text-xs flex items-center mt-1 text-purple-100">
+            <ChevronUp className="h-4 w-4 mr-1" />
+            5.7% from last month
+          </p>
+        </CardContent>
+      </Card>
+    </div>
 
           {/* Revenue chart */}
           <motion.div

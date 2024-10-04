@@ -49,7 +49,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8 }}
           >
             Save on every order with <br />
-            <span className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 ${permanent_marker.className}`}>
+            <span className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${permanent_marker.className}`}>
               Duos Eats
             </span>
           </motion.h1>

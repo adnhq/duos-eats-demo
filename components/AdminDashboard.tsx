@@ -163,7 +163,7 @@ export default function AdminDashboard() {
           
           {/* Key metrics */}
           <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           <DollarSign className="h-5 w-5" />
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-green-500 to-green-600 text-white">
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Restaurants</CardTitle>
           <Store className="h-5 w-5" />
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
           <TrendingUp className="h-5 w-5" />
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 text-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Users</CardTitle>
           <Users className="h-5 w-5" />

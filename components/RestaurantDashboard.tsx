@@ -69,9 +69,9 @@ export default function RestaurantDashboard() {
         {/* Key metrics */}
         <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { title: 'Total Orders', value: '1,245', icon: ShoppingCart, color: 'yellow', increase: '15.8%' },
+            { title: 'Total Orders', value: '1,245', icon: ShoppingCart, color: 'blue', increase: '15.8%' },
             { title: 'Total Revenue', value: '$23,456', icon: DollarSign, color: 'green', increase: '20.1%' },
-            { title: 'Avg. Order Value', value: '$18.85', icon: TrendingUp, color: 'blue', increase: '4.3%' },
+            { title: 'Avg. Order Value', value: '$18.85', icon: TrendingUp, color: 'amber', increase: '4.3%' },
             { title: 'Total Customers', value: '3,456', icon: Users, color: 'purple', increase: '8.2%' },
           ].map((metric, index) => (
             <motion.div
@@ -80,14 +80,14 @@ export default function RestaurantDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className={`bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden border-l-4 border-${metric.color}-500 transform hover:-translate-y-1`}>
+              <Card className={`shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden transform hover:-translate-y-1 bg-gradient-to-br from-${metric.color}-500 via-${metric.color}-600 to-${metric.color}-700 text-white`}>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-700">{metric.title}</CardTitle>
+                  <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
                   <metric.icon className={`h-5 w-5 text-${metric.color}-500`} />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-gray-900">{metric.value}</div>
-                  <p className="text-xs text-gray-600 flex items-center mt-1">
+                  <div className="text-2xl font-bold">{metric.value}</div>
+                  <p className="text-xs flex items-center mt-1">
                     <ChevronUp className="h-4 w-4 text-green-500 mr-1" />
                     {metric.increase} from last month
                   </p>

@@ -210,7 +210,7 @@ export default function Restaurants() {
       onScroll={handleScroll}
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
-      {allRestaurants.slice(0, 10).map((restaurant, index) => (
+      {popularRestaurants.slice(2, 10).map((restaurant, index) => (
         <div key={index} className="snap-start shrink-0 w-52 sm:w-60 md:w-68 lg:w-76 pt-2 pb-4">
           <RestaurantCard restaurant={restaurant} />
         </div>
@@ -245,14 +245,14 @@ export default function Restaurants() {
             placeholder="Search restaurants..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg focus:shadow-lg"
+            className="w-full pl-10 pr-4 py-2 rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
         </div>
 
         <div className="self-end sm:self-auto">
           <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-            <SelectTrigger className="w-[160px] sm:w-[180px] rounded-lg shadow-md">
+            <SelectTrigger className="w-[160px] sm:w-[180px] rounded-lg shadow-sm">
               <MapPinned className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 mr-2" />
               <SelectValue placeholder="Location" />
             </SelectTrigger>

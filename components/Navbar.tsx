@@ -77,7 +77,7 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-2">
                   <User className="h-5 w-5" />
-                  <span>Wasif</span>
+                  <span className="tracking-wide font-semibold">Wasif</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -117,7 +117,7 @@ export default function Navbar() {
               <div className="space-y-2 bg-gray-100 p-4 rounded-lg mt-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <User className="h-5 w-5" />
-                  <span className="font-semibold">Wasif</span>
+                  <span className="tracking-wide font-semibold">Wasif</span>
                 </div>
                 <Link href="/account-settings" passHref>
                   <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">

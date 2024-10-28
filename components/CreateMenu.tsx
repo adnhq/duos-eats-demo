@@ -11,7 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { Spline_Sans } from "next/font/google"
 
@@ -40,7 +39,7 @@ export default function AddMenuItems() {
   const [extraParams, setExtraParams] = useState<ExtraParam[]>([])
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [newCategory, setNewCategory] = useState('')
+  const [categoryInput, setCategoryInput] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleAddItem = (item: MenuItem) => {
@@ -60,6 +59,7 @@ export default function AddMenuItems() {
   const handleEditItem = (item: MenuItem) => {
     setCurrentItem(item)
     setExtraParams(item.extraParams)
+    setCategoryInput(item.category)
     setIsEditing(true)
     setIsDialogOpen(true)
   }
@@ -115,13 +115,6 @@ export default function AddMenuItems() {
     ))
   }
 
-  const handleAddCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory])
-      setNewCategory('')
-    }
-  }
-
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className={`text-2xl md:text-3xl font-bold mb-6 ${splineSans.className}`}>Add Menu Items</h1>
@@ -133,6 +126,7 @@ export default function AddMenuItems() {
               <Button className="w-full md:w-auto" onClick={() => {
                 setCurrentItem(null)
                 setExtraParams([])
+                setCategoryInput('')
                 setIsEditing(false)
               }}>
                 <Plus className="mr-2 h-4 w-4" /> Add New Item
@@ -152,7 +146,7 @@ export default function AddMenuItems() {
                     price: parseFloat(formData.get('price') as string),
                     description: formData.get('description') as string,
                     image: currentItem?.image || '',
-                    category: formData.get('category') as string,
+                    category: categoryInput,
                     isPopular: currentItem?.isPopular || false,
                     extraParams: extraParams
                   }
@@ -180,38 +174,20 @@ export default function AddMenuItems() {
                     </div>
                     <div>
                       <Label htmlFor="category">Category</Label>
-                      <div className="flex gap-2">
-                        <Select name="category" defaultValue={currentItem?.category}>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button type="button" onClick={() => setNewCategory('New Category')}>
-                          New
-                        </Button>
-                      </div>
+                      <Input
+                        id="category"
+                        name="category"
+                        value={categoryInput}
+                        onChange={(e) => setCategoryInput(e.target.value)}
+                        className="mt-1"
+                        list="categories"
+                      />
+                      <datalist id="categories">
+                        {categories.map((category) => (
+                          <option key={category} value={category} />
+                        ))}
+                      </datalist>
                     </div>
-                    {newCategory && (
-                      <div>
-                        <Label htmlFor="newCategory">New Category</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            id="newCategory"
-                            value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value)}
-                            className="mt-1"
-                          />
-                          <Button type="button" onClick={handleAddCategory}>Add</Button>
-                        </div>
-                      </div>
-                    )}
                     <div>
                       <Label htmlFor="description">Description</Label>
                       <Textarea
@@ -232,13 +208,13 @@ export default function AddMenuItems() {
                         ref={fileInputRef}
                       />
                       {currentItem?.image && (
-                        <div className="mt-2">
+                        <div className="mt-2 relative w-full h-40">
                           <Image
                             src={currentItem.image}
                             alt="Preview"
-                            width={100}
-                            height={100}
-                            className="rounded-md"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="rounded-md object-cover"
                           />
                         </div>
                       )}
@@ -344,17 +320,17 @@ export default function AddMenuItems() {
                     .filter((item) => category === 'Popular' ? item.isPopular : item.category === category)
                     .map((item) => (
                       <div key={item.id} className="flex items-start space-x-4 rounded-md border p-4">
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 relative w-20 h-20">
                           <Image
                             src={item.image || "/placeholder.svg"}
                             alt={item.name}
-                            width={80}
-                            height={80}
-                            className="h-20 w-20 rounded-md object-cover"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="rounded-md object-cover"
                           />
                         </div>
                         <div className="flex-grow">
-                          <h3 className="text-lg  font-semibold">{item.name}</h3>
+                          <h3 className="text-lg font-semibold">{item.name}</h3>
                           <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
                           <p className="text-sm font-semibold mt-1">Tk {item.price.toFixed(2)}</p>
                           {item.extraParams.length > 0 && (
@@ -369,6 +345,7 @@ export default function AddMenuItems() {
                           )}
                         </div>
                       </div>
+                    
                     ))}
                 </div>
               </TabsContent>

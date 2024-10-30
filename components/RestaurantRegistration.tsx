@@ -146,7 +146,7 @@ export default function RestaurantRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden py-16">
       {/* Background illustration */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -219,7 +219,7 @@ export default function RestaurantRegistration() {
                     <FormLabel>Email address</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="restaurant@example.com"
+                        placeholder="myrestaurant@example.com"
                         {...field}
                         type="email"
                       />

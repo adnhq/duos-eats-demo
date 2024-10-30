@@ -70,3 +70,24 @@ export async function registerRestaurant(formData: FormData) {
     return { error: "Failed to register restaurant" };
   }
 }
+
+export async function getAllRestaurants() {
+  const { data: Restaurants, error } = await supabase
+    .from("Restaurants")
+    .select("*");
+
+  if (error) throw error;
+
+  return Restaurants;
+}
+
+export async function getRestaurant(restaurantId: string) {
+  const { data: Restaurant, error } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("id", restaurantId);
+
+  if (error) throw error;
+
+  return Restaurant;
+}

@@ -1,123 +1,147 @@
-'use client'
-import React, { useState, ChangeEvent } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ChevronRight, Eye, EyeOff, Upload } from 'lucide-react'
-import { useToast } from "@/hooks/use-toast"
+"use client";
 
-interface FormData {
-  restaurantName: string;
-  email: string;
-  password: string;
-  phone: string;
-  cuisine: string;
-  address: string;
-  location: string;
-  logo?: File | null;
-}
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { ChevronRight, Eye, EyeOff, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { registerRestaurant } from "@/lib/actions";
+
+const formSchema = z.object({
+  restaurantName: z.string().min(2, {
+    message: "Restaurant name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
+  phone: z.string().min(10, {
+    message: "Please enter a valid phone number.",
+  }),
+  cuisine: z.string({
+    required_error: "Please select a cuisine type.",
+  }),
+  address: z.string().min(10, {
+    message: "Address must be at least 10 characters.",
+  }),
+  location: z.string({
+    required_error: "Please select a location.",
+  }),
+  logo: z.any().optional(),
+});
 
 export default function RestaurantRegistration() {
-  const { toast } = useToast()
-  const [showPassword, setShowPassword] = useState(false)
-  const [logoFile, setLogoFile] = useState<string>('')
-  
-  const [formData, setFormData] = useState<FormData>({
-    restaurantName: '',
-    email: '',
-    password: '',
-    phone: '',
-    cuisine: '',
-    address: '',
-    location: '',
-    logo: null
-  })
+  const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [logoFile, setLogoFile] = useState<string>("");
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      restaurantName: "",
+      email: "",
+      password: "",
+      phone: "",
+      cuisine: "",
+      address: "",
+      location: "",
+    },
+  });
 
   const cuisineTypes = [
-    "Bengali", "Chinese", "Indian", "Italian", "Japanese", "Mediterranean", 
-    "Mexican", "Thai", "American", "French", "Greek", "Korean", "Vietnamese", "Other"
-  ]
+    "Bengali",
+    "Chinese",
+    "Indian",
+    "Italian",
+    "Japanese",
+    "Mediterranean",
+    "Mexican",
+    "Thai",
+    "American",
+    "French",
+    "Greek",
+    "Korean",
+    "Vietnamese",
+    "Other",
+  ];
 
   const locations = [
-    "Uttara", "Mirpur", "Pallabi", "Kazipara", "Kafrul", "Agargaon", "Banani", 
-    "Gulshan", "Niketan", "Shahjadpur", "Mohakhali", "Bashundhara", "Banasree", 
-    "Aftab Nagar", "Baridhara", "Khilkhet", "Tejgaon", "Farmgate", "Mohammadpur", 
-    "Rampura", "Badda", "Khilgaon"
-  ]
+    "Uttara",
+    "Mirpur",
+    "Pallabi",
+    "Kazipara",
+    "Kafrul",
+    "Agargaon",
+    "Banani",
+    "Gulshan",
+    "Niketan",
+    "Shahjadpur",
+    "Mohakhali",
+    "Bashundhara",
+    "Banasree",
+    "Aftab Nagar",
+    "Baridhara",
+    "Khilkhet",
+    "Tejgaon",
+    "Farmgate",
+    "Mohammadpur",
+    "Rampura",
+    "Badda",
+    "Khilgaon",
+  ];
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  const handleSelectChange = (value: string, name: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        logo: file
-      }))
-      setLogoFile(file.name)
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    try {
-      // Create FormData for multipart/form-data submission
-      const submitData = new FormData()
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) {
-          submitData.append(key, value)
-        }
-      })
-
-      const response = await fetch('/api/restaurant/register', {
-        method: 'POST',
-        body: submitData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Registration failed')
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const formData = new FormData();
+    Object.entries(values).forEach(([key, value]) => {
+      if (value !== null) {
+        formData.append(key, value);
       }
+    });
 
+    const result = await registerRestaurant(formData);
+
+    if (result.error) {
+      toast({
+        title: "Registration Failed",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
       toast({
         title: "Registration Successful!",
         description: "Your restaurant has been registered successfully.",
-      })
-
-      // Reset form
-      setFormData({
-        restaurantName: '',
-        email: '',
-        password: '',
-        phone: '',
-        cuisine: '',
-        address: '',
-        location: '',
-        logo: null
-      })
-      setLogoFile('')
-    } catch (error) {
-      toast({
-        title: "Registration Failed",
-        description: "There was an error registering your restaurant. Please try again.",
-        variant: "destructive",
-      })
+      });
+      form.reset();
+      setLogoFile("");
     }
   }
 
@@ -147,173 +171,251 @@ export default function RestaurantRegistration() {
             <rect x="0" y="40%" width="100%" height="60%" fill="black" />
           </mask>
         </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" mask="url(#fade-mask)" />
+        <rect
+          width="100%"
+          height="100%"
+          fill="url(#grid)"
+          mask="url(#fade-mask)"
+        />
         <g mask="url(#fade-mask)">
           <circle cx="500" cy="0" r="400" fill="rgba(245, 158, 11, 0.05)" />
           <circle cx="500" cy="0" r="300" fill="rgba(245, 158, 11, 0.05)" />
           <circle cx="500" cy="0" r="200" fill="rgba(245, 158, 11, 0.05)" />
         </g>
       </svg>
-      
+
       {/* Centered form */}
       <Card className="w-full max-w-md z-10 bg-white shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">Join Duos as a Partner</CardTitle>
-          <CardDescription className="text-gray-600">Grow your restaurant with us</CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-900">
+            Join Duos as a Partner
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Grow your restaurant with us
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <Label htmlFor="restaurantName" className="text-gray-700">Restaurant Name</Label>
-              <Input 
-                id="restaurantName" 
-                name="restaurantName" 
-                value={formData.restaurantName}
-                onChange={handleInputChange}
-                type="text" 
-                required 
-                className="mt-1" 
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="restaurantName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Restaurant Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My Restaurant" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <Label htmlFor="email" className="text-gray-700">Email address</Label>
-              <Input 
-                id="email" 
-                name="email" 
-                value={formData.email}
-                onChange={handleInputChange}
-                type="email" 
-                autoComplete="email" 
-                required 
-                className="mt-1" 
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email address</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="restaurant@example.com"
+                        {...field}
+                        type="email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <Label htmlFor="password" className="text-gray-700">Password</Label>
-              <div className="relative">
-                <Input 
-                  id="password" 
-                  name="password" 
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  type={showPassword ? "text" : "password"}
-                  required 
-                  className="mt-1 pr-10" 
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-1 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-500" />
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="flex">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                  +880
-                </span>
-                <Input 
-                  id="phone" 
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  type="tel" 
-                  className="flex-1 rounded-l-none" 
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="cuisine" className="text-gray-700">Cuisine Type</Label>
-              <Select 
-                name="cuisine" 
-                value={formData.cuisine}
-                onValueChange={(value) => handleSelectChange(value, 'cuisine')}
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select cuisine type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cuisineTypes.map((cuisine) => (
-                    <SelectItem key={cuisine} value={cuisine.toLowerCase()}>{cuisine}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="address" className="text-gray-700">Restaurant Address</Label>
-              <Textarea 
-                id="address" 
-                name="address" 
-                value={formData.address}
-                onChange={handleInputChange}
-                rows={3} 
-                className="mt-1" 
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="••••••••"
+                          {...field}
+                          type={showPassword ? "text" : "password"}
+                          className="pr-10"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-500" />
+                          )}
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <Label htmlFor="location" className="text-gray-700">Location</Label>
-              <Select 
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <div className="flex">
+                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                          +880
+                        </span>
+                        <Input
+                          placeholder="1234567890"
+                          {...field}
+                          type="tel"
+                          className="flex-1 rounded-l-none"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cuisine"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cuisine Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select cuisine type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {cuisineTypes.map((cuisine) => (
+                          <SelectItem
+                            key={cuisine}
+                            value={cuisine.toLowerCase()}
+                          >
+                            {cuisine}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Restaurant Address</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="123 Food Street, Cuisine City"
+                        {...field}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="location"
-                value={formData.location}
-                onValueChange={(value) => handleSelectChange(value, 'location')}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem
+                            key={location}
+                            value={location.toLowerCase()}
+                          >
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="logo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Restaurant Logo</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center">
+                        <Input
+                          id="logo"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              field.onChange(file);
+                              setLogoFile(file.name);
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor="logo"
+                          className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                        >
+                          <Upload className="h-4 w-4 inline-block mr-2" />
+                          Choose logo
+                        </label>
+                        <span className="ml-3 text-sm text-gray-500">
+                          {logoFile || "No file chosen"}
+                        </span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
               >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location} value={location.toLowerCase()}>{location}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="logo" className="text-gray-700">Restaurant Logo</Label>
-              <div className="mt-1 flex items-center">
-                <Input
-                  id="logo"
-                  name="logo"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleLogoChange}
-                />
-                <label
-                  htmlFor="logo"
-                  className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                >
-                  <Upload className="h-4 w-4 inline-block mr-2" />
-                  Choose logo
-                </label>
-                <span className="ml-3 text-sm text-gray-500">
-                  {logoFile || "No file chosen"}
-                </span>
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-white">
-              Apply to become a partner
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
+                Apply to become a partner
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

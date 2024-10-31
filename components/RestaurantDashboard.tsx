@@ -1,27 +1,23 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
-import { AlertCircle, CalendarIcon, ChefHat, CreditCard, DollarSign, Eye, Receipt, Utensils } from 'lucide-react'
-
+import { AlertCircle, Menu, X, Utensils, ChefHat, CreditCard, DollarSign, Receipt } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
+import { OrdersTab } from './OrdersTab'
+import CreateMenu from './CreateMenu'
 
-const revenueData = [
-  { date: "2023-03-01", revenue: 5200 },
-  { date: "2023-03-02", revenue: 4800 },
-  { date: "2023-03-03", revenue: 5500 },
-  { date: "2023-03-04", revenue: 6200 },
-  { date: "2023-03-05", revenue: 7100 },
-  { date: "2023-03-06", revenue: 6800 },
-  { date: "2023-03-07", revenue: 7500 },
+const activeOrders = [
+  { orderId: "ORD006", customerName: "Alice Johnson", items: [
+    { name: "Burger", price: 350, quantity: 1 },
+    { name: "Fries", price: 150, quantity: 1 }
+  ], totalAmount: 500, orderTime: "2023-03-08 14:30" },
+  { orderId: "ORD007", customerName: "Bob Smith", items: [
+    { name: "Pizza", price: 600, quantity: 1 },
+    { name: "Soda", price: 200, quantity: 2 }
+  ], totalAmount: 1000, orderTime: "2023-03-08 14:45" },
 ]
 
 const historicalData = [
@@ -47,9 +43,9 @@ const historicalData = [
   ], originalAmount: 300, discount: 0, platformFee: 15, finalEarnings: 285 },
 ]
 
-export default function EnhancedRestaurantDashboard() {
-  const [dateRange, setDateRange] = useState("This Week")
-  const [currentDiscount, setCurrentDiscount] = useState("15%")
+export default function RestaurantDashboard({ approved = true }: { approved?: boolean }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("orders")
 
   const todayStats = {
     earnings: 7500,
@@ -64,306 +60,174 @@ export default function EnhancedRestaurantDashboard() {
     monthlyOrders: 1950
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto p-6 space-y-8">
-        {/* Header Section */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Restaurant Dashboard</h1>
-            <p className="text-gray-500">Welcome back, Restaurant Owner</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="outline">
-              <CalendarIcon className="mr-2 h-4 w-4" /> March 2023
-            </Button>
-            <Button>
-              <DollarSign className="mr-2 h-4 w-4" /> Pay Dues
-            </Button>
-          </div>
-        </div>
+  const sidebarItems = [
+    { id: "orders", name: "Order Stats", icon: Utensils },
+    { id: "menu", name: "Menu", icon: ChefHat },
+    { id: "settings", name: "Settings", icon: CreditCard },
+  ]
 
-        {/* Alert */}
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Attention Required</AlertTitle>
-          <AlertDescription>
-            You have BDT 2,450 in pending platform fees. Please clear your dues to avoid any service interruptions.
-          </AlertDescription>
-        </Alert>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-white">Today's Earnings</CardTitle>
-              <DollarSign className="h-4 w-4 text-white" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">BDT {todayStats.earnings.toLocaleString()}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg bg-gradient-to-br from-green-500 to-green-600">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-white">Today's Orders</CardTitle>
-              <Utensils className="h-4 w-4 text-white" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{todayStats.orders}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-white">Avg. Order Value</CardTitle>
-              <Receipt className="h-4 w-4 text-white" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">BDT {todayStats.averageOrderValue}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Current Discount and Performance Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Current Discount
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Select value={currentDiscount} onValueChange={setCurrentDiscount}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select discount" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0%">0%</SelectItem>
-                    <SelectItem value="5%">5%</SelectItem>
-                    <SelectItem value="10%">10%</SelectItem>
-                    <SelectItem value="15%">15%</SelectItem>
-                    <SelectItem value="20%">20%</SelectItem>
-                    <SelectItem value="25%">25%</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-3xl font-bold">{currentDiscount}</span>
-              </div>
-              <Button className="w-full mt-4">Apply New Discount</Button>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Performance Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Weekly Earnings</p>
-                  <p className="text-2xl font-bold">BDT {weeklyMonthlyStats.weeklyEarnings.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Weekly Orders</p>
-                  <p className="text-2xl font-bold">{weeklyMonthlyStats.weeklyOrders}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Monthly Earnings</p>
-                  <p className="text-2xl font-bold">BDT {weeklyMonthlyStats.monthlyEarnings.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Monthly Orders</p>
-                  <p className="text-2xl font-bold">{weeklyMonthlyStats.monthlyOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tabs Section */}
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="analytics">Order Analytics</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue Trend</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="analytics">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Order Analytics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-center p-4 border rounded-lg shadow-sm">
-                      <Utensils className="h-6 w-6 mr-4 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Today's Order Count</p>
-                        <p className="text-2xl font-bold">{todayStats.orders}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center p-4 border rounded-lg shadow-sm">
-                      <ChefHat className="h-6 w-6 mr-4 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Active Orders</p>
-                        <p className="text-2xl font-bold">12</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="border rounded-lg p-4 shadow-sm">
-                    <h4 className="text-lg font-medium mb-4">Most Ordered Items (Top 5)</h4>
-                    <ol className="space-y-2">
-                      {[
-                        "Margherita Pizza",
-                        "Chicken Tikka Masala",
-                        "Vegetable Biryani",
-                        "Chocolate Brownie",
-                        "Mango Lassi"
-                      ].map((item, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground rounded-full mr-2 text-xs">
-                            {index + 1}
-                          </span>
-                          <span className="text-sm">{item}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="revenue">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Weekly Revenue Trend</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={revenueData}>
-                      <XAxis 
-                        dataKey="date" 
-                        stroke="#888888"
-                        tickFormatter={(value) => new Date(value).toLocaleDateString()}
-                      />
-                      <YAxis stroke="#888888" />
-                      <Tooltip 
-                        contentStyle={{ background: 'white', border: '1px solid #e5e7eb' }}
-                        formatter={(value) => [`$${value}`, 'Revenue']}
-                        labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#8884d8" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Historical Data Table */}
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Receipt className="h-5 w-5" />
-              Historical Data
-            </CardTitle>
-            <div className="flex items-center space-x-4">
-              <Label htmlFor="date-range" className="text-sm">Date Range:</Label>
-              <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger id="date-range" className="w-[180px]">
-                  <SelectValue placeholder="Select date range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem  value="Today">Today</SelectItem>
-                  <SelectItem value="This Week">This Week</SelectItem>
-                  <SelectItem value="This Month">This Month</SelectItem>
-                  <SelectItem value="Custom">Custom</SelectItem>
-                </SelectContent>
-              </Select>
-              {dateRange === "Custom" && (
-                <div className="flex items-center space-x-2">
-                  <Input type="date" className="w-[150px]" />
-                  <span className="text-sm text-muted-foreground">to</span>
-                  <Input type="date" className="w-[150px]" />
-                </div>
-              )}
-            </div>
+  if (!approved) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md shadow-md">
+          <CardHeader className="text-center">
+            <AlertCircle className="w-16 h-16 mx-auto text-yellow-500 mb-4" />
+            <CardTitle className="text-2xl font-bold text-gray-900">Application Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Original Amount</TableHead>
-                  <TableHead>Discount %</TableHead>
-                  <TableHead>Platform Fee</TableHead>
-                  <TableHead>Final Earnings</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {historicalData.map((order) => (
-                  <TableRow key={order.orderId}>
-                    <TableCell>{order.date}</TableCell>
-                    <TableCell>{order.orderId}</TableCell>
-                    <TableCell>BDT {order.originalAmount}</TableCell>
-                    <TableCell>{order.discount}%</TableCell>
-                    <TableCell>BDT {order.platformFee}</TableCell>
-                    <TableCell>BDT {order.finalEarnings}</TableCell>
-                    <TableCell>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Eye className="mr-2 h-4 w-4" />
-                            View
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Order Receipt: {order.orderId}</DialogTitle>
-                            <DialogDescription>Order details for {order.date}</DialogDescription>
-                          </DialogHeader>
-                          <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label className="text-right">Item</Label>
-                              <Label className="text-right">Price</Label>
-                              <Label className="text-right">Qty</Label>
-                              <Label className="text-right">Total</Label>
-                            </div>
-                            {order.items.map((item, index) => (
-                              <div key={index} className="grid grid-cols-4 items-center gap-4">
-                                <div className="text-sm">{item.name}</div>
-                                <div className="text-sm text-right">BDT {item.price}</div>
-                                <div className="text-sm text-right">{item.quantity}</div>
-                                <div className="text-sm text-right">BDT {item.price * item.quantity}</div>
-                              </div>
-                            ))}
-                            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                              <Label className="text-right font-bold">Subtotal:</Label>
-                              <div className="text-right font-bold">BDT {order.originalAmount}</div>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <p className="text-gray-600 text-center mb-6">
+              Your application is currently under review. We appreciate your patience and will notify you once it's approved.
+            </p>
+            <Button className="w-full" variant="outline">Check Status</Button>
           </CardContent>
         </Card>
+      </div>
+    )
+  }
+
+  const renderMainContent = () => {
+    switch (activeTab) {
+      case "orders":
+        return (
+          <>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-white">Today's Earnings</CardTitle>
+                  <DollarSign className="h-4 w-4 text-white" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">BDT {todayStats.earnings.toLocaleString()}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg bg-gradient-to-br from-green-500 to-green-600">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-white">Today's Orders</CardTitle>
+                  <Utensils className="h-4 w-4 text-white" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{todayStats.orders}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-white">Avg. Order Value</CardTitle>
+                  <Receipt className="h-4 w-4 text-white" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">BDT {todayStats.averageOrderValue}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <OrdersTab 
+              activeOrders={activeOrders}
+              historicalData={historicalData}
+              todayStats={todayStats}
+              weeklyMonthlyStats={weeklyMonthlyStats}
+            />
+          </>
+        )
+      case "menu":
+        return <CreateMenu />
+      case "settings":
+        return <div>Settings content will go here</div>
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="flex h-screen bg-white">
+      {/* Mobile sidebar backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center space-x-2">
+              <Utensils className="h-6 w-6 text-primary" />
+              <div>
+                <h2 className="font-semibold">Restaurant Name</h2>
+                <p className="text-xs text-muted-foreground">Dashboard</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+          
+          <nav className="flex-1 overflow-y-auto p-4">
+            {sidebarItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id)
+                  setSidebarOpen(false)
+                }}
+                className={cn(
+                  "flex items-center w-full space-x-2 px-4 py-2 rounded-lg mb-1 transition-colors",
+                  activeTab === item.id
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-gray-100 text-gray-700"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <header className="bg-white border-b px-4 py-3 flex items-center justify-between lg:justify-end">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+        </header>
+
+        {/* Main content area */}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="container mx-auto space-y-8">
+            {/* Alert */}
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Attention Required</AlertTitle>
+              <AlertDescription>
+                You have BDT 2,450 in pending platform fees. Please clear your dues to avoid any service interruptions.
+              </AlertDescription>
+            </Alert>
+
+            {renderMainContent()}
+          </div>
+        </main>
       </div>
     </div>
   )

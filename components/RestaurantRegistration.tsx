@@ -147,7 +147,6 @@ export default function RestaurantRegistration() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden py-16">
-      {/* Background illustration */}
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 1000 1000"

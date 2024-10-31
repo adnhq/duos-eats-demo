@@ -32,7 +32,7 @@ type ExtraParam = {
   options: string[]
 }
 
-export default function AddMenuItems() {
+export default function CreateMenu() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [categories, setCategories] = useState<string[]>(['Popular'])
   const [currentItem, setCurrentItem] = useState<MenuItem | null>(null)

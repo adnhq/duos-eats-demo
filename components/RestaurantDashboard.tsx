@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { OrdersTab } from './OrdersTab'
 import CreateMenu from './CreateMenu'
+import { RestaurantSettings } from './RestaurantSettings'
 
 const activeOrders = [
   { orderId: "ORD006", customerName: "Alice Johnson", items: [
@@ -101,7 +102,7 @@ export default function RestaurantDashboard({ approved = true }: { approved?: bo
                   <div className="text-2xl font-bold text-white">BDT {todayStats.earnings.toLocaleString()}</div>
                 </CardContent>
               </Card>
-
+  
               <Card className="shadow-lg bg-gradient-to-br from-green-500 to-green-600">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium text-white">Today's Orders</CardTitle>
@@ -111,7 +112,7 @@ export default function RestaurantDashboard({ approved = true }: { approved?: bo
                   <div className="text-2xl font-bold text-white">{todayStats.orders}</div>
                 </CardContent>
               </Card>
-
+  
               <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium text-white">Avg. Order Value</CardTitle>
@@ -122,7 +123,7 @@ export default function RestaurantDashboard({ approved = true }: { approved?: bo
                 </CardContent>
               </Card>
             </div>
-
+  
             <OrdersTab 
               activeOrders={activeOrders}
               historicalData={historicalData}
@@ -134,7 +135,7 @@ export default function RestaurantDashboard({ approved = true }: { approved?: bo
       case "menu":
         return <CreateMenu />
       case "settings":
-        return <div>Settings content will go here</div>
+        return <RestaurantSettings />
       default:
         return null
     }

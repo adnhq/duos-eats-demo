@@ -18,105 +18,145 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Spline_Sans } from "next/font/google";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { addMenuItem } from "@/lib/actions";
+import { useTransition } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const splineSans = Spline_Sans({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 });
 
-type MenuItem = {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  image: string;
-  category: string;
-  isPopular: boolean;
-  extraParams: ExtraParam[];
-};
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  price: z.number().min(0, {
+    message: "Price must be a positive number.",
+  }),
+  description: z.string().optional(),
+  category: z.string().min(1, {
+    message: "Category is required.",
+  }),
+  image: z.any().optional(),
+  popular: z.boolean().default(false),
+  extraParams: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Parameter name is required"),
+        options: z.array(z.string().min(1, "Option cannot be empty")),
+      })
+    )
+    .optional(),
+});
 
-type ExtraParam = {
-  name: string;
-  options: string[];
-};
+type FormValues = z.infer<typeof formSchema>;
+
+type MenuItem = FormValues & { imageUrl?: string };
 
 export default function CreateMenu() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<string[]>(["Popular"]);
-  const [currentItem, setCurrentItem] = useState<MenuItem | null>(null);
-  const [extraParams, setExtraParams] = useState<ExtraParam[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [categoryInput, setCategoryInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isPending, startTransition] = useTransition();
 
-  const handleAddItem = (item: MenuItem) => {
-    if (isEditing) {
-      setMenuItems(menuItems.map((i) => (i.id === item.id ? item : i)));
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      price: 0,
+      description: "",
+      category: "",
+      popular: false,
+      extraParams: [],
+    },
+  });
+
+  const handleAddItem = (values: FormValues) => {
+    const newItem: MenuItem = {
+      ...values,
+      imageUrl: values.image ? URL.createObjectURL(values.image) : undefined,
+    };
+    if (isEditing && editingIndex !== null) {
+      const updatedItems = [...menuItems];
+      updatedItems[editingIndex] = newItem;
+      setMenuItems(updatedItems);
     } else {
-      setMenuItems([...menuItems, { ...item, id: Date.now() }]);
+      setMenuItems([...menuItems, newItem]);
     }
-    if (item.category && !categories.includes(item.category)) {
-      setCategories([...categories, item.category]);
+    if (values.category && !categories.includes(values.category)) {
+      setCategories([...categories, values.category]);
     }
-    setCurrentItem(null);
     setIsEditing(false);
+    setEditingIndex(null);
     setIsDialogOpen(false);
-    setCategoryInput("");
+    form.reset();
   };
 
-  const handleEditItem = (item: MenuItem) => {
-    setCurrentItem(item);
-    setExtraParams(item.extraParams);
-    setCategoryInput(item.category);
+  const handleEditItem = (index: number) => {
+    const item = menuItems[index];
+    form.reset(item);
     setIsEditing(true);
+    setEditingIndex(index);
     setIsDialogOpen(true);
   };
 
-  const handleDeleteItem = (id: number) => {
-    setMenuItems(menuItems.filter((item) => item.id !== id));
+  const handleDeleteItem = (index: number) => {
+    setMenuItems(menuItems.filter((_, i) => i !== index));
   };
 
   const handleAddExtraParam = () => {
-    setExtraParams([...extraParams, { name: "", options: [""] }]);
-  };
-
-  const handleExtraParamChange = (
-    index: number,
-    field: "name" | "options",
-    value: string | string[]
-  ) => {
-    const newParams = [...extraParams];
-    if (field === "name") {
-      newParams[index].name = value as string;
-    } else {
-      newParams[index].options = value as string[];
-    }
-    setExtraParams(newParams);
+    const currentExtraParams = form.getValues("extraParams") || [];
+    form.setValue("extraParams", [
+      ...currentExtraParams,
+      { name: "", options: [""] },
+    ]);
   };
 
   const handleRemoveExtraParam = (index: number) => {
-    setExtraParams(extraParams.filter((_, i) => i !== index));
+    const currentExtraParams = form.getValues("extraParams") || [];
+    form.setValue(
+      "extraParams",
+      currentExtraParams.filter((_, i) => i !== index)
+    );
   };
 
   const handleAddOption = (paramIndex: number) => {
-    const newParams = [...extraParams];
-    newParams[paramIndex].options.push("");
-    setExtraParams(newParams);
+    const currentExtraParams = form.getValues("extraParams") || [];
+    const updatedParams = [...currentExtraParams];
+    updatedParams[paramIndex].options.push("");
+    form.setValue("extraParams", updatedParams);
+  };
+
+  const handleRemoveOption = (paramIndex: number, optionIndex: number) => {
+    const currentExtraParams = form.getValues("extraParams") || [];
+    const updatedParams = [...currentExtraParams];
+    updatedParams[paramIndex].options = updatedParams[
+      paramIndex
+    ].options.filter((_, i) => i !== optionIndex);
+    form.setValue("extraParams", updatedParams);
+  };
+
+  const handleTogglePopular = (index: number) => {
+    const updatedItems = [...menuItems];
+    updatedItems[index].popular = !updatedItems[index].popular;
+    setMenuItems(updatedItems);
   };
 
   const getFilteredCategories = (input: string) => {
@@ -127,46 +167,42 @@ export default function CreateMenu() {
     );
   };
 
-  const handleRemoveOption = (paramIndex: number, optionIndex: number) => {
-    const newParams = [...extraParams];
-    newParams[paramIndex].options = newParams[paramIndex].options.filter(
-      (_, i) => i !== optionIndex
-    );
-    setExtraParams(newParams);
-  };
+  async function handleSubmit() {
+    startTransition(async () => {
+      try {
+        for (let i = 0; i < menuItems.length; i++) {
+          let formData = new FormData();
+          Object.entries(menuItems[i]).forEach(([key, value]) => {
+            if (key === "extraParams") {
+              formData.append(key, JSON.stringify(value));
+            } else {
+              if (value !== null) {
+                formData.append(key, value);
+              }
+            }
+          });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCurrentItem((prev) =>
-          prev ? { ...prev, image: reader.result as string } : null
-        );
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+          const result = await addMenuItem(formData);
+          if (result.success) {
+            toast({
+              title: "Success",
+              description: result.message,
+            });
+          } else {
+            throw new Error("Failed to add menu items");
+          }
+        }
 
-  const handleTogglePopular = (id: number) => {
-    setMenuItems(
-      menuItems.map((item) =>
-        item.id === id ? { ...item, isPopular: !item.isPopular } : item
-      )
-    );
-  };
-
-  const handleCategorySelect = (selectedCategory: string) => {
-    setCategoryInput(selectedCategory);
-    setIsPopoverOpen(false);
-  };
-
-  // Filter categories based on input, with null check
-  const filteredCategories = categoryInput
-    ? categories.filter((category) =>
-        category.toLowerCase().includes(categoryInput.toLowerCase())
-      )
-    : [];
+        setMenuItems([]);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to add menu items. Please try again.",
+          variant: "destructive",
+        });
+      }
+    });
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -183,10 +219,16 @@ export default function CreateMenu() {
               <Button
                 className="w-full md:w-auto"
                 onClick={() => {
-                  setCurrentItem(null);
-                  setExtraParams([]);
-                  setCategoryInput("");
+                  form.reset({
+                    name: "",
+                    price: 0,
+                    description: "",
+                    category: "",
+                    popular: false,
+                    extraParams: [],
+                  });
                   setIsEditing(false);
+                  setEditingIndex(null);
                 }}
               >
                 <Plus className="mr-2 h-4 w-4" /> Add New Item
@@ -199,195 +241,254 @@ export default function CreateMenu() {
                 </DialogTitle>
               </DialogHeader>
               <ScrollArea className="max-h-[80vh] overflow-y-auto">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const newItem: MenuItem = {
-                      id: currentItem?.id || Date.now(),
-                      name: formData.get("name") as string,
-                      price: parseFloat(formData.get("price") as string),
-                      description: formData.get("description") as string,
-                      image: currentItem?.image || "",
-                      category: categoryInput,
-                      isPopular: currentItem?.isPopular || false,
-                      extraParams: extraParams,
-                    };
-                    handleAddItem(newItem);
-                  }}
-                >
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        defaultValue={currentItem?.name}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="price">Price</Label>
-                      <Input
-                        id="price"
-                        name="price"
-                        type="number"
-                        defaultValue={currentItem?.price}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <Input
-                        id="category"
-                        value={categoryInput}
-                        onChange={(e) => {
-                          setCategoryInput(e.target.value);
-                          setIsPopoverOpen(true);
-                        }}
-                        className="w-full"
-                        placeholder="Type a category name..."
-                      />
-                      {categoryInput && isPopoverOpen && (
-                        <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border shadow-lg z-10">
-                          <div className="py-1">
-                            {getFilteredCategories(categoryInput).map(
-                              (category) => (
-                                <div
-                                  key={category}
-                                  onClick={() => {
-                                    setCategoryInput(category);
-                                    setIsPopoverOpen(false);
-                                  }}
-                                  className="flex items-center gap-2 px-4 py-2 hover:bg-muted cursor-pointer"
-                                >
-                                  <Check
-                                    className={`h-4 w-4 ${
-                                      category === categoryInput
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    }`}
-                                  />
-                                  <span>{category}</span>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(handleAddItem)}
+                    className="space-y-8"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        name="description"
-                        defaultValue={currentItem?.description}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="image">Image</Label>
-                      <Input
-                        id="image"
-                        name="image"
-                        type="file"
-                        onChange={handleImageUpload}
-                        className="mt-1"
-                        ref={fileInputRef}
-                      />
-                      {currentItem?.image && (
-                        <div className="mt-2 relative w-full h-40">
-                          <Image
-                            src={currentItem.image}
-                            alt="Preview"
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="rounded-md object-cover"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <Label>Extra Parameters</Label>
-                      {extraParams.map((param, paramIndex) => (
-                        <div
-                          key={paramIndex}
-                          className="mt-2 p-2 border rounded-md"
-                        >
-                          <div className="flex gap-2 mb-2">
+                    />
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
                             <Input
-                              placeholder="Parameter Name"
-                              value={param.name}
+                              type="number"
+                              {...field}
                               onChange={(e) =>
-                                handleExtraParamChange(
-                                  paramIndex,
-                                  "name",
-                                  e.target.value
-                                )
+                                field.onChange(parseFloat(e.target.value))
                               }
                             />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => handleRemoveExtraParam(paramIndex)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          {param.options.map((option, optionIndex) => (
-                            <div key={optionIndex} className="flex gap-2 mt-2">
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <FormControl>
+                            <div className="relative">
                               <Input
-                                placeholder="Option"
-                                value={option}
+                                {...field}
                                 onChange={(e) => {
-                                  const newOptions = [...param.options];
-                                  newOptions[optionIndex] = e.target.value;
-                                  handleExtraParamChange(
-                                    paramIndex,
-                                    "options",
-                                    newOptions
-                                  );
+                                  field.onChange(e);
+                                  setIsPopoverOpen(true);
                                 }}
+                                placeholder="Type a category name..."
                               />
+                              {field.value && isPopoverOpen && (
+                                <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border shadow-lg z-10">
+                                  <div className="py-1">
+                                    {getFilteredCategories(field.value).map(
+                                      (category) => (
+                                        <div
+                                          key={category}
+                                          onClick={() => {
+                                            field.onChange(category);
+                                            setIsPopoverOpen(false);
+                                          }}
+                                          className="flex items-center gap-2 px-4 py-2 hover:bg-muted cursor-pointer"
+                                        >
+                                          <Check
+                                            className={`h-4 w-4 ${
+                                              category === field.value
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            }`}
+                                          />
+                                          <span>{category}</span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="image"
+                      render={({ field: { value, onChange, ...field } }) => (
+                        <FormItem>
+                          <FormLabel>Image</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  onChange(file);
+                                }
+                              }}
+                              {...field}
+                              ref={fileInputRef}
+                            />
+                          </FormControl>
+                          {value && (
+                            <div className="mt-2 relative w-full h-40">
+                              <Image
+                                src={URL.createObjectURL(value)}
+                                alt="Preview"
+                                fill
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                className="rounded-md object-cover"
+                              />
+                            </div>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="extraParams"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Extra Parameters</FormLabel>
+                          <FormControl>
+                            <div>
+                              {form
+                                .watch("extraParams")
+                                ?.map((param, paramIndex) => (
+                                  <div
+                                    key={paramIndex}
+                                    className="mt-2 p-2 border rounded-md"
+                                  >
+                                    <div className="flex gap-2 mb-2">
+                                      <Input
+                                        placeholder="Parameter Name"
+                                        value={param.name}
+                                        onChange={(e) => {
+                                          const newParams = [
+                                            ...form.getValues("extraParams"),
+                                          ];
+                                          newParams[paramIndex].name =
+                                            e.target.value;
+                                          form.setValue(
+                                            "extraParams",
+                                            newParams
+                                          );
+                                        }}
+                                      />
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() =>
+                                          handleRemoveExtraParam(paramIndex)
+                                        }
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                    {param.options.map(
+                                      (option, optionIndex) => (
+                                        <div
+                                          key={optionIndex}
+                                          className="flex gap-2 mt-2"
+                                        >
+                                          <Input
+                                            placeholder="Option"
+                                            value={option}
+                                            onChange={(e) => {
+                                              const newParams = [
+                                                ...form.getValues(
+                                                  "extraParams"
+                                                ),
+                                              ];
+                                              newParams[paramIndex].options[
+                                                optionIndex
+                                              ] = e.target.value;
+                                              form.setValue(
+                                                "extraParams",
+                                                newParams
+                                              );
+                                            }}
+                                          />
+                                          <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() =>
+                                              handleRemoveOption(
+                                                paramIndex,
+                                                optionIndex
+                                              )
+                                            }
+                                          >
+                                            <X className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      )
+                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      className="mt-2 w-full"
+                                      onClick={() =>
+                                        handleAddOption(paramIndex)
+                                      }
+                                    >
+                                      <Plus className="h-4 w-4 mr-2" /> Add
+                                      Option
+                                    </Button>
+                                  </div>
+                                ))}
                               <Button
                                 type="button"
                                 variant="outline"
-                                size="icon"
-                                onClick={() =>
-                                  handleRemoveOption(paramIndex, optionIndex)
-                                }
+                                className="mt-2 w-full"
+                                onClick={handleAddExtraParam}
                               >
-                                <X className="h-4 w-4" />
+                                <Plus className="h-4 w-4 mr-2" /> Add Parameter
                               </Button>
                             </div>
-                          ))}
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="mt-2 w-full"
-                            onClick={() => handleAddOption(paramIndex)}
-                          >
-                            <Plus className="h-4 w-4 mr-2" /> Add Option
-                          </Button>
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="mt-2 w-full"
-                        onClick={handleAddExtraParam}
-                      >
-                        <Plus className="h-4 w-4 mr-2" /> Add Parameter
-                      </Button>
-                    </div>
-                  </div>
-                  <Button type="submit" className="mt-4 w-full">
-                    {isEditing ? "Update Item" : "Add Item"}
-                  </Button>
-                </form>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full">
+                      {isEditing ? "Update Item" : "Add Item"}
+                    </Button>
+                  </form>
+                </Form>
               </ScrollArea>
             </DialogContent>
           </Dialog>
@@ -398,8 +499,8 @@ export default function CreateMenu() {
             Menu Items
           </h2>
           <ScrollArea className="h-[300px] md:h-[400px] w-full rounded-md border p-4">
-            {menuItems.map((item) => (
-              <Card key={item.id} className="mb-4">
+            {menuItems.map((item, index) => (
+              <Card key={index} className="mb-4">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
                     {item.name}
@@ -408,27 +509,25 @@ export default function CreateMenu() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleTogglePopular(item.id)}
+                      onClick={() => handleTogglePopular(index)}
                     >
                       <Star
                         className={`h-4 w-4 ${
-                          item.isPopular
-                            ? "text-yellow-400 fill-yellow-400"
-                            : ""
+                          item.popular ? "text-yellow-400 fill-yellow-400" : ""
                         }`}
                       />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleEditItem(item)}
+                      onClick={() => handleEditItem(index)}
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDeleteItem(item.id)}
+                      onClick={() => handleDeleteItem(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -444,6 +543,14 @@ export default function CreateMenu() {
             ))}
           </ScrollArea>
         </div>
+
+        {menuItems.length > 0 && (
+          <div className="flex justify-end">
+            <Button onClick={handleSubmit} disabled={isPending}>
+              {isPending ? "Submitting..." : "Confirm"}
+            </Button>
+          </div>
+        )}
 
         <div>
           <h2 className={`text-xl font-semibold mb-4 ${splineSans.className}`}>
@@ -469,17 +576,20 @@ export default function CreateMenu() {
                   {menuItems
                     .filter((item) =>
                       category === "Popular"
-                        ? item.isPopular
+                        ? item.popular
                         : item.category === category
                     )
-                    .map((item) => (
+                    .map((item, index) => (
                       <div
-                        key={item.id}
+                        key={index}
                         className="flex items-start space-x-4 rounded-md border p-4"
                       >
                         <div className="flex-shrink-0 relative w-20 h-20">
                           <Image
-                            src={item.image || "/placeholder.svg"}
+                            src={
+                              item.imageUrl ||
+                              "https://images.unsplash.com/photo-1534790566855-4cb788d389ec?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            }
                             alt={item.name}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -494,14 +604,14 @@ export default function CreateMenu() {
                           <p className="text-sm font-semibold mt-1">
                             Tk {item.price.toFixed(2)}
                           </p>
-                          {item.extraParams.length > 0 && (
+                          {item.extraParams && item.extraParams.length > 0 && (
                             <div className="mt-2">
                               <p className="text-sm font-semibold">
                                 Extra Options:
                               </p>
                               <ul className="text-xs text-muted-foreground">
-                                {item.extraParams.map((param, index) => (
-                                  <li key={index}>
+                                {item.extraParams.map((param, paramIndex) => (
+                                  <li key={paramIndex}>
                                     {param.name}: {param.options.join(", ")}
                                   </li>
                                 ))}

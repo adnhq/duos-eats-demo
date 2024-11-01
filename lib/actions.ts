@@ -91,3 +91,85 @@ export async function getRestaurant(restaurantId: string) {
 
   return Restaurant;
 }
+
+// const formSchema = z.object({
+//   name: z.string().min(2, {
+//     message: "Name must be at least 2 characters.",
+//   }),
+//   price: z.number().min(0, {
+//     message: "Price must be a positive number.",
+//   }),
+//   description: z.string().optional(),
+//   category: z.string().min(1, {
+//     message: "Category is required.",
+//   }),
+//   image: z.instanceof(File).optional(),
+//   isPopular: z.boolean().default(false),
+//   extraParams: z
+//     .array(
+//       z.object({
+//         name: z.string().min(1, "Parameter name is required"),
+//         options: z.array(z.string().min(1, "Option cannot be empty")),
+//       })
+//     )
+//     .optional(),
+// });
+
+export async function addMenuItem(formData: FormData) {
+  // Parse extraParams properly
+  const extraParamsString = formData.get("extraParams");
+  const extraParams = extraParamsString
+    ? JSON.parse(extraParamsString as string)
+    : [];
+
+  const values = {
+    name: formData.get("name"),
+    price: formData.get("price"),
+    description: formData.get("description"),
+    popular: formData.get("popular"),
+    category: formData.get("category"),
+    image: formData.get("image"),
+  };
+
+  const itemImageName = `${Math.random()}-${
+    (values.image as File).name
+  }`.replaceAll("/", "");
+
+  const itemImageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/menuItemImage/${itemImageName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("menuItemImage")
+    .upload(itemImageName, values.image as File);
+
+  if (uploadError) throw uploadError;
+
+  const { data: itemData, error: itemUploadError } = await supabase
+    .from("Menu")
+    .insert([{ ...values, image: itemImageUrl, restaurantId: 9 }])
+    .select("*");
+
+  if (itemUploadError) throw itemUploadError;
+
+  if (extraParams.length > 0) {
+    for (let i = 0; i < extraParams.length; i++) {
+      const { data: paramData, error: paramUploadError } = await supabase
+        .from("MenuParameters")
+        .insert([{ ...extraParams[i], menuId: itemData[0].id }])
+        .select();
+
+      if (paramUploadError) throw paramUploadError;
+    }
+  }
+
+  // console.log(extraParams);
+  // console.log(values);
+
+  // Simulate a delay to mimic database operation
+  // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    success: true,
+    message: "Menu items added successfully",
+    data: values, // Optional: return the processed data
+  };
+}

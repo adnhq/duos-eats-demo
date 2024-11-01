@@ -6,16 +6,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { decrypt, getSession, logout } from "@/lib/actions";
+import { getSession, logout } from "@/lib/actions";
 import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import duosLogo from "../duos-lg.png";
 import { AuthModal } from "./AuthModal";
 import NavMenuToggle from "./NavMenuToggle";
-import { cookies } from "next/headers";
 import { Button } from "./ui/button";
-import { redirect } from "next/navigation";
 
 export default async function Navbar() {
   const session = await getSession();
@@ -79,21 +78,27 @@ export default async function Navbar() {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>{session.name}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link href="/account-settings" className="w-full">
-                      Account Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/admin-dashboard" className="w-full">
-                      Admin Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/restaurant-dashboard" className="w-full">
-                      Restaurant Dashboard
-                    </Link>
-                  </DropdownMenuItem>
+
+                  {session?.isAdmin ? (
+                    <DropdownMenuItem>
+                      <Link href="/admin-dashboard" className="w-full">
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : (
+                    <>
+                      <DropdownMenuItem>
+                        <Link href="/restaurant" className="w-full">
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href="/restaurant/Settings" className="w-full">
+                          Account Settings
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <form
                     action={async () => {

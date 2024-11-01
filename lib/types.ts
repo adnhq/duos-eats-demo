@@ -29,3 +29,7 @@ export type Restaurant = {
 export type CartItem = MenuItem & {
   quantity: number;
 };
+
+export type Category = {
+  category: string;
+};

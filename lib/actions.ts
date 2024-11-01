@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { supabase } from "./supabase";
+import { Category } from "./types";
 
 const restaurantFormSchema = z.object({
   name: z.string().min(2),
@@ -77,7 +78,8 @@ export async function registerRestaurant(formData: FormData) {
 export async function getAllRestaurants() {
   const { data: Restaurants, error } = await supabase
     .from("Restaurants")
-    .select("*");
+    .select("*")
+    .neq("email", process.env.ADMIN_EMAIL);
 
   if (error) throw error;
 
@@ -95,28 +97,20 @@ export async function getRestaurant(restaurantId: string) {
   return Restaurant;
 }
 
-// const formSchema = z.object({
-//   name: z.string().min(2, {
-//     message: "Name must be at least 2 characters.",
-//   }),
-//   price: z.number().min(0, {
-//     message: "Price must be a positive number.",
-//   }),
-//   description: z.string().optional(),
-//   category: z.string().min(1, {
-//     message: "Category is required.",
-//   }),
-//   image: z.instanceof(File).optional(),
-//   isPopular: z.boolean().default(false),
-//   extraParams: z
-//     .array(
-//       z.object({
-//         name: z.string().min(1, "Parameter name is required"),
-//         options: z.array(z.string().min(1, "Option cannot be empty")),
-//       })
-//     )
-//     .optional(),
-// });
+export async function getRestaurantMenuCategories(id: number) {
+  const { data: menuCategories, error } = await supabase
+    .from("Menu")
+    .select("category")
+    .eq("restaurantId", id);
+
+  let categories = [];
+
+  menuCategories?.forEach((value, idx) => {
+    if (!categories.includes(value.category)) categories.push(value.category);
+  });
+
+  return categories;
+}
 
 export async function addMenuItem(formData: FormData) {
   // Parse extraParams properly
@@ -223,7 +217,11 @@ export async function login(formData: FormData) {
 
   // Create the session
   const expires = new Date(Date.now() + 3600 * 1000);
-  const session = await encrypt({ ...restaurant[0], expires });
+  const session = await encrypt({
+    ...restaurant[0],
+    isAdmin: restaurant[0].email === process.env.ADMIN_EMAIL,
+    expires,
+  });
 
   // Save the session in a cookie
   const cookieStore = await cookies();

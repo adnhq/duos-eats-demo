@@ -60,7 +60,7 @@ export default function NavMenu({ isLoggedIn, isMenuOpen }: Props) {
                   Admin Dashboard
                 </Button>
               </Link>
-              <Link href="/restaurant-dashboard" passHref>
+              <Link href="/restaurant" passHref>
                 <Button
                   variant="ghost"
                   className="w-full justify-start hover:bg-gray-200"

@@ -1,8 +1,5 @@
 // pages/RestaurantMenu.tsx
 
-"use client";
-
-import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -31,6 +28,7 @@ import CartItem from "@/components/CartItem";
 import { CartItem as CartItemType, MenuItem, Restaurant } from "@/lib/types";
 
 import { Pacifico, Spline_Sans } from "next/font/google";
+import { getRestaurantMenuCategories } from "@/lib/actions";
 
 const splineSans = Spline_Sans({
   subsets: ["latin"],
@@ -133,68 +131,69 @@ const pacificoFont = Pacifico({ subsets: ["latin"], weight: ["400"] });
 //   },
 // };
 
-export default function RestaurantMenu({
+export default async function RestaurantMenu({
   restaurantData,
 }: {
   restaurantData: Restaurant;
 }) {
-  const [checkoutState, setCheckoutState] = useState("idle"); // 'idle', 'waiting', 'confirmed'
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const categories = await getRestaurantMenuCategories(restaurantData.id);
+  // const [checkoutState, setCheckoutState] = useState("idle"); // 'idle', 'waiting', 'confirmed'
+  // const [orderId, setOrderId] = useState<string | null>(null);
 
-  const handleCheckout = () => {
-    setCheckoutState("waiting");
-    // Simulate a backend process
-    setTimeout(() => {
-      setCheckoutState("confirmed");
-      setOrderId(Math.random().toString(36).substr(2, 9).toUpperCase());
-    }, 3000);
-  };
-  const handleGoBackToMenu = () => {
-    setCheckoutState("idle");
-    setOrderId(null);
-  };
+  // const handleCheckout = () => {
+  //   setCheckoutState("waiting");
+  //   // Simulate a backend process
+  //   setTimeout(() => {
+  //     setCheckoutState("confirmed");
+  //     setOrderId(Math.random().toString(36).substr(2, 9).toUpperCase());
+  //   }, 3000);
+  // };
+  // const handleGoBackToMenu = () => {
+  //   setCheckoutState("idle");
+  //   setOrderId(null);
+  // };
 
-  const [cart, setCart] = useState<CartItemType[]>([]);
+  // const [cart, setCart] = useState<CartItemType[]>([]);
 
-  const handleAddToCart = (item: MenuItem, quantity: number) => {
-    setCart((prevCart) => {
-      const existingItemIndex = prevCart.findIndex(
-        (cartItem) => cartItem.id === item.id
-      );
-      if (existingItemIndex !== -1) {
-        const newCart = [...prevCart];
-        newCart[existingItemIndex] = {
-          ...newCart[existingItemIndex],
-          quantity: newCart[existingItemIndex].quantity + quantity,
-        };
-        return newCart;
-      } else {
-        return [...prevCart, { ...item, quantity }];
-      }
-    });
-  };
+  // const handleAddToCart = (item: MenuItem, quantity: number) => {
+  //   setCart((prevCart) => {
+  //     const existingItemIndex = prevCart.findIndex(
+  //       (cartItem) => cartItem.id === item.id
+  //     );
+  //     if (existingItemIndex !== -1) {
+  //       const newCart = [...prevCart];
+  //       newCart[existingItemIndex] = {
+  //         ...newCart[existingItemIndex],
+  //         quantity: newCart[existingItemIndex].quantity + quantity,
+  //       };
+  //       return newCart;
+  //     } else {
+  //       return [...prevCart, { ...item, quantity }];
+  //     }
+  //   });
+  // };
 
-  const handleUpdateQuantity = (id: number, change: number) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: Math.max(0, item.quantity + change) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  };
+  // const handleUpdateQuantity = (id: number, change: number) => {
+  //   setCart((prevCart) =>
+  //     prevCart
+  //       .map((item) =>
+  //         item.id === id
+  //           ? { ...item, quantity: Math.max(0, item.quantity + change) }
+  //           : item
+  //       )
+  //       .filter((item) => item.quantity > 0)
+  //   );
+  // };
 
-  const handleRemoveItem = (id: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-  };
+  // const handleRemoveItem = (id: number) => {
+  //   setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  // };
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  // const totalPrice = cart.reduce(
+  //   (sum, item) => sum + item.price * item.quantity,
+  //   0
+  // );
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -285,21 +284,22 @@ export default function RestaurantMenu({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
       </div>
 
-      {/* <Tabs defaultValue="Popular" className="mb-6">
+      <Tabs defaultValue="Popular" className="mb-6">
         <ScrollArea className="w-full pb-4">
           <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">
-            {Object.keys(restaurantData.menu).map((category) => (
-              <TabsTrigger
-                key={category}
-                value={category}
-                className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
-              >
-                {category}
-              </TabsTrigger>
-            ))}
+            {categories.length > 0 &&
+              categories.map((category) => (
+                <TabsTrigger
+                  key={category}
+                  value={category}
+                  className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+                >
+                  {category}
+                </TabsTrigger>
+              ))}
           </TabsList>
         </ScrollArea>
-        <div className="mt-6 space-y-6">
+        {/* <div className="mt-6 space-y-6">
           {Object.entries(restaurantData.menu).map(([category, items]) => (
             <TabsContent key={category} value={category}>
               <MenuCategory
@@ -309,15 +309,15 @@ export default function RestaurantMenu({
               />
             </TabsContent>
           ))}
-        </div>
-      </Tabs> */}
+        </div> */}
+      </Tabs>
 
       <Sheet>
         <SheetTrigger asChild>
           <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
             <ShoppingBag className="h-6 w-6" />
-            <AnimatePresence>
-              {totalItems > 0 && (
+            {/* <AnimatePresence>
+               {totalItems > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -326,8 +326,8 @@ export default function RestaurantMenu({
                 >
                   {totalItems}
                 </motion.span>
-              )}
-            </AnimatePresence>
+              )} 
+            </AnimatePresence> */}
           </Button>
         </SheetTrigger>
         <SheetContent className="w-full sm:max-w-md flex flex-col">
@@ -337,7 +337,7 @@ export default function RestaurantMenu({
             </SheetTitle>
           </SheetHeader>
           <ScrollArea className="flex-grow">
-            <AnimatePresence>
+            {/* <AnimatePresence>
               {cart.length === 0 ? (
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
@@ -363,16 +363,16 @@ export default function RestaurantMenu({
                   </motion.div>
                 ))
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
           </ScrollArea>
           <div className="mt-auto pt-4 border-t">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold text-lg">Total:</span>
               <span className="font-bold text-xl">
-                Tk {totalPrice.toFixed(2)}
+                {/* Tk {totalPrice.toFixed(2)} */} 0
               </span>
             </div>
-            <AnimatePresence mode="wait">
+            {/* <AnimatePresence mode="wait">
               {checkoutState === "idle" && (
                 <motion.div
                   key="checkout"
@@ -431,7 +431,7 @@ export default function RestaurantMenu({
                   </SheetClose>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
           </div>
         </SheetContent>
       </Sheet>

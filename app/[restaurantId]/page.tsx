@@ -7,7 +7,7 @@ type Params = {
 };
 
 export default async function Page({ params }: { params: Params }) {
-  const { restaurantId } = params;
+  const { restaurantId } = await params;
   const restaurant = await getRestaurant(restaurantId);
 
   if (restaurant.length === 0) return <h1>No Restaurant found</h1>;

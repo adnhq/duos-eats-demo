@@ -217,7 +217,7 @@ export default function CreateMenu() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4">
       <h1
         className={`text-2xl md:text-3xl font-bold mb-6 ${splineSans.className}`}
       >
@@ -248,7 +248,7 @@ export default function CreateMenu() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="pl-2">
                   {isEditing ? "Edit Menu Item" : "Add New Menu Item"}
                 </DialogTitle>
               </DialogHeader>
@@ -256,7 +256,7 @@ export default function CreateMenu() {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(handleAddItem)}
-                    className="space-y-8"
+                    className="space-y-4 px-2"
                   >
                     <FormField
                       control={form.control}

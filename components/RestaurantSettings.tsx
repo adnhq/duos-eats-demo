@@ -1,7 +1,7 @@
 // components/RestaurantSettings.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,15 +33,17 @@ import {
 import { Eye, EyeOff, Upload, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Restaurant } from "@/lib/types";
+import Image from "next/image";
 
 const updateFormSchema = z.object({
-  restaurantName: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Restaurant name must be at least 2 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  phone: z.string().min(10, {
+  phoneNumber: z.string().min(10, {
     message: "Please enter a valid phone number.",
   }),
   cuisine: z.string(),
@@ -52,38 +54,37 @@ const updateFormSchema = z.object({
   logo: z.any().optional(),
 });
 
-const passwordFormSchema = z.object({
-  currentPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  newPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  confirmPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const passwordFormSchema = z
+  .object({
+    currentPassword: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    newPassword: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    confirmPassword: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-export function RestaurantSettings() {
+type Props = {
+  defaultValues: Restaurant;
+};
+
+export function RestaurantSettings({ defaultValues }: Props) {
   const { toast } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [logoFile, setLogoFile] = useState<string>("");
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data - replace with actual restaurant data
-  const restaurantData = {
-    restaurantName: "Sample Restaurant",
-    email: "sample@restaurant.com",
-    phone: "1234567890",
-    cuisine: "bengali",
-    address: "123 Food Street, Cuisine City",
-    location: "uttara",
-    logo: "",
-  };
+  const restaurantData = defaultValues;
 
   const updateForm = useForm<z.infer<typeof updateFormSchema>>({
     resolver: zodResolver(updateFormSchema),
@@ -147,7 +148,8 @@ export function RestaurantSettings() {
       console.log("Update values:", values);
       toast({
         title: "Settings Updated",
-        description: "Your restaurant information has been updated successfully.",
+        description:
+          "Your restaurant information has been updated successfully.",
       });
     } catch (error) {
       toast({
@@ -177,9 +179,9 @@ export function RestaurantSettings() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4">
       <h1 className="text-2xl font-bold mb-6">Restaurant Settings</h1>
-      
+
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -196,10 +198,13 @@ export function RestaurantSettings() {
             </CardHeader>
             <CardContent>
               <Form {...updateForm}>
-                <form onSubmit={updateForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
+                <form
+                  onSubmit={updateForm.handleSubmit(onUpdateSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={updateForm.control}
-                    name="restaurantName"
+                    name="name"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Restaurant Name</FormLabel>
@@ -227,7 +232,7 @@ export function RestaurantSettings() {
 
                   <FormField
                     control={updateForm.control}
-                    name="phone"
+                    name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
@@ -327,36 +332,45 @@ export function RestaurantSettings() {
                   <FormField
                     control={updateForm.control}
                     name="logo"
-                    render={({ field }) => (
+                    render={({ field: { value, onChange, ...field } }) => (
                       <FormItem>
-                        <FormLabel>Restaurant Logo</FormLabel>
+                        <FormLabel>Image</FormLabel>
                         <FormControl>
-                          <div className="flex items-center">
-                            <Input
-                              id="logo"
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  field.onChange(file);
-                                  setLogoFile(file.name);
-                                }
-                              }}
-                            />
-                            <label
-                              htmlFor="logo"
-                              className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                            >
-                              <Upload className="h-4 w-4 inline-block mr-2" />
-                              Choose logo
-                            </label>
-                            <span className="ml-3 text-sm text-gray-500">
-                              {logoFile || "No file chosen"}
-                            </span>
-                          </div>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                onChange(file);
+                              }
+                            }}
+                            {...field}
+                            ref={fileInputRef}
+                          />
                         </FormControl>
+                        {value && value instanceof File ? (
+                          <div className="mt-2 relative w-full h-40">
+                            <Image
+                              src={URL.createObjectURL(value)}
+                              alt="Preview"
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="rounded-md object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="mt-2 relative w-full h-40">
+                            <Image
+                              src={value}
+                              alt="Preview"
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="rounded-md object-cover"
+                            />
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -376,13 +390,14 @@ export function RestaurantSettings() {
           <Card>
             <CardHeader>
               <CardTitle>Security Settings</CardTitle>
-              <CardDescription>
-                Update your password
-              </CardDescription>
+              <CardDescription>Update your password</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...passwordForm}>
-                <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+                <form
+                  onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={passwordForm.control}
                     name="currentPassword"
@@ -401,7 +416,9 @@ export function RestaurantSettings() {
                               variant="ghost"
                               size="sm"
                               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              onClick={() =>
+                                setShowCurrentPassword(!showCurrentPassword)
+                              }
                             >
                               {showCurrentPassword ? (
                                 <EyeOff className="h-4 w-4 text-gray-500" />
@@ -434,7 +451,9 @@ export function RestaurantSettings() {
                               variant="ghost"
                               size="sm"
                               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              onClick={() =>
+                                setShowNewPassword(!showNewPassword)
+                              }
                             >
                               {showNewPassword ? (
                                 <EyeOff className="h-4 w-4 text-gray-500" />
@@ -467,15 +486,17 @@ export function RestaurantSettings() {
                               variant="ghost"
                               size="sm"
                               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
                             >
                               {showConfirmPassword ? (
-                              <EyeOff className="h-4 w-4 text-gray-500" />
-                            ) : (
-                              <Eye className="h-4 w-4 text-gray-500" />
-                            )}
-                          </Button>
-                        </div>
+                                <EyeOff className="h-4 w-4 text-gray-500" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-gray-500" />
+                              )}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

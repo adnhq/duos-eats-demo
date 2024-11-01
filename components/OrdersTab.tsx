@@ -1,14 +1,41 @@
 // components/OrdersTab.tsx
-import { useState } from 'react'
-import { Utensils, Eye, CheckCircle, XCircle, ChefHat, Receipt } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import {
+  Utensils,
+  Eye,
+  CheckCircle,
+  XCircle,
+  ChefHat,
+  Receipt,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OrderItem {
   name: string;
@@ -54,9 +81,14 @@ interface OrdersTabProps {
   weeklyMonthlyStats: WeeklyMonthlyStats;
 }
 
-export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMonthlyStats }: OrdersTabProps) {
-  const [dateRange, setDateRange] = useState("This Week")
-  const [currentDiscount, setCurrentDiscount] = useState("15%")
+export function OrdersTab({
+  activeOrders,
+  historicalData,
+  todayStats,
+  weeklyMonthlyStats,
+}: OrdersTabProps) {
+  const [dateRange, setDateRange] = useState("This Week");
+  const [currentDiscount, setCurrentDiscount] = useState("15%");
 
   // Mobile-responsive card view for orders
   const OrderCard = ({ order }: { order: Order }) => (
@@ -68,11 +100,11 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
         </div>
         <p className="text-sm text-muted-foreground">{order.orderTime}</p>
       </div>
-      
+
       <div className="mb-3">
         <p className="text-sm font-medium">Amount: BDT {order.totalAmount}</p>
       </div>
-      
+
       <div className="flex flex-wrap gap-2">
         <Dialog>
           <DialogTrigger asChild>
@@ -84,16 +116,25 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Order Details</DialogTitle>
-              <DialogDescription>Order #{order.orderId} • {order.orderTime}</DialogDescription>
+              <DialogDescription>
+                Order #{order.orderId} • {order.orderTime}
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               {order.items.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center py-2 border-b">
+                <div
+                  key={idx}
+                  className="flex justify-between items-center py-2 border-b"
+                >
                   <div>
                     <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">BDT {item.price} × {item.quantity}</p>
+                    <p className="text-sm text-muted-foreground">
+                      BDT {item.price} × {item.quantity}
+                    </p>
                   </div>
-                  <p className="font-medium">BDT {item.price * item.quantity}</p>
+                  <p className="font-medium">
+                    BDT {item.price * item.quantity}
+                  </p>
                 </div>
               ))}
               <div className="flex justify-between items-center pt-2">
@@ -113,7 +154,7 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
         </Button>
       </div>
     </div>
-  )
+  );
 
   // Mobile-responsive card view for historical orders
   const HistoricalOrderCard = ({ order }: { order: HistoricalOrder }) => (
@@ -124,7 +165,7 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
           <p className="text-sm text-muted-foreground">{order.date}</p>
         </div>
       </div>
-      
+
       <div className="space-y-2 mb-3">
         <div className="flex justify-between">
           <p className="text-sm text-muted-foreground">Original Amount</p>
@@ -143,7 +184,7 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
           <p className="text-sm font-medium">BDT {order.finalEarnings}</p>
         </div>
       </div>
-      
+
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="w-full">
@@ -154,14 +195,21 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Order Details</DialogTitle>
-            <DialogDescription>Order #{order.orderId} • {order.date}</DialogDescription>
+            <DialogDescription>
+              Order #{order.orderId} • {order.date}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {order.items.map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center py-2 border-b">
+              <div
+                key={idx}
+                className="flex justify-between items-center py-2 border-b"
+              >
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">BDT {item.price} × {item.quantity}</p>
+                  <p className="text-sm text-muted-foreground">
+                    BDT {item.price} × {item.quantity}
+                  </p>
                 </div>
                 <p className="font-medium">BDT {item.price * item.quantity}</p>
               </div>
@@ -173,7 +221,10 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <p>Discount ({order.discount}%)</p>
-                <p>- BDT {(order.originalAmount * order.discount / 100).toFixed(2)}</p>
+                <p>
+                  - BDT{" "}
+                  {((order.originalAmount * order.discount) / 100).toFixed(2)}
+                </p>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <p>Platform Fee</p>
@@ -188,11 +239,11 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 
   return (
     <Tabs defaultValue="orders" className="space-y-6">
-      <TabsList className="w-full justify-start">
+      <TabsList className="justify-start">
         <TabsTrigger value="orders">Order Stats</TabsTrigger>
         <TabsTrigger value="revenue">Revenue</TabsTrigger>
       </TabsList>
@@ -200,7 +251,9 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
       <TabsContent value="orders" className="space-y-6">
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Pending Orders</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Pending Orders
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {/* Mobile view */}
@@ -209,7 +262,7 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
                 <OrderCard key={order.orderId} order={order} />
               ))}
             </div>
-            
+
             {/* Desktop view */}
             <div className="hidden md:block">
               <Table>
@@ -241,21 +294,32 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
                             <DialogContent className="sm:max-w-[425px]">
                               <DialogHeader>
                                 <DialogTitle>Order Details</DialogTitle>
-                                <DialogDescription>Order #{order.orderId} • {order.orderTime}</DialogDescription>
+                                <DialogDescription>
+                                  Order #{order.orderId} • {order.orderTime}
+                                </DialogDescription>
                               </DialogHeader>
                               <div className="space-y-4">
                                 {order.items.map((item, idx) => (
-                                  <div key={idx} className="flex justify-between items-center py-2 border-b">
+                                  <div
+                                    key={idx}
+                                    className="flex justify-between items-center py-2 border-b"
+                                  >
                                     <div>
                                       <p className="font-medium">{item.name}</p>
-                                      <p className="text-sm text-muted-foreground">BDT {item.price} × {item.quantity}</p>
+                                      <p className="text-sm text-muted-foreground">
+                                        BDT {item.price} × {item.quantity}
+                                      </p>
                                     </div>
-                                    <p className="font-medium">BDT {item.price * item.quantity}</p>
+                                    <p className="font-medium">
+                                      BDT {item.price * item.quantity}
+                                    </p>
                                   </div>
                                 ))}
                                 <div className="flex justify-between items-center pt-2">
                                   <p className="font-bold">Total</p>
-                                  <p className="font-bold">BDT {order.totalAmount}</p>
+                                  <p className="font-bold">
+                                    BDT {order.totalAmount}
+                                  </p>
                                 </div>
                               </div>
                             </DialogContent>
@@ -280,7 +344,9 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
 
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Order Analytics</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Order Analytics
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -288,27 +354,33 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
                 <div className="flex items-center p-4 border rounded-lg shadow-sm">
                   <Utensils className="h-6 w-6 mr-4 text-primary" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Today's Order Count</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Today's Order Count
+                    </p>
                     <p className="text-2xl font-bold">{todayStats.orders}</p>
                   </div>
                 </div>
                 <div className="flex items-center p-4 border rounded-lg shadow-sm">
                   <ChefHat className="h-6 w-6 mr-4 text-primary" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Pending Orders</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Pending Orders
+                    </p>
                     <p className="text-2xl font-bold">{activeOrders.length}</p>
                   </div>
                 </div>
               </div>
               <div className="border rounded-lg p-4 shadow-sm">
-                <h4 className="text-lg font-medium mb-4">Most Ordered Items (Top 5)</h4>
+                <h4 className="text-lg font-medium mb-4">
+                  Most Ordered Items (Top 5)
+                </h4>
                 <ol className="space-y-2">
                   {[
                     "Margherita Pizza",
                     "Chicken Tikka Masala",
                     "Vegetable Biryani",
                     "Chocolate Brownie",
-                    "Mango Lassi"
+                    "Mango Lassi",
                   ].map((item: string, index: number) => (
                     <li key={index} className="flex items-center">
                       <span className="w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground rounded-full mr-2 text-xs">
@@ -327,25 +399,43 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
       <TabsContent value="revenue" className="space-y-6">
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Revenue Overview</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Revenue Overview
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Weekly Earnings</p>
-                <p className="text-2xl font-bold">BDT {weeklyMonthlyStats.weeklyEarnings.toLocaleString()}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Weekly Earnings
+                </p>
+                <p className="text-2xl font-bold">
+                  BDT {weeklyMonthlyStats.weeklyEarnings.toLocaleString()}
+                </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Weekly Orders</p>
-                <p className="text-2xl font-bold">{weeklyMonthlyStats.weeklyOrders}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Weekly Orders
+                </p>
+                <p className="text-2xl font-bold">
+                  {weeklyMonthlyStats.weeklyOrders}
+                </p>
               </div>
               <div>
-              <p className="text-sm font-medium text-muted-foreground">Monthly Earnings</p>
-                <p className="text-2xl font-bold">BDT {weeklyMonthlyStats.monthlyEarnings.toLocaleString()}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Monthly Earnings
+                </p>
+                <p className="text-2xl font-bold">
+                  BDT {weeklyMonthlyStats.monthlyEarnings.toLocaleString()}
+                </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Monthly Orders</p>
-                <p className="text-2xl font-bold">{weeklyMonthlyStats.monthlyOrders}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Monthly Orders
+                </p>
+                <p className="text-2xl font-bold">
+                  {weeklyMonthlyStats.monthlyOrders}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -353,11 +443,16 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
 
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Current Discount</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Current Discount
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
-              <Select value={currentDiscount} onValueChange={setCurrentDiscount}>
+              <Select
+                value={currentDiscount}
+                onValueChange={setCurrentDiscount}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select discount" />
                 </SelectTrigger>
@@ -384,7 +479,12 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
             </CardTitle>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-2">
-                <Label htmlFor="date-range" className="text-sm whitespace-nowrap">Date Range:</Label>
+                <Label
+                  htmlFor="date-range"
+                  className="text-sm whitespace-nowrap"
+                >
+                  Date Range:
+                </Label>
                 <Select value={dateRange} onValueChange={setDateRange}>
                   <SelectTrigger id="date-range" className="w-[140px]">
                     <SelectValue placeholder="Select date range" />
@@ -448,16 +548,25 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Order Details</DialogTitle>
-                              <DialogDescription>Order #{order.orderId} • {order.date}</DialogDescription>
+                              <DialogDescription>
+                                Order #{order.orderId} • {order.date}
+                              </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4">
                               {order.items.map((item, idx) => (
-                                <div key={idx} className="flex justify-between items-center py-2 border-b">
+                                <div
+                                  key={idx}
+                                  className="flex justify-between items-center py-2 border-b"
+                                >
                                   <div>
                                     <p className="font-medium">{item.name}</p>
-                                    <p className="text-sm text-muted-foreground">BDT {item.price} × {item.quantity}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      BDT {item.price} × {item.quantity}
+                                    </p>
                                   </div>
-                                  <p className="font-medium">BDT {item.price * item.quantity}</p>
+                                  <p className="font-medium">
+                                    BDT {item.price * item.quantity}
+                                  </p>
                                 </div>
                               ))}
                               <div className="space-y-2">
@@ -467,7 +576,13 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
                                 </div>
                                 <div className="flex justify-between text-muted-foreground">
                                   <p>Discount ({order.discount}%)</p>
-                                  <p>- BDT {(order.originalAmount * order.discount / 100).toFixed(2)}</p>
+                                  <p>
+                                    - BDT{" "}
+                                    {(
+                                      (order.originalAmount * order.discount) /
+                                      100
+                                    ).toFixed(2)}
+                                  </p>
                                 </div>
                                 <div className="flex justify-between text-muted-foreground">
                                   <p>Platform Fee</p>
@@ -491,5 +606,5 @@ export function OrdersTab({ activeOrders, historicalData, todayStats, weeklyMont
         </Card>
       </TabsContent>
     </Tabs>
-  )
+  );
 }

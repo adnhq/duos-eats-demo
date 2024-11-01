@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import Image from 'next/image'
-import { Plus, Edit2, Trash2, X, Star } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Star, Check } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 import { Spline_Sans } from "next/font/google"
 
@@ -40,6 +42,7 @@ export default function CreateMenu() {
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [categoryInput, setCategoryInput] = useState('')
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleAddItem = (item: MenuItem) => {
@@ -48,12 +51,13 @@ export default function CreateMenu() {
     } else {
       setMenuItems([...menuItems, { ...item, id: Date.now() }])
     }
-    if (!categories.includes(item.category)) {
+    if (item.category && !categories.includes(item.category)) {
       setCategories([...categories, item.category])
     }
     setCurrentItem(null)
     setIsEditing(false)
     setIsDialogOpen(false)
+    setCategoryInput('')
   }
 
   const handleEditItem = (item: MenuItem) => {
@@ -92,6 +96,14 @@ export default function CreateMenu() {
     setExtraParams(newParams)
   }
 
+  const getFilteredCategories = (input: string) => {
+    if (!input) return []
+    const lowercasedInput = input.toLowerCase()
+    return categories.filter(category => 
+      category.toLowerCase().includes(lowercasedInput)
+    )
+  }
+
   const handleRemoveOption = (paramIndex: number, optionIndex: number) => {
     const newParams = [...extraParams]
     newParams[paramIndex].options = newParams[paramIndex].options.filter((_, i) => i !== optionIndex)
@@ -114,6 +126,18 @@ export default function CreateMenu() {
       item.id === id ? { ...item, isPopular: !item.isPopular } : item
     ))
   }
+
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategoryInput(selectedCategory)
+    setIsPopoverOpen(false)
+  }
+
+  // Filter categories based on input, with null check
+  const filteredCategories = categoryInput
+    ? categories.filter(category =>
+        category.toLowerCase().includes(categoryInput.toLowerCase())
+      )
+    : []
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -172,22 +196,46 @@ export default function CreateMenu() {
                         className="mt-1"
                       />
                     </div>
+                    
                     <div>
-                      <Label htmlFor="category">Category</Label>
+                    `<Label htmlFor="category">Category</Label>
+                    <div className="relative mt-1">
                       <Input
                         id="category"
-                        name="category"
                         value={categoryInput}
-                        onChange={(e) => setCategoryInput(e.target.value)}
-                        className="mt-1"
-                        list="categories"
+                        onChange={(e) => {
+                          setCategoryInput(e.target.value)
+                          setIsPopoverOpen(true)
+                        }}
+                        className="w-full"
+                        placeholder="Type a category name..."
                       />
-                      <datalist id="categories">
-                        {categories.map((category) => (
-                          <option key={category} value={category} />
-                        ))}
-                      </datalist>
+                      {categoryInput && isPopoverOpen && (
+                        <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border shadow-lg z-10">
+                          <div className="py-1">
+                            {getFilteredCategories(categoryInput).map((category) => (
+                              <div
+                                key={category}
+                                onClick={() => {
+                                  setCategoryInput(category)
+                                  setIsPopoverOpen(false)
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-muted cursor-pointer"
+                              >
+                                <Check
+                                  className={`h-4 w-4 ${
+                                    category === categoryInput ? "opacity-100" : "opacity-0"
+                                  }`}
+                                />
+                                <span>{category}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
+                  </div>
+
                     <div>
                       <Label htmlFor="description">Description</Label>
                       <Textarea
@@ -345,7 +393,6 @@ export default function CreateMenu() {
                           )}
                         </div>
                       </div>
-                    
                     ))}
                 </div>
               </TabsContent>

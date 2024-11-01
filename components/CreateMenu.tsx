@@ -80,7 +80,7 @@ export default function CreateMenu() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      price: 0,
+      price: undefined, // Changed from 0 to undefined to prevent the 404 error
       description: "",
       category: "",
       popular: false,
@@ -88,6 +88,7 @@ export default function CreateMenu() {
     },
   });
 
+  // Rest of the handlers remain the same
   const handleAddItem = (values: FormValues) => {
     const newItem: MenuItem = {
       ...values,
@@ -203,7 +204,7 @@ export default function CreateMenu() {
       }
     });
   }
-
+  
   return (
     <div className="container mx-auto px-4 py-6">
       <h1
@@ -221,7 +222,7 @@ export default function CreateMenu() {
                 onClick={() => {
                   form.reset({
                     name: "",
-                    price: 0,
+                    price: undefined,
                     description: "",
                     category: "",
                     popular: false,
@@ -253,7 +254,11 @@ export default function CreateMenu() {
                         <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input 
+                              {...field} 
+                              placeholder="Enter item name"
+                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background" 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -268,10 +273,14 @@ export default function CreateMenu() {
                           <FormControl>
                             <Input
                               type="number"
+                              placeholder="Enter price"
+                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
-                              }
+                              value={field.value || ''} 
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === '' ? undefined : parseFloat(value));
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -288,11 +297,12 @@ export default function CreateMenu() {
                             <div className="relative">
                               <Input
                                 {...field}
+                                placeholder="Type a category name..."
+                                className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                                 onChange={(e) => {
                                   field.onChange(e);
                                   setIsPopoverOpen(true);
                                 }}
-                                placeholder="Type a category name..."
                               />
                               {field.value && isPopoverOpen && (
                                 <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border shadow-lg z-10">
@@ -334,7 +344,11 @@ export default function CreateMenu() {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea {...field} />
+                            <Textarea 
+                              {...field} 
+                              placeholder="Enter item description (optional)"
+                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -350,6 +364,7 @@ export default function CreateMenu() {
                             <Input
                               type="file"
                               accept="image/*"
+                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
@@ -393,6 +408,7 @@ export default function CreateMenu() {
                                     <div className="flex gap-2 mb-2">
                                       <Input
                                         placeholder="Parameter Name"
+                                        className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                                         value={param.name}
                                         onChange={(e) => {
                                           const newParams = [
@@ -425,6 +441,7 @@ export default function CreateMenu() {
                                         >
                                           <Input
                                             placeholder="Option"
+                                            className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                                             value={option}
                                             onChange={(e) => {
                                               const newParams = [
@@ -535,8 +552,7 @@ export default function CreateMenu() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground">
-                    Price: Tk {item.price.toFixed(2)} | Category:{" "}
-                    {item.category}
+                    Price: Tk {item.price.toFixed(2)} | Category: {item.category}
                   </p>
                 </CardContent>
               </Card>

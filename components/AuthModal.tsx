@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,80 +9,68 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from "lucide-react";
+import { getSession, login } from "@/lib/actions";
+import { error } from "console";
 
-interface AuthModalProps {
-  onLogin: () => void;
-}
-
-export function AuthModal({ onLogin }: AuthModalProps) {
+export function AuthModal() {
   // State for restaurant login
-  const [restaurantEmail, setRestaurantEmail] = useState('');
-  const [restaurantPassword, setRestaurantPassword] = useState('');
+  const [restaurantEmail, setRestaurantEmail] = useState("");
+  const [restaurantPassword, setRestaurantPassword] = useState("");
   const [showRestaurantPassword, setShowRestaurantPassword] = useState(false);
-  
+
   // State for user login
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
   const [showUserPassword, setShowUserPassword] = useState(false);
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleRestaurantLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleRestaurantLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (restaurantEmail === 'admin@duos.com' && restaurantPassword === 'duos') {
-      onLogin();
-      setIsOpen(false);
-      toast({
-        title: "Logged in successfully",
-        description: "Welcome back to your restaurant dashboard!",
-      });
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password",
-        variant: "destructive",
-      });
-    }
-  };
 
-  const handleUserLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (userEmail === 'user@duos.com' && userPassword === 'duos') {
-      onLogin();
+    let formData = new FormData();
+    formData.append("email", restaurantEmail);
+    formData.append("password", restaurantPassword);
+
+    try {
+      await login(formData);
+      const session = await getSession();
+      console.log(session);
       setIsOpen(false);
-      toast({
-        title: "Logged in successfully",
-        description: "Welcome back!",
-      });
-    } else {
+
+      if (session !== null) {
+        toast({
+          title: "Logged in successfully",
+          description: "Welcome back!",
+        });
+      } else {
+        throw new Error("Invalid");
+      }
+    } catch (error) {
       toast({
         title: "Login failed",
         description: "Invalid email or password",
         variant: "destructive",
       });
+    } finally {
+      setRestaurantEmail("");
+      setRestaurantPassword("");
     }
-  };
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="w-full md:w-auto">Sign In</Button>
+        <Button variant="default" className="w-full md:w-auto">
+          Sign In
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -93,17 +81,17 @@ export function AuthModal({ onLogin }: AuthModalProps) {
             <TabsTrigger value="user">Sign in as User</TabsTrigger>
             <TabsTrigger value="restaurant">Sign in as Restaurant</TabsTrigger>
           </TabsList>
-          
+
           {/* User Login Tab */}
           <TabsContent value="user">
             <Card>
-              <form onSubmit={handleUserLogin}>
+              <form>
                 <CardContent className="space-y-2 pt-4">
                   <div className="space-y-1">
                     <Label htmlFor="userEmail">Email</Label>
-                    <Input 
-                      id="userEmail" 
-                      type="email" 
+                    <Input
+                      id="userEmail"
+                      type="email"
                       placeholder="your@email.com"
                       value={userEmail}
                       onChange={(e) => setUserEmail(e.target.value)}
@@ -112,8 +100,8 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                   <div className="space-y-1">
                     <Label htmlFor="userPassword">Password</Label>
                     <div className="relative">
-                      <Input 
-                        id="userPassword" 
+                      <Input
+                        id="userPassword"
                         type={showUserPassword ? "text" : "password"}
                         placeholder="Enter your password"
                         value={userPassword}
@@ -134,7 +122,9 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full">Sign In</Button>
+                  <Button type="submit" className="w-full">
+                    Sign In
+                  </Button>
                 </CardFooter>
               </form>
             </Card>
@@ -147,9 +137,9 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                 <CardContent className="space-y-2 pt-4">
                   <div className="space-y-1">
                     <Label htmlFor="restaurantEmail">Restaurant Email</Label>
-                    <Input 
-                      id="restaurantEmail" 
-                      type="email" 
+                    <Input
+                      id="restaurantEmail"
+                      type="email"
                       placeholder="restaurant@example.com"
                       value={restaurantEmail}
                       onChange={(e) => setRestaurantEmail(e.target.value)}
@@ -158,8 +148,8 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                   <div className="space-y-1">
                     <Label htmlFor="restaurantPassword">Password</Label>
                     <div className="relative">
-                      <Input 
-                        id="restaurantPassword" 
+                      <Input
+                        id="restaurantPassword"
                         type={showRestaurantPassword ? "text" : "password"}
                         placeholder="Enter your password"
                         value={restaurantPassword}
@@ -167,7 +157,9 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowRestaurantPassword(!showRestaurantPassword)}
+                        onClick={() =>
+                          setShowRestaurantPassword(!showRestaurantPassword)
+                        }
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                       >
                         {showRestaurantPassword ? (
@@ -180,7 +172,9 @@ export function AuthModal({ onLogin }: AuthModalProps) {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full">Sign In</Button>
+                  <Button type="submit" className="w-full">
+                    Sign In
+                  </Button>
                 </CardFooter>
               </form>
             </Card>

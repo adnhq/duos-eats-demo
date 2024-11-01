@@ -132,6 +132,7 @@ export async function addMenuItem(formData: FormData) {
     popular: formData.get("popular"),
     category: formData.get("category"),
     image: formData.get("image"),
+    restaurantId: formData.get("restaurantId"),
   };
 
   const itemImageName = `${Math.random()}-${
@@ -148,7 +149,7 @@ export async function addMenuItem(formData: FormData) {
 
   const { data: itemData, error: itemUploadError } = await supabase
     .from("Menu")
-    .insert([{ ...values, image: itemImageUrl, restaurantId: 9 }])
+    .insert([{ ...values, image: itemImageUrl }])
     .select("*");
 
   if (itemUploadError) throw itemUploadError;
@@ -163,12 +164,6 @@ export async function addMenuItem(formData: FormData) {
       if (paramUploadError) throw paramUploadError;
     }
   }
-
-  // console.log(extraParams);
-  // console.log(values);
-
-  // Simulate a delay to mimic database operation
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return {
     success: true,
@@ -186,7 +181,7 @@ export async function encrypt(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("10 sec from now")
+    .setExpirationTime("3600 sec from now")
     .sign(key);
 }
 
@@ -210,6 +205,8 @@ export async function login(formData: FormData) {
     .select("*")
     .eq("email", user.email);
 
+  console.log(restaurant);
+
   if (restaurant === null || restaurant?.length === 0) return;
 
   const isPasswordSame = await bcrypt.compare(
@@ -217,23 +214,32 @@ export async function login(formData: FormData) {
     restaurant[0].password
   );
 
-  if (!isPasswordSame) return;
+  if (!isPasswordSame) {
+    console.log("milenai");
+    return;
+  }
+
+  console.log("milse");
 
   // Create the session
-  const expires = new Date(Date.now() + 10 * 1000);
-  const session = await encrypt({ user, expires });
+  const expires = new Date(Date.now() + 3600 * 1000);
+  const session = await encrypt({ ...restaurant[0], expires });
 
   // Save the session in a cookie
-  (await cookies()).set("session", session, { expires, httpOnly: true });
+  const cookieStore = await cookies();
+
+  cookieStore.set("session", session, { expires, httpOnly: true });
 }
 
 export async function logout() {
+  const cookieStore = await cookies();
   // Destroy the session
-  (await cookies()).set("session", "", { expires: new Date(0) });
+  cookieStore.set("session", "", { expires: new Date(0) });
 }
 
 export async function getSession() {
-  const session = (await cookies()).get("session")?.value;
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
   if (!session) return null;
   return await decrypt(session);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Edit2, Trash2, X, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ import { Spline_Sans } from "next/font/google";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { addMenuItem } from "@/lib/actions";
+import { addMenuItem, getSession } from "@/lib/actions";
 import { useTransition } from "react";
 import { toast } from "@/hooks/use-toast";
 
@@ -75,6 +75,16 @@ export default function CreateMenu() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
+  const [restaurantId, setRestaurantId] = useState("");
+
+  useEffect(() => {
+    async function getRestaurantId() {
+      const { id } = await getSession();
+      setRestaurantId(id);
+    }
+
+    getRestaurantId();
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -181,6 +191,7 @@ export default function CreateMenu() {
                 formData.append(key, value);
               }
             }
+            formData.append("restaurantId", restaurantId);
           });
 
           const result = await addMenuItem(formData);
@@ -204,7 +215,7 @@ export default function CreateMenu() {
       }
     });
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h1
@@ -254,10 +265,10 @@ export default function CreateMenu() {
                         <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               placeholder="Enter item name"
-                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background" 
+                              className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                             />
                           </FormControl>
                           <FormMessage />
@@ -276,10 +287,12 @@ export default function CreateMenu() {
                               placeholder="Enter price"
                               className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                               {...field}
-                              value={field.value || ''} 
+                              value={field.value || ""}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                field.onChange(value === '' ? undefined : parseFloat(value));
+                                field.onChange(
+                                  value === "" ? undefined : parseFloat(value)
+                                );
                               }}
                             />
                           </FormControl>
@@ -344,8 +357,8 @@ export default function CreateMenu() {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              {...field} 
+                            <Textarea
+                              {...field}
                               placeholder="Enter item description (optional)"
                               className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
                             />
@@ -552,7 +565,8 @@ export default function CreateMenu() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground">
-                    Price: Tk {item.price.toFixed(2)} | Category: {item.category}
+                    Price: Tk {item.price.toFixed(2)} | Category:{" "}
+                    {item.category}
                   </p>
                 </CardContent>
               </Card>

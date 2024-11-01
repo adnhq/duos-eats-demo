@@ -168,18 +168,6 @@ export default function CreateMenu() {
       )
     : [];
 
-  const handleCategorySelect = (selectedCategory: string) => {
-    setCategoryInput(selectedCategory);
-    setIsPopoverOpen(false);
-  };
-
-  // Filter categories based on input, with null check
-  const filteredCategories = categoryInput
-    ? categories.filter((category) =>
-        category.toLowerCase().includes(categoryInput.toLowerCase())
-      )
-    : [];
-
   return (
     <div className="container mx-auto px-4 py-6">
       <h1

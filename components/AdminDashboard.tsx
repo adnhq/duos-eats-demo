@@ -1,24 +1,12 @@
 "use client"
 
 import { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { AlertCircle, ArrowUpDown, ChevronDown, ChevronsUpDown, DollarSign, Eye, FileText, MoreHorizontal, Plus, Search, Store } from 'lucide-react'
+import { AlertCircle, ArrowUpDown, DollarSign, MoreHorizontal, Plus, Store } from 'lucide-react'
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,19 +16,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+interface Restaurant {
+  id: number
+  name: string
+  pendingDues: number
+  lastPayment: string
+  status: string
+}
+
+interface Application {
+  id: number
+  restaurantName: string
+  email: string
+  password: string
+  phone: string
+  cuisine: string
+  address: string
+  location: string
+  appliedOn: string
+}
 
 // Mock data
-const restaurantsData = [
+const restaurantsData: Restaurant[] = [
   { id: 1, name: "Tasty Bites", pendingDues: 2500, lastPayment: "2023-05-15", status: "active" },
   { id: 2, name: "Spice Haven", pendingDues: 1800, lastPayment: "2023-05-20", status: "active" },
   { id: 3, name: "Burger Palace", pendingDues: 3200, lastPayment: "2023-05-10", status: "active" },
@@ -48,10 +46,29 @@ const restaurantsData = [
   { id: 5, name: "Pizza Paradise", pendingDues: 1500, lastPayment: "2023-05-18", status: "active" },
 ]
 
-const pendingApplications = [
-  { id: 101, name: "Green Leaf Cafe", appliedOn: "2023-05-25", cuisine: "Vegan" },
-  { id: 102, name: "Taco Town", appliedOn: "2023-05-26", cuisine: "Mexican" },
-  { id: 103, name: "Noodle House", appliedOn: "2023-05-24", cuisine: "Asian Fusion" },
+const pendingApplications: Application[] = [
+  {
+    id: 101,
+    restaurantName: "Green Leaf Cafe",
+    email: "green@leaf.com",
+    password: "********",
+    phone: "+880123456789",
+    cuisine: "Vegan",
+    address: "123 Green St",
+    location: "Dhaka",
+    appliedOn: "2023-05-25"
+  },
+  {
+    id: 102,
+    restaurantName: "Taco Town",
+    email: "taco@town.com",
+    password: "********",
+    phone: "+880123456790",
+    cuisine: "Mexican",
+    address: "45 Taco Ave",
+    location: "Dhaka",
+    appliedOn: "2023-05-26"
+  }
 ]
 
 const platformStats = [
@@ -64,31 +81,104 @@ const platformStats = [
 export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
 
+  // Mobile-friendly card view component for restaurants
+  const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
+    <Card className="mb-4">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-lg font-semibold">{restaurant.name}</CardTitle>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem>Edit Information</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>View Payment History</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Pending Dues:</span>
+            <span className="font-medium">BDT {restaurant.pendingDues.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Last Payment:</span>
+            <span>{restaurant.lastPayment}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">Status:</span>
+            <Badge variant="outline" className="bg-green-100 text-green-800">
+              {restaurant.status}
+            </Badge>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  // Mobile-friendly card view component for applications
+  const ApplicationCard = ({ application }: { application: Application }) => (
+    <Card className="mb-4">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold">{application.restaurantName}</CardTitle>
+        <p className="text-sm text-muted-foreground">Applied on: {application.appliedOn}</p>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Email:</p>
+              <p className="font-medium">{application.email}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Phone:</p>
+              <p className="font-medium">{application.phone}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Cuisine:</p>
+              <p className="font-medium">{application.cuisine}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Location:</p>
+              <p className="font-medium">{application.location}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">Address:</p>
+          <p className="font-medium">{application.address}</p>
+        </div>
+        <div className="flex gap-2 mt-4">
+          <Button className="flex-1 bg-green-600 hover:bg-green-700">Approve</Button>
+          <Button variant="outline" className="flex-1 bg-red-100 text-red-600 hover:bg-red-200">
+            Reject
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto p-4 space-y-6">
         {/* Header Section */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-500">Manage restaurants and platform statistics</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-500">Manage restaurants and applications</p>
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" /> Add New Restaurant
           </Button>
         </div>
 
-        {/* Alert */}
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Attention</AlertTitle>
-          <AlertDescription>
-            There are 3 new restaurant applications awaiting your review.
-          </AlertDescription>
-        </Alert>
-
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {platformStats.map((stat, index) => (
             <Card key={index} className={`shadow-lg ${
               index === 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
@@ -104,7 +194,7 @@ export default function AdminDashboard() {
                  <ArrowUpDown className="h-4 w-4 text-white" />}
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl md:text-2xl font-bold text-white">
                   {index === 0 || index === 3 ? `BDT ${stat.value.toLocaleString()}` : stat.value}
                 </div>
               </CardContent>
@@ -112,195 +202,146 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Main Content */}
-        <Tabs defaultValue="restaurants" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="restaurants">Restaurants</TabsTrigger>
-            <TabsTrigger value="applications">Pending Applications</TabsTrigger>
-          </TabsList>
+        {/* Pending Applications Section */}
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Pending Applications</CardTitle>
+            <CardDescription>Review new restaurant applications</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Mobile View */}
+            <div className="md:hidden space-y-4">
+              {pendingApplications.map(application => (
+                <ApplicationCard key={application.id} application={application} />
+              ))}
+            </div>
+            
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">Restaurant Name</th>
+                    <th className="text-left py-3 px-4">Contact</th>
+                    <th className="text-left py-3 px-4">Cuisine</th>
+                    <th className="text-left py-3 px-4">Location</th>
+                    <th className="text-left py-3 px-4">Applied On</th>
+                    <th className="text-right py-3 px-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingApplications.map(application => (
+                    <tr key={application.id} className="border-b">
+                      <td className="py-3 px-4">
+                        <div>
+                          <p className="font-medium">{application.restaurantName}</p>
+                          <p className="text-sm text-muted-foreground">{application.address}</p>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div>
+                          <p>{application.email}</p>
+                          <p>{application.phone}</p>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">{application.cuisine}</td>
+                      <td className="py-3 px-4">{application.location}</td>
+                      <td className="py-3 px-4">{application.appliedOn}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex justify-end gap-2">
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                            Approve
+                          </Button>
+                          <Button size="sm" variant="outline" className="bg-red-100 text-red-600 hover:bg-red-200">
+                            Reject
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="restaurants">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Restaurant List</CardTitle>
-                <CardDescription>Manage restaurants and their pending dues</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center py-4">
-                  <Input
-                    placeholder="Search restaurants..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                  />
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[250px]">Name</TableHead>
-                      <TableHead>Pending Dues</TableHead>
-                      <TableHead>Last Payment</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {restaurantsData
-                      .filter(restaurant => 
-                        restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
-                      )
-                      .map((restaurant) => (
-                      <TableRow key={restaurant.id}>
-                        <TableCell className="font-medium">{restaurant.name}</TableCell>
-                        <TableCell>BDT {restaurant.pendingDues.toLocaleString()}</TableCell>
-                        <TableCell>{restaurant.lastPayment}</TableCell>
-                        <TableCell>
+        {/* Restaurants Section */}
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Restaurant List</CardTitle>
+            <CardDescription>Manage restaurants and their pending dues</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center py-4">
+              <Input
+                placeholder="Search restaurants..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+            
+            {/* Mobile View */}
+            <div className="md:hidden space-y-4">
+              {restaurantsData
+                .filter(restaurant => 
+                  restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map(restaurant => (
+                  <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+                ))}
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">Name</th>
+                    <th className="text-left py-3 px-4">Pending Dues</th>
+                    <th className="text-left py-3 px-4">Last Payment</th>
+                    <th className="text-left py-3 px-4">Status</th>
+                    <th className="text-right py-3 px-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {restaurantsData
+                    .filter(restaurant => 
+                      restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map(restaurant => (
+                      <tr key={restaurant.id} className="border-b">
+                        <td className="py-3 px-4 font-medium">{restaurant.name}</td>
+                        <td className="py-3 px-4">BDT {restaurant.pendingDues.toLocaleString()}</td>
+                        <td className="py-3 px-4">{restaurant.lastPayment}</td>
+                        <td className="py-3 px-4">
                           <Badge variant="outline" className="bg-green-100 text-green-800">
                             {restaurant.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>Edit Information</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem>View Payment History</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="applications">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Pending Applications</CardTitle>
-                <CardDescription>Review and approve new restaurant applications</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[250px]">Restaurant Name</TableHead>
-                      <TableHead>Applied On</TableHead>
-                      <TableHead>Cuisine</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingApplications.map((application) => (
-                      <TableRow key={application.id}>
-                        <TableCell className="font-medium">{application.name}</TableCell>
-                        <TableCell>{application.appliedOn}</TableCell>
-                        <TableCell>{application.cuisine}</TableCell>
-                        <TableCell className="text-right">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline">
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[625px]">
-                              <DialogHeader>
-                                <DialogTitle>Application Details: {application.name}</DialogTitle>
-                                <DialogDescription>
-                                  Review the restaurant's information and make a decision.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="name" className="text-right">
-                                    Name
-                                  </Label>
-                                  <Input id="name" value={application.name} className="col-span-3" readOnly />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="cuisine" className="text-right">
-                                    Cuisine
-                                  </Label>
-                                  <Input id="cuisine" value={application.cuisine} className="col-span-3" readOnly />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="applied-on" className="text-right">
-                                    Applied On
-                                  </Label>
-                                  <Input id="applied-on" value={application.appliedOn} className="col-span-3" readOnly />
-                                </div>
-                                <Collapsible>
-                                  <CollapsibleTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between">
-                                      View Menu PDF <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent className="mt-2">
-                                    <div className="rounded-md border border-dashed p-8 text-center">
-                                      <FileText className="mx-auto h-8 w-8 text-gray-400" />
-                                      <p className="mt-2 text-sm text-gray-500">menu.pdf</p>
-                                    </div>
-                                  </CollapsibleContent>
-                                </Collapsible>
-                              </div>
-                              <DialogFooter>
-                                <Button type="submit" className="bg-green-600 hover:bg-green-700">Approve</Button>
-                                <Button type="button" variant="outline" className="bg-red-100 text-red-600 hover:bg-red-200">
-                                  Reject
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex justify-end">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
                                 </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </TableCell>
-                      </TableRow>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem>Edit Information</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>View Payment History</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>View Payment History</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Platform Performance Chart */}
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Platform Performance</CardTitle>
-            <CardDescription>Monthly overview of key metrics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[
-                    { name: 'Jan', revenue: 65000, newRestaurants: 5 },
-                    { name: 'Feb', revenue: 59000, newRestaurants: 3 },
-                    { name: 'Mar', revenue: 80000, newRestaurants: 8 },
-                    { name: 'Apr', revenue: 81000, newRestaurants: 7 },
-                    { name: 'May', revenue: 56000, newRestaurants: 4 },
-                    { name: 'Jun', revenue: 95000, newRestaurants: 10 },
-                  ]}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-                  <Tooltip />
-                  <Bar yAxisId="left" dataKey="revenue" fill="#8884d8" name="Revenue (BDT)" />
-                  <Bar yAxisId="right" dataKey="newRestaurants" fill="#82ca9d" name="New Restaurants" />
-                </BarChart>
-              </ResponsiveContainer>
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>

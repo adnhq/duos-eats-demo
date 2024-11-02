@@ -178,34 +178,80 @@ export default function CreateMenu() {
     );
   };
 
+  // async function handleSubmit() {
+  //   startTransition(async () => {
+  //     try {
+  //       for (let i = 0; i < menuItems.length; i++) {
+  //         let formData = new FormData();
+  //         Object.entries(menuItems[i]).forEach(([key, value]) => {
+  //           if (key === "extraParams") {
+  //             formData.append(key, JSON.stringify(value));
+  //           } else {
+  //             if (value !== null) {
+  //               formData.append(key, value);
+  //             }
+  //           }
+  //           formData.append("restaurantId", restaurantId);
+  //         });
+
+  //         const result = await addMenuItem(formData);
+  //         if (result.success) {
+  //           toast({
+  //             title: "Success",
+  //             description: result.message,
+  //           });
+  //         } else {
+  //           throw new Error("Failed to add menu items");
+  //         }
+  //       }
+
+  //       setMenuItems([]);
+  //     } catch (error) {
+  //       toast({
+  //         title: "Error",
+  //         description: "Failed to add menu items. Please try again.",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   });
+  // }
+
   async function handleSubmit() {
     startTransition(async () => {
       try {
-        for (let i = 0; i < menuItems.length; i++) {
-          let formData = new FormData();
-          Object.entries(menuItems[i]).forEach(([key, value]) => {
+        // Map menu items to an array of promises
+        const promises = menuItems.map((menuItem) => {
+          const formData = new FormData();
+
+          // Add menu item data to formData
+          Object.entries(menuItem).forEach(([key, value]) => {
             if (key === "extraParams") {
               formData.append(key, JSON.stringify(value));
-            } else {
-              if (value !== null) {
-                formData.append(key, value);
-              }
+            } else if (value !== null) {
+              formData.append(key, value);
             }
             formData.append("restaurantId", restaurantId);
           });
 
-          const result = await addMenuItem(formData);
-          if (result.success) {
-            toast({
-              title: "Success",
-              description: result.message,
-            });
-          } else {
-            throw new Error("Failed to add menu items");
-          }
-        }
+          // Return the promise from addMenuItem
+          return addMenuItem(formData);
+        });
 
-        setMenuItems([]);
+        // Wait for all promises to resolve
+        const results = await Promise.all(promises);
+
+        // Check if all requests were successful
+        const allSuccessful = results.every((result) => result.success);
+
+        if (allSuccessful) {
+          toast({
+            title: "Success",
+            description: "All menu items added successfully",
+          });
+          setMenuItems([]);
+        } else {
+          throw new Error("Failed to add some menu items");
+        }
       } catch (error) {
         toast({
           title: "Error",

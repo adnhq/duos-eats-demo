@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -8,15 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
 import { getSession, login } from "@/lib/actions";
-import { error } from "console";
+import { Eye, EyeOff } from "lucide-react";
+import React, { useState } from "react";
 
 export function AuthModal() {
   // State for restaurant login

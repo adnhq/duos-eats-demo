@@ -30,7 +30,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronRight, Eye, EyeOff, Upload } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
 import Image from "next/image";
@@ -283,6 +283,10 @@ export default function RestaurantRegistration() {
                         />
                       </div>
                     </FormControl>
+                    <FormDescription className="flex gap-2 items-center">
+                      <Info className="w-4 h-4" />
+                      Must be a bKash number
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -11,7 +11,7 @@ export default async function RestaurantDashboardLayout({
 
   if (session.isAdmin) return redirect("/");
   return (
-    <div className="grid grid-cols-[16rem_1fr] min-h-screen py-12">
+    <div className="grid grid-cols-1 md:grid-cols-[16rem_1fr] min-h-screen py-12">
       <Sidebar restaurantName={session.name} />
 
       <main className="flex-1 p-4">

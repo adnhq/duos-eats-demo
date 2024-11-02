@@ -88,7 +88,7 @@ export function OrdersTab({
   weeklyMonthlyStats,
 }: OrdersTabProps) {
   const [dateRange, setDateRange] = useState("This Week");
-  const [currentDiscount, setCurrentDiscount] = useState("15%");
+  const [currentDiscount, setCurrentDiscount] = useState("10%");
 
   // Mobile-responsive card view for orders
   const OrderCard = ({ order }: { order: Order }) => (
@@ -258,9 +258,15 @@ export function OrdersTab({
           <CardContent>
             {/* Mobile view */}
             <div className="md:hidden space-y-4">
-              {activeOrders.map((order) => (
-                <OrderCard key={order.orderId} order={order} />
-              ))}
+              {activeOrders.length > 0 ? (
+                activeOrders.map((order) => (
+                  <OrderCard key={order.orderId} order={order} />
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground text-sm">
+                  No active orders
+                </p>
+              )}
             </div>
 
             {/* Desktop view */}
@@ -376,11 +382,11 @@ export function OrdersTab({
                 </h4>
                 <ol className="space-y-2">
                   {[
-                    "Margherita Pizza",
-                    "Chicken Tikka Masala",
-                    "Vegetable Biryani",
-                    "Chocolate Brownie",
-                    "Mango Lassi",
+                    // "Margherita Pizza",
+                    // "Chicken Tikka Masala",
+                    // "Vegetable Biryani",
+                    // "Chocolate Brownie",
+                    // "Mango Lassi",
                   ].map((item: string, index: number) => (
                     <li key={index} className="flex items-center">
                       <span className="w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground rounded-full mr-2 text-xs">
@@ -467,7 +473,9 @@ export function OrdersTab({
               </Select>
               <span className="text-3xl font-bold">{currentDiscount}</span>
             </div>
-            <Button className="w-full mt-4">Apply New Discount</Button>
+            <Button className="w-full mt-4" disabled={true}>
+              Apply New Discount
+            </Button>
           </CardContent>
         </Card>
 
@@ -509,9 +517,15 @@ export function OrdersTab({
           <CardContent>
             {/* Mobile view */}
             <div className="md:hidden space-y-4">
-              {historicalData.map((order) => (
-                <HistoricalOrderCard key={order.orderId} order={order} />
-              ))}
+              {historicalData.length > 0 ? (
+                historicalData.map((order) => (
+                  <HistoricalOrderCard key={order.orderId} order={order} />
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground text-sm">
+                  No pending orders
+                </p>
+              )}
             </div>
 
             {/* Desktop view */}

@@ -3,101 +3,101 @@ import { DollarSign, Receipt, Utensils } from "lucide-react";
 import { OrdersTab } from "./OrdersTab";
 
 const todayStats = {
-  earnings: 7500,
-  orders: 78,
-  averageOrderValue: 96,
+  earnings: 0,
+  orders: 0,
+  averageOrderValue: 0,
 };
 
 const weeklyMonthlyStats = {
-  weeklyEarnings: 43100,
-  weeklyOrders: 450,
-  monthlyEarnings: 186400,
-  monthlyOrders: 1950,
+  weeklyEarnings: 0,
+  weeklyOrders: 0,
+  monthlyEarnings: 0,
+  monthlyOrders: 0,
 };
 const activeOrders = [
-  {
-    orderId: "ORD006",
-    customerName: "Alice Johnson",
-    items: [
-      { name: "Burger", price: 350, quantity: 1 },
-      { name: "Fries", price: 150, quantity: 1 },
-    ],
-    totalAmount: 500,
-    orderTime: "2023-03-08 14:30",
-  },
-  {
-    orderId: "ORD007",
-    customerName: "Bob Smith",
-    items: [
-      { name: "Pizza", price: 600, quantity: 1 },
-      { name: "Soda", price: 200, quantity: 2 },
-    ],
-    totalAmount: 1000,
-    orderTime: "2023-03-08 14:45",
-  },
+  // {
+  //   orderId: "ORD006",
+  //   customerName: "Alice Johnson",
+  //   items: [
+  //     { name: "Burger", price: 350, quantity: 1 },
+  //     { name: "Fries", price: 150, quantity: 1 },
+  //   ],
+  //   totalAmount: 500,
+  //   orderTime: "2023-03-08 14:30",
+  // },
+  // {
+  //   orderId: "ORD007",
+  //   customerName: "Bob Smith",
+  //   items: [
+  //     { name: "Pizza", price: 600, quantity: 1 },
+  //     { name: "Soda", price: 200, quantity: 2 },
+  //   ],
+  //   totalAmount: 1000,
+  //   orderTime: "2023-03-08 14:45",
+  // },
 ];
 
 const historicalData = [
-  {
-    date: "2023-03-07 19:23",
-    orderId: "ORD001",
-    items: [
-      { name: "Pasta", price: 800, quantity: 1 },
-      { name: "Salad", price: 400, quantity: 1 },
-    ],
-    originalAmount: 1200,
-    discount: 15,
-    platformFee: 60,
-    finalEarnings: 960,
-  },
-  {
-    date: "2023-03-07 20:05",
-    orderId: "ORD002",
-    items: [
-      { name: "Pizza", price: 600, quantity: 1 },
-      { name: "Soda", price: 200, quantity: 1 },
-    ],
-    originalAmount: 800,
-    discount: 10,
-    platformFee: 40,
-    finalEarnings: 680,
-  },
-  {
-    date: "2023-03-06 13:45",
-    orderId: "ORD003",
-    items: [
-      { name: "Burger", price: 350, quantity: 1 },
-      { name: "Fries", price: 150, quantity: 1 },
-    ],
-    originalAmount: 500,
-    discount: 20,
-    platformFee: 25,
-    finalEarnings: 375,
-  },
-  {
-    date: "2023-03-06 18:30",
-    orderId: "ORD004",
-    items: [
-      { name: "Steak", price: 1500, quantity: 1 },
-      { name: "Wine", price: 500, quantity: 1 },
-    ],
-    originalAmount: 2000,
-    discount: 5,
-    platformFee: 100,
-    finalEarnings: 1800,
-  },
-  {
-    date: "2023-03-05 12:15",
-    orderId: "ORD005",
-    items: [
-      { name: "Sandwich", price: 200, quantity: 1 },
-      { name: "Coffee", price: 100, quantity: 1 },
-    ],
-    originalAmount: 300,
-    discount: 0,
-    platformFee: 15,
-    finalEarnings: 285,
-  },
+  // {
+  //   date: "2023-03-07 19:23",
+  //   orderId: "ORD001",
+  //   items: [
+  //     { name: "Pasta", price: 800, quantity: 1 },
+  //     { name: "Salad", price: 400, quantity: 1 },
+  //   ],
+  //   originalAmount: 1200,
+  //   discount: 15,
+  //   platformFee: 60,
+  //   finalEarnings: 960,
+  // },
+  // {
+  //   date: "2023-03-07 20:05",
+  //   orderId: "ORD002",
+  //   items: [
+  //     { name: "Pizza", price: 600, quantity: 1 },
+  //     { name: "Soda", price: 200, quantity: 1 },
+  //   ],
+  //   originalAmount: 800,
+  //   discount: 10,
+  //   platformFee: 40,
+  //   finalEarnings: 680,
+  // },
+  // {
+  //   date: "2023-03-06 13:45",
+  //   orderId: "ORD003",
+  //   items: [
+  //     { name: "Burger", price: 350, quantity: 1 },
+  //     { name: "Fries", price: 150, quantity: 1 },
+  //   ],
+  //   originalAmount: 500,
+  //   discount: 20,
+  //   platformFee: 25,
+  //   finalEarnings: 375,
+  // },
+  // {
+  //   date: "2023-03-06 18:30",
+  //   orderId: "ORD004",
+  //   items: [
+  //     { name: "Steak", price: 1500, quantity: 1 },
+  //     { name: "Wine", price: 500, quantity: 1 },
+  //   ],
+  //   originalAmount: 2000,
+  //   discount: 5,
+  //   platformFee: 100,
+  //   finalEarnings: 1800,
+  // },
+  // {
+  //   date: "2023-03-05 12:15",
+  //   orderId: "ORD005",
+  //   items: [
+  //     { name: "Sandwich", price: 200, quantity: 1 },
+  //     { name: "Coffee", price: 100, quantity: 1 },
+  //   ],
+  //   originalAmount: 300,
+  //   discount: 0,
+  //   platformFee: 15,
+  //   finalEarnings: 285,
+  // },
 ];
 export default function RestaurantStats() {
   return (

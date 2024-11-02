@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,6 +33,7 @@ import {
 import { ChevronRight, Eye, EyeOff, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
+import Image from "next/image";
 
 const formSchema = z.object({
   restaurantName: z.string().min(2, {
@@ -63,6 +64,7 @@ export default function RestaurantRegistration() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [logoFile, setLogoFile] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -369,36 +371,35 @@ export default function RestaurantRegistration() {
               <FormField
                 control={form.control}
                 name="logo"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...field } }) => (
                   <FormItem>
-                    <FormLabel>Restaurant Logo</FormLabel>
+                    <FormLabel>Image</FormLabel>
                     <FormControl>
-                      <div className="flex items-center">
-                        <Input
-                          id="logo"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              field.onChange(file);
-                              setLogoFile(file.name);
-                            }
-                          }}
-                        />
-                        <label
-                          htmlFor="logo"
-                          className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                        >
-                          <Upload className="h-4 w-4 inline-block mr-2" />
-                          Choose logo
-                        </label>
-                        <span className="ml-3 text-sm text-gray-500">
-                          {logoFile || "No file chosen"}
-                        </span>
-                      </div>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            onChange(file);
+                          }
+                        }}
+                        {...field}
+                        ref={fileInputRef}
+                      />
                     </FormControl>
+                    {value && (
+                      <div className="mt-2 relative w-full h-40">
+                        <Image
+                          src={URL.createObjectURL(value)}
+                          alt="Preview"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { supabase } from "./supabase";
-import { Category } from "./types";
+import { revalidatePath } from "next/cache";
 
 const restaurantFormSchema = z.object({
   name: z.string().min(2),
@@ -103,13 +103,26 @@ export async function getRestaurantMenuCategories(id: number) {
     .select("category")
     .eq("restaurantId", id);
 
-  let categories = [];
+  if (error) throw error;
+
+  let categories: string[] = [];
 
   menuCategories?.forEach((value, idx) => {
     if (!categories.includes(value.category)) categories.push(value.category);
   });
 
   return categories;
+}
+
+export async function getRestaurantMenu(id: number) {
+  const { data: menu, error } = await supabase
+    .from("Menu")
+    .select("*")
+    .eq("restaurantId", id);
+
+  if (error) throw error;
+
+  return menu;
 }
 
 export async function addMenuItem(formData: FormData) {
@@ -166,6 +179,56 @@ export async function addMenuItem(formData: FormData) {
   };
 }
 
+export async function getUnapprovedRestaurants() {
+  const { data: Restaurants, error } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("approved", false)
+    .neq("email", process.env.ADMIN_EMAIL)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return Restaurants;
+}
+
+export async function approveRestaurant(id: number) {
+  const { error } = await supabase
+    .from("Restaurants")
+    .update({ approved: true })
+    .eq("id", id);
+
+  if (error) throw error;
+
+  revalidatePath("/admin-dashboard");
+}
+
+export async function rejectRestaurant(id: number) {
+  const { data: restaurant, error: notFoundError } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("id", id);
+
+  if (notFoundError) throw notFoundError;
+
+  const { error: deleteError } = await supabase
+    .from("Restaurants")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) throw deleteError;
+
+  const imageName = restaurant[0].logo.split("restaurantLogo/")[1];
+  console.log(imageName);
+
+  const { error: fileDeleteError } = await supabase.storage
+    .from("restaurantLogo")
+    .remove([imageName]);
+
+  if (fileDeleteError) throw fileDeleteError;
+
+  revalidatePath("/admin-dashboard");
+}
 // authentication
 
 const secretKey = "secret";
@@ -197,7 +260,8 @@ export async function login(formData: FormData) {
   const { data: restaurant, error } = await supabase
     .from("Restaurants")
     .select("*")
-    .eq("email", user.email);
+    .eq("email", user.email)
+    .eq("approved", true);
 
   console.log(restaurant);
 

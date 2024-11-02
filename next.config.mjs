@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["images.unsplash.com", "img.freepik.com"],
+    // domains: ["images.unsplash.com", "img.freepik.com"],
 
     remotePatterns: [
       {
@@ -10,6 +10,32 @@ const nextConfig = {
         hostname: "gxeletnimcclddohqbdt.supabase.co",
         port: "",
         pathname: "//storage/v1/object/public/restaurantLogo/**",
+      },
+      {
+        protocol: "https",
+        hostname: "gxeletnimcclddohqbdt.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/restaurantLogo/**",
+      },
+      {
+        protocol: "https",
+        hostname: "gxeletnimcclddohqbdt.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/menuItemImage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "gxeletnimcclddohqbdt.supabase.co",
+        port: "",
+        pathname: "//storage/v1/object/public/menuItemImage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.freepik.com",
       },
     ],
   },

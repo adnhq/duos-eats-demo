@@ -1,8 +1,9 @@
-import { ChefHat, CreditCard, Utensils } from "lucide-react";
+"use client";
+import { ChefHat, Cog, CreditCard, PencilRuler, Utensils } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
-
+import { usePathname } from "next/navigation";
 
 export default function Sidebar({
   restaurantName,
@@ -18,15 +19,27 @@ export default function Sidebar({
       href: "/restaurant/OrderStats",
       icon: Utensils,
     },
-    { id: "menu", name: "Menu", href: "/restaurant/Menu", icon: ChefHat },
+    {
+      id: "addMenu",
+      name: "Add Menu",
+      href: "/restaurant/AddMenu",
+      icon: ChefHat,
+    },
+    {
+      id: "editMenu",
+      name: "Edit Menu",
+      href: "/restaurant/EditMenu",
+      icon: PencilRuler,
+    },
     {
       id: "settings",
       name: "Settings",
       href: "/restaurant/Settings",
-      icon: CreditCard,
+      icon: Cog,
     },
   ];
 
+  const pathName = usePathname();
 
   return (
     <div className="flex flex-col h-full w-full md:border-r md:w-64">
@@ -48,7 +61,6 @@ export default function Sidebar({
         </div>
       </div>
 
-
       <nav className="flex flex-col gap-2 p-4">
         {sidebarItems.map((item) => (
           <Link
@@ -56,7 +68,9 @@ export default function Sidebar({
             key={item.id}
             className={cn(
               "flex items-center w-full space-x-2 pl-4 py-2 rounded-lg mb-1 transition-colors text-sm font-semibold",
-              "hover:bg-gray-100 text-gray-700"
+              pathName === item.href
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-gray-100 text-gray-700"
             )}
           >
             <item.icon className="h-5 w-5" />

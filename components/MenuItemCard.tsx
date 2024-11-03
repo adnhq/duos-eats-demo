@@ -17,7 +17,6 @@ interface MenuItemProps {
     description: string;
     image: string;
     popular: boolean;
-    originalPrice?: number;
   };
   onAddToCart?: (item: any, quantity: number) => void;
 }
@@ -50,14 +49,7 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
         <h3 className={`${splineSans.className} tracking-wide`}>{item.name}</h3>
         <p className="text-sm text-muted-foreground">{item.description}</p>
         <div className="mt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-          <p className="font-semibold">
-            Tk {item.price}
-            {item.originalPrice && (
-              <span className="text-muted-foreground line-through ml-2">
-                Tk {item.originalPrice}
-              </span>
-            )}
-          </p>
+          <p className="font-semibold">Tk {item.price}</p>
           <div className="flex items-center justify-between w-full sm:w-auto">
             <div className="flex items-center space-x-2">
               <Button

@@ -121,7 +121,7 @@ export async function editRestaurant(formData: FormData) {
     if (EditError) throw EditError;
   }
 
-  revalidatePath("/restaurant/Settings");
+  revalidatePath("/restaurant");
   return { success: true };
 }
 

@@ -1,15 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import { Plus, Edit2, Trash2, X, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -20,19 +12,24 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Spline_Sans } from "next/font/google";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { addMenuItem, getSession } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, Edit2, Plus, Star, Trash2, X } from "lucide-react";
+import { Spline_Sans } from "next/font/google";
+import Image from "next/image";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { addMenuItem, getSession } from "@/lib/actions";
-import { useTransition } from "react";
-import { toast } from "@/hooks/use-toast";
 
 const splineSans = Spline_Sans({
   subsets: ["latin"],

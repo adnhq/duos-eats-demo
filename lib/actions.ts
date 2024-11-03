@@ -75,6 +75,57 @@ export async function registerRestaurant(formData: FormData) {
   }
 }
 
+export async function editRestaurant(formData: FormData) {
+  const values = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phoneNumber: formData.get("phoneNumber"),
+    cuisine: formData.get("cuisine"),
+    address: formData.get("address"),
+    location: formData.get("location"),
+    logo: formData.get("logo"),
+  };
+
+  const isLogoFile = values.logo instanceof File;
+
+  if (isLogoFile) {
+    //upload the file
+    const resLogoName = `${Math.random()}-${
+      (values.logo as File).name
+    }`.replaceAll("/", "");
+
+    const resLogoUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/restaurantLogo/${resLogoName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("restaurantLogo")
+      .upload(resLogoName, values.logo as File);
+
+    if (uploadError) throw uploadError;
+
+    const dataToUpdate = {
+      ...values,
+      logo: resLogoUrl,
+    };
+
+    const { error: EditError } = await supabase
+      .from("Restaurants")
+      .update(dataToUpdate)
+      .eq("id", formData.get("id"));
+
+    if (EditError) throw EditError;
+  } else {
+    const { error: EditError } = await supabase
+      .from("Restaurants")
+      .update(values)
+      .eq("id", formData.get("id"));
+
+    if (EditError) throw EditError;
+  }
+
+  revalidatePath("/restaurant/Settings");
+  return { success: true };
+}
+
 export async function getAllRestaurants() {
   const { data: Restaurants, error } = await supabase
     .from("Restaurants")

@@ -1,12 +1,13 @@
 import { RestaurantSettings } from "@/components/RestaurantSettings";
-import { getSession } from "@/lib/actions";
+import { getRestaurant, getSession } from "@/lib/actions";
 
 export default async function Page() {
-  const defaultValues = await getSession();
+  const { id } = await getSession();
+  const restaurant = await getRestaurant(id);
 
   return (
     <>
-      <RestaurantSettings defaultValues={defaultValues} />
+      <RestaurantSettings defaultValues={restaurant[0]} id={id} />
     </>
   );
 }

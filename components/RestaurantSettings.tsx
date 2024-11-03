@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Restaurant } from "@/lib/types";
 import Image from "next/image";
+import { editRestaurant } from "@/lib/actions";
 
 const updateFormSchema = z.object({
   name: z.string().min(2, {
@@ -73,9 +74,10 @@ const passwordFormSchema = z
 
 type Props = {
   defaultValues: Restaurant;
+  id: string;
 };
 
-export function RestaurantSettings({ defaultValues }: Props) {
+export function RestaurantSettings({ defaultValues, id }: Props) {
   const { toast } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -84,11 +86,10 @@ export function RestaurantSettings({ defaultValues }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data - replace with actual restaurant data
-  const restaurantData = defaultValues;
 
   const updateForm = useForm<z.infer<typeof updateFormSchema>>({
     resolver: zodResolver(updateFormSchema),
-    defaultValues: restaurantData,
+    defaultValues,
   });
 
   const passwordForm = useForm<z.infer<typeof passwordFormSchema>>({
@@ -145,12 +146,22 @@ export function RestaurantSettings({ defaultValues }: Props) {
   async function onUpdateSubmit(values: z.infer<typeof updateFormSchema>) {
     try {
       // Add your update API call here
-      console.log("Update values:", values);
-      toast({
-        title: "Settings Updated",
-        description:
-          "Your restaurant information has been updated successfully.",
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== null) {
+          formData.append(key, value);
+        }
       });
+      formData.append("id", id);
+      const result = await editRestaurant(formData);
+
+      if (result.success) {
+        toast({
+          title: "Settings Updated",
+          description:
+            "Your restaurant information has been updated successfully.",
+        });
+      }
     } catch (error) {
       toast({
         title: "Update Failed",
@@ -376,9 +387,15 @@ export function RestaurantSettings({ defaultValues }: Props) {
                     )}
                   />
 
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={updateForm.formState.isLoading}
+                  >
                     <Save className="mr-2 h-4 w-4" />
-                    Save Changes
+                    {updateForm.formState.isLoading
+                      ? "Saving..."
+                      : "Save Changes"}
                   </Button>
                 </form>
               </Form>

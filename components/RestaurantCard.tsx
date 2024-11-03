@@ -64,8 +64,8 @@ export default function RestaurantCard({
             <h3 className="text-base font-semibold line-clamp-1 mb-0.5">
               {restaurant.name}
             </h3>
-            <p className="text-xs text-muted-foreground mb-2 uppercase">
-              {restaurant.cuisine}
+            <p className="text-xs text-muted-foreground mb-2 capitalize">
+              {restaurant.location}
             </p>
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-1">

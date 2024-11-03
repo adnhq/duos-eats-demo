@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Spline_Sans } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +35,8 @@ import { ChevronRight, Eye, EyeOff, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
 import Image from "next/image";
+
+const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500", "600"] });
 
 const formSchema = z.object({
   restaurantName: z.string().min(2, {
@@ -149,53 +152,50 @@ export default function RestaurantRegistration() {
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden py-16">
       <svg
         className="absolute inset-0 w-full h-full"
-        viewBox="0 0 1000 1000"
+        viewBox="0 0 1600 1000"
         preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <pattern
-            id="grid"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M0 40L40 0M0 0L40 40"
-              stroke="rgba(245, 158, 11, 0.1)"
-              strokeWidth="1"
-            />
+          <radialGradient id="fadeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stopColor="#FFF7ED" />
+            <stop offset="40%" stopColor="#FFEDD5" />
+            <stop offset="100%" stopColor="#FFFFFF" />
+          </radialGradient>
+          
+          <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1" fill="#FB923C" opacity="0.15" />
           </pattern>
-          <mask id="fade-mask">
-            <rect x="0" y="0" width="100%" height="100%" fill="white" />
-            <rect x="0" y="40%" width="100%" height="60%" fill="black" />
-          </mask>
+          
+          <filter id="softBlur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
+          </filter>
         </defs>
-        <rect
-          width="100%"
-          height="100%"
-          fill="url(#grid)"
-          mask="url(#fade-mask)"
-        />
-        <g mask="url(#fade-mask)">
-          <circle cx="500" cy="0" r="400" fill="rgba(245, 158, 11, 0.05)" />
-          <circle cx="500" cy="0" r="300" fill="rgba(245, 158, 11, 0.05)" />
-          <circle cx="500" cy="0" r="200" fill="rgba(245, 158, 11, 0.05)" />
-        </g>
+        
+        <rect width="100%" height="100%" fill="url(#fadeGradient)" />
+        
+        <rect width="100%" height="100%" fill="url(#dots)" />
+        
+        <circle cx="200" cy="150" r="300" fill="#FB923C" opacity="0.03" filter="url(#softBlur)" />
+        <circle cx="1400" cy="200" r="250" fill="#FB923C" opacity="0.03" filter="url(#softBlur)" />
+        
+        <path d="M0,300 Q400,250 800,300 T1600,300" stroke="#FB923C" strokeWidth="1" fill="none" opacity="0.1" />
+        <path d="M0,350 Q400,300 800,350 T1600,350" stroke="#FB923C" strokeWidth="1" fill="none" opacity="0.07" />
       </svg>
 
-      {/* Centered form */}
-      <Card className="w-full max-w-md z-10 bg-white shadow-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">
+      <Card className="w-full max-w-md z-10 bg-white/95 backdrop-blur-sm shadow-xl border-0">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className={`${splineSans.className} text-3xl font-semibold text-gray-900`}>
             Join Duos as a Partner
           </CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardDescription className={`${splineSans.className} text-base text-gray-600`}>
             Grow your restaurant with us
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* All form fields remain exactly the same */}
               <FormField
                 control={form.control}
                 name="restaurantName"
@@ -409,7 +409,7 @@ export default function RestaurantRegistration() {
 
               <Button
                 type="submit"
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
               >
                 Apply to become a partner
                 <ChevronRight className="ml-2 h-4 w-4" />

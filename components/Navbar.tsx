@@ -30,8 +30,7 @@ export default async function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Restaurants" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
+    { href: "/about", label: "About" }
   ];
 
   return (

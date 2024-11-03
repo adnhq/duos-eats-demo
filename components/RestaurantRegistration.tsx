@@ -63,7 +63,6 @@ const formSchema = z.object({
 export default function RestaurantRegistration() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const [logoFile, setLogoFile] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -143,7 +142,6 @@ export default function RestaurantRegistration() {
         description: "Your restaurant has been registered successfully.",
       });
       form.reset();
-      setLogoFile("");
     }
   }
 

@@ -3,7 +3,6 @@
 import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSession, decrypt, deleteSession } from "./session";
 import { supabase } from "./supabase";
@@ -51,10 +50,10 @@ export async function registerRestaurant(formData: FormData) {
     if (uploadError) throw uploadError;
 
     // Hash the password with bcrypt
-    const saltRounds = 2;
+
     const hashedPassword = await bcrypt.hash(
       values.password as string,
-      saltRounds
+      Number(process.env.BCRYPT_SALT_ROUNDS)
     );
 
     // Replace the plain password with the hashed one
@@ -121,6 +120,39 @@ export async function editRestaurant(formData: FormData) {
 
     if (EditError) throw EditError;
   }
+
+  revalidatePath("/restaurant/Settings");
+  return { success: true };
+}
+
+export async function editRestaurantPassword(formData: FormData) {
+  const { data: restaurants, error: notFoundError } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("id", formData.get("id"));
+
+  if (notFoundError) throw notFoundError;
+
+  const isCurPassSame = await bcrypt.compare(
+    formData.get("currentPassword") as string,
+    restaurants[0].password
+  );
+
+  if (!isCurPassSame) throw new Error("Incorrect password");
+
+  const hashedPassword = await bcrypt.hash(
+    formData.get("newPassword") as string,
+    Number(process.env.BCRYPT_SALT_ROUNDS)
+  );
+
+  const { error: EditError } = await supabase
+    .from("Restaurants")
+    .update({
+      password: hashedPassword,
+    })
+    .eq("id", formData.get("id"));
+
+  if (EditError) throw EditError;
 
   revalidatePath("/restaurant/Settings");
   return { success: true };
@@ -303,7 +335,7 @@ export async function login(formData: FormData) {
     restaurant[0].password
   );
 
-  if (!isPasswordSame) return;
+  if (!isPasswordSame) throw new Error("Incorrect password");
 
   const isAdmin = restaurant[0].email === process.env.ADMIN_EMAIL;
 

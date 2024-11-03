@@ -55,7 +55,7 @@ const updateFormSchema = z.object({
 
 type Props = {
   defaultValues: Restaurant;
-  id: string;
+  id: any;
 };
 
 const cuisineTypes = [

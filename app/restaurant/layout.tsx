@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import Spinner from "@/components/Spinner";
 import { getRestaurant, getSession } from "@/lib/actions";
+import { JWTPayload } from "jose";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -10,9 +11,9 @@ export default async function RestaurantDashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  const restaurants = await getRestaurant(session.id);
+  const restaurants = await getRestaurant((session as JWTPayload).id);
 
-  if (session.isAdmin) return redirect("/");
+  if ((session as JWTPayload).isAdmin) return redirect("/");
   return (
     <div className="grid grid-cols-1 md:grid-cols-[16rem_1fr] min-h-screen py-12">
       <Sidebar

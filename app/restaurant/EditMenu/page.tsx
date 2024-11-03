@@ -1,9 +1,10 @@
 import EditMenuItemCard from "@/components/EditMenuItemCard";
 import { getRestaurantMenu, getSession } from "@/lib/actions";
+import { JWTPayload } from "jose";
 
 export default async function Page() {
-  const { id } = await getSession();
-  const menuItems = await getRestaurantMenu(id);
+  const session = await getSession();
+  const menuItems = await getRestaurantMenu((session as JWTPayload).id);
 
   return (
     <div className="container mx-auto px-4">

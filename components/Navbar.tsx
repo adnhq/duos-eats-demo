@@ -6,14 +6,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSession, logout } from "@/lib/actions";
-import { Menu, User, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import duosLogo from "../duos-lg.png";
-import { AuthModal } from "./AuthModal";
-import { Button } from "./ui/button";
 import {
   Sheet,
   SheetContent,
@@ -21,6 +13,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getSession, logout } from "@/lib/actions";
+import { JWTPayload } from "jose";
+import { Menu, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import duosLogo from "../duos-lg.png";
+import { AuthModal } from "./AuthModal";
+import { Button } from "./ui/button";
 
 export default async function Navbar() {
   const session = await getSession();
@@ -30,7 +31,7 @@ export default async function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Restaurants" },
-    { href: "/about", label: "About" }
+    { href: "/about", label: "About" },
   ];
 
   return (
@@ -79,11 +80,13 @@ export default async function Navbar() {
                 <DropdownMenuTrigger className="flex items-center space-x-2">
                   <User className="h-5 w-5" />
                   <span className="tracking-wide font-semibold">
-                    {session.name}
+                    {(session as JWTPayload).name as string}
                   </span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuLabel>{session.name}</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    {(session as JWTPayload).name as string}
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
                   {session?.isAdmin ? (
@@ -159,7 +162,9 @@ export default async function Navbar() {
                     <div className="space-y-3 pt-4 border-t">
                       <div className="flex justify-center gap-2 items-center mb-4">
                         <User className="h-5 w-5" />
-                        <p className="font-semibold">{session.name}</p>
+                        <p className="font-semibold">
+                          {(session as JWTPayload).name as string}
+                        </p>
                       </div>
                       {session?.isAdmin ? (
                         <Link

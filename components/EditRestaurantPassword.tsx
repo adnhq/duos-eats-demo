@@ -42,7 +42,7 @@ const passwordFormSchema = z
     path: ["confirmPassword"],
   });
 
-export default function EditRestaurantPassword({ id }: { id: string }) {
+export default function EditRestaurantPassword({ id }: { id: any }) {
   const { toast } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);

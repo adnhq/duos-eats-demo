@@ -54,8 +54,8 @@ export default function RestaurantCard({
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-            <div className="absolute top-2 left-2">
-              <span className="px-1.5 py-0.5 text-xs font-medium text-primary-foreground bg-primary rounded-full">
+            <div className="absolute top-2 right-2">
+              <span className="px-4 py-1 text-xs font-medium tracking-wider text-primary-foreground bg-primary rounded-full uppercase">
                 {restaurant.cuisine}
               </span>
             </div>
@@ -64,7 +64,7 @@ export default function RestaurantCard({
             <h3 className="text-base font-semibold line-clamp-1 mb-0.5">
               {restaurant.name}
             </h3>
-            <p className="text-xs text-muted-foreground mb-2">
+            <p className="text-xs text-muted-foreground mb-2 uppercase">
               {restaurant.cuisine}
             </p>
             <div className="flex justify-between items-center">

@@ -1,3 +1,4 @@
+"use client";
 // components/OrdersTab.tsx
 import { useState } from "react";
 import {

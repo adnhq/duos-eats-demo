@@ -23,12 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <main className="max-w-7xl mx-auto">
-          <Navbar />
-          {children}
-          <Toaster />
-          <Footer></Footer>
-        </main>
+        <Navbar />
+        <main className="max-w-7xl mx-auto">{children}</main>
+        <Toaster />
+        <Footer />
       </body>
     </html>
   );

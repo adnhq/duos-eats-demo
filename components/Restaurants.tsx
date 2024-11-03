@@ -1,6 +1,8 @@
 import { getAllRestaurants } from "@/lib/actions";
 import { Restaurant } from "@/lib/types";
 import RestaurantCard from "./RestaurantCard";
+import { Suspense } from "react";
+import Spinner from "./Spinner";
 
 const locations = [
   "Uttara",
@@ -43,11 +45,14 @@ export default async function Restaurants() {
             Coming soon...
           </p>
         )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {restaurants.map((restaurant: Restaurant, index: number) => (
-            <RestaurantCard key={`${index}`} restaurant={restaurant} />
-          ))}
-        </div>
+
+        <Suspense fallback={<Spinner />}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {restaurants.map((restaurant: Restaurant, index: number) => (
+              <RestaurantCard key={`${index}`} restaurant={restaurant} />
+            ))}
+          </div>
+        </Suspense>
       </section>
     </div>
   );

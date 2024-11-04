@@ -2,10 +2,11 @@ import EditRestaurantPassword from "@/components/EditRestaurantPassword";
 import { RestaurantProfile } from "@/components/RestaurantProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getRestaurant, getSession } from "@/lib/actions";
-import { JWTPayload } from "jose";
 
 export default async function Page() {
-  const session = (await getSession()) as JWTPayload;
+  const session = await getSession();
+  if (!session) return null;
+
   const restaurant = await getRestaurant(session.id);
 
   return (

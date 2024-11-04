@@ -86,10 +86,10 @@ const restaurantsData: Restaurant[] = [
 // ];
 
 const platformStats = [
-  { name: "Total Fees", value: 125000 },
-  { name: "Active Restaurants", value: 250 },
-  { name: "New Sign-ups", value: 15 },
-  { name: "Avg. Order Value", value: 450 },
+  { name: "Total Fees", value: 0 },
+  { name: "Active Restaurants", value: 0 },
+  { name: "New Sign-ups", value: 0 },
+  { name: "Avg. Order Value", value: 0 },
 ];
 
 export default async function AdminDashboard() {

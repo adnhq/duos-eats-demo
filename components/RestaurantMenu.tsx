@@ -164,53 +164,54 @@ export default async function RestaurantMenu({
       </div>
 
       <Tabs defaultValue="all" className="mb-6">
-  <ScrollArea className="w-full pb-4">
-    <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">
-      <TabsTrigger
-        value="all"
-        className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
-      >
-        All Items
-      </TabsTrigger>
-      {categories.map((category) => (
-        <TabsTrigger
-          key={category}
-          value={category}
-          className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
-        >
-          {category}
-        </TabsTrigger>
-      ))}
-    </TabsList>
-  </ScrollArea>
+        <ScrollArea className="w-full whitespace-nowrap pb-4">
+          <TabsList className="w-max rounded-full bg-muted p-1">
+            <TabsTrigger
+              value="all"
+              className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+            >
+              All Items
+            </TabsTrigger>
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category}
+                value={category}
+                className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <ScrollBar orientation="horizontal" className="invisible" />
+        </ScrollArea>
 
-  {/* All Items View - Shows all items grouped by category */}
-  <TabsContent value="all" className="mt-6">
-    <div className="space-y-8">
-      {categories.map((category) => (
-        <div key={category}>
-          <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
-          <div className="space-y-4">
-            {groupedMenuItems[category].map((item) => (
-              <MenuItemCard key={item.id} item={item} />
+        {/* All Items View - Shows all items grouped by category */}
+        <TabsContent value="all" className="mt-6">
+          <div className="space-y-8">
+            {categories.map((category) => (
+              <div key={category}>
+                <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
+                <div className="space-y-4">
+                  {groupedMenuItems[category].map((item) => (
+                    <MenuItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      ))}
-    </div>
-  </TabsContent>
+        </TabsContent>
 
-  {/* Individual Category Views */}
-  {categories.map((category) => (
-    <TabsContent key={category} value={category} className="mt-6">
-      <div className="space-y-4">
-        {groupedMenuItems[category].map((item) => (
-          <MenuItemCard key={item.id} item={item} />
+        {/* Individual Category Views */}
+        {categories.map((category) => (
+          <TabsContent key={category} value={category} className="mt-6">
+            <div className="space-y-4">
+              {groupedMenuItems[category].map((item) => (
+                <MenuItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          </TabsContent>
         ))}
-      </div>
-    </TabsContent>
-  ))}
-</Tabs>
+      </Tabs>
 
       {/* Cart Sheet */}
       <Sheet>

@@ -5,8 +5,8 @@ import { getRestaurant, getSession } from "@/lib/actions";
 import { JWTPayload } from "jose";
 
 export default async function Page() {
-  const { id } = (await getSession()) as JWTPayload;
-  const restaurant = await getRestaurant(id);
+  const session = (await getSession()) as JWTPayload;
+  const restaurant = await getRestaurant(session.id);
 
   return (
     <div className="container mx-auto px-4">
@@ -19,11 +19,11 @@ export default async function Page() {
         </TabsList>
 
         <TabsContent value="profile">
-          <RestaurantProfile defaultValues={restaurant[0]} id={id} />
+          <RestaurantProfile defaultValues={restaurant[0]} id={session.id} />
         </TabsContent>
 
         <TabsContent value="security">
-          <EditRestaurantPassword id={id} />
+          <EditRestaurantPassword id={session.id} />
         </TabsContent>
       </Tabs>
     </div>

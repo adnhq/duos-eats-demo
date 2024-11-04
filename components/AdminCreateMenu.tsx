@@ -245,7 +245,7 @@ export default function AdminCreateMenu() {
         <SelectContent>
           {restaurants.length > 0 && (
             <>
-              {restaurants.map((restaurant, idx) => (
+              {restaurants.map((restaurant: any, idx: number) => (
                 <SelectItem key={idx} value={restaurant.id}>
                   {restaurant.name}
                 </SelectItem>

@@ -1,11 +1,8 @@
-import React from "react";
-
-type Props = {
-  params: {
-    editMenuId: string;
-  };
-};
-
-export default function Page({ params }: Props) {
-  return <div>Should Edit {params.editMenuId}</div>;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ editMenuId: string }>;
+}) {
+  const { editMenuId } = await params;
+  return <div>Should Edit {editMenuId}</div>;
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -107,7 +107,7 @@ export default async function RestaurantMenu({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[40rem_auto] md:gap-8 items-center sm:items-stretch justify-between gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[40rem_auto] md:gap-8 items-center sm:items-stretch justify-between gap-4">
           <div className="bg-gradient-to-r from-yellow-400/30 to-orange-400/30 rounded-lg p-4 sm:p-6 shadow-lg">
             <div className="space-y-2">
               <div className="flex items-center gap-2">

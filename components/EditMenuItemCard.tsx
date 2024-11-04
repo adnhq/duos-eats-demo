@@ -30,6 +30,7 @@ type Props = {
     description: string;
     image: string;
     popular: boolean;
+    MenuParameters: any[];
   };
 };
 
@@ -68,6 +69,20 @@ export default function EditMenuItemCard({ item }: Props) {
       <div className="flex-grow w-full">
         <h3 className={`${splineSans.className} tracking-wide`}>{item.name}</h3>
         <p className="text-sm text-muted-foreground">{item.description}</p>
+        {item?.MenuParameters.length > 0 && (
+          <>
+            <h4 className="text-sm mt-2 font-semibold">Extra Options:</h4>
+
+            {item.MenuParameters.map((parameter, idx) => (
+              <div key={idx} className="text-xs flex gap-2">
+                <p className="font-semibold">{parameter.name}</p>
+                <p> - </p>
+                <p>{parameter.options.join(", ")}</p>
+              </div>
+            ))}
+          </>
+        )}
+
         <div className="mt-2 flex justify-between sm:items-center space-y-2 sm:space-y-0 items-center">
           <p className="font-semibold">Tk {item.price}</p>
           <div className="flex gap-2">

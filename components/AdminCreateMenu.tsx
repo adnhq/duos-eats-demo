@@ -22,15 +22,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { addMenuItem, getSession } from "@/lib/actions";
+import { addMenuItem, getAllRestaurants, getSession } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { JWTPayload } from "jose";
 import { Check, Edit2, Plus, Star, Trash2, X } from "lucide-react";
 import { Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const splineSans = Spline_Sans({
   subsets: ["latin"],
@@ -64,7 +70,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 type MenuItem = FormValues & { imageUrl?: string };
 
-export default function CreateMenu() {
+export default function AdminCreateMenu() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<string[]>(["Popular"]);
   const [isEditing, setIsEditing] = useState(false);
@@ -73,15 +79,16 @@ export default function CreateMenu() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [restaurantId, setRestaurantId] = useState<any>("");
+  const [restaurantId, setRestaurantId] = useState("");
+  const [restaurants, setRestaurants] = useState<any>([]);
 
   useEffect(() => {
-    async function getRestaurantId() {
-      const { id } = (await getSession()) as JWTPayload;
-      setRestaurantId(id);
+    async function getRestaurants() {
+      const data = await getAllRestaurants();
+      setRestaurants(data);
     }
 
-    getRestaurantId();
+    getRestaurants();
   }, []);
 
   const form = useForm<FormValues>({
@@ -176,47 +183,10 @@ export default function CreateMenu() {
     );
   };
 
-  // async function handleSubmit() {
-  //   startTransition(async () => {
-  //     try {
-  //       for (let i = 0; i < menuItems.length; i++) {
-  //         let formData = new FormData();
-  //         Object.entries(menuItems[i]).forEach(([key, value]) => {
-  //           if (key === "extraParams") {
-  //             formData.append(key, JSON.stringify(value));
-  //           } else {
-  //             if (value !== null) {
-  //               formData.append(key, value);
-  //             }
-  //           }
-  //           formData.append("restaurantId", restaurantId);
-  //         });
-
-  //         const result = await addMenuItem(formData);
-  //         if (result.success) {
-  //           toast({
-  //             title: "Success",
-  //             description: result.message,
-  //           });
-  //         } else {
-  //           throw new Error("Failed to add menu items");
-  //         }
-  //       }
-
-  //       setMenuItems([]);
-  //     } catch (error) {
-  //       toast({
-  //         title: "Error",
-  //         description: "Failed to add menu items. Please try again.",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   });
-  // }
-
   async function handleSubmit() {
     startTransition(async () => {
       try {
+        if (restaurantId === "") throw new Error("Please select a Restaurant");
         // Map menu items to an array of promises
         const promises = menuItems.map((menuItem) => {
           const formData = new FormData();
@@ -253,7 +223,7 @@ export default function CreateMenu() {
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to add menu items. Please try again.",
+          description: (error as any).message,
           variant: "destructive",
         });
       }
@@ -267,6 +237,23 @@ export default function CreateMenu() {
       >
         Add Menu Items
       </h1>
+
+      <Select value={restaurantId} onValueChange={setRestaurantId}>
+        <SelectTrigger className="mb-4">
+          <SelectValue placeholder="Select a Restaurant" />
+        </SelectTrigger>
+        <SelectContent>
+          {restaurants.length > 0 && (
+            <>
+              {restaurants.map((restaurant, idx) => (
+                <SelectItem key={idx} value={restaurant.id}>
+                  {restaurant.name}
+                </SelectItem>
+              ))}
+            </>
+          )}
+        </SelectContent>
+      </Select>
 
       <div className="space-y-8">
         <div>

@@ -32,7 +32,14 @@ export async function login(formData: FormData) {
 
   const isAdmin = restaurant[0].email === process.env.ADMIN_EMAIL;
 
-  await createSession(restaurant[0], isAdmin);
+  await createSession(
+    {
+      name: restaurant[0].name,
+      email: restaurant[0].email,
+      id: restaurant[0].id,
+    },
+    isAdmin
+  );
 }
 
 export async function logout() {
@@ -240,7 +247,7 @@ export async function getRestaurantMenuCategories(id: any) {
 export async function getRestaurantMenu(id: any) {
   const { data: menu, error } = await supabase
     .from("Menu")
-    .select("*")
+    .select("*, MenuParameters(name, options)")
     .eq("restaurantId", id);
 
   if (error) throw error;

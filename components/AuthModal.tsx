@@ -41,7 +41,6 @@ export function AuthModal() {
     try {
       await login(formData);
       const session = await getSession();
-      console.log(session);
       setIsOpen(false);
 
       if (session !== null) {

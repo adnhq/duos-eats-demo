@@ -1,11 +1,17 @@
 import RestaurantMenu from "@/components/RestaurantMenu";
 import { getRestaurant } from "@/lib/actions";
+import React from "react";
 
-export default async function Page({
-  params,
-}: {
-  params: { restaurantId: string }
-}) {
+type Params = {
+  restaurantId: string;
+};
+
+type PageProps = {
+  params: Params;
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function Page({ params }: PageProps) {
   const { restaurantId } = params;
   const restaurant = await getRestaurant(restaurantId);
 

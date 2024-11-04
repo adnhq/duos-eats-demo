@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -163,55 +163,54 @@ export default async function RestaurantMenu({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
       </div>
 
-      {/* Menu Categories and Items */}
       <Tabs defaultValue="all" className="mb-6">
-        <ScrollArea className="w-full pb-4">
-          <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">
-            <TabsTrigger
-              value="all"
-              className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
-            >
-              All Items
-            </TabsTrigger>
-            {categories.map((category) => (
-              <TabsTrigger
-                key={category}
-                value={category}
-                className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
-              >
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </ScrollArea>
+  <ScrollArea className="w-full pb-4">
+    <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">
+      <TabsTrigger
+        value="all"
+        className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+      >
+        All Items
+      </TabsTrigger>
+      {categories.map((category) => (
+        <TabsTrigger
+          key={category}
+          value={category}
+          className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+        >
+          {category}
+        </TabsTrigger>
+      ))}
+    </TabsList>
+  </ScrollArea>
 
-        {/* All Items View - Shows all items grouped by category */}
-        <TabsContent value="all" className="mt-6">
-          <div className="space-y-8">
-            {categories.map((category) => (
-              <div key={category}>
-                <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
-                <div className="space-y-4">
-                  {groupedMenuItems[category].map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
+  {/* All Items View - Shows all items grouped by category */}
+  <TabsContent value="all" className="mt-6">
+    <div className="space-y-8">
+      {categories.map((category) => (
+        <div key={category}>
+          <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
+          <div className="space-y-4">
+            {groupedMenuItems[category].map((item) => (
+              <MenuItemCard key={item.id} item={item} />
             ))}
           </div>
-        </TabsContent>
+        </div>
+      ))}
+    </div>
+  </TabsContent>
 
-        {/* Individual Category Views */}
-        {categories.map((category) => (
-          <TabsContent key={category} value={category} className="mt-6">
-            <div className="space-y-4">
-              {groupedMenuItems[category].map((item) => (
-                <MenuItemCard key={item.id} item={item} />
-              ))}
-            </div>
-          </TabsContent>
+  {/* Individual Category Views */}
+  {categories.map((category) => (
+    <TabsContent key={category} value={category} className="mt-6">
+      <div className="space-y-4">
+        {groupedMenuItems[category].map((item) => (
+          <MenuItemCard key={item.id} item={item} />
         ))}
-      </Tabs>
+      </div>
+    </TabsContent>
+  ))}
+</Tabs>
 
       {/* Cart Sheet */}
       <Sheet>

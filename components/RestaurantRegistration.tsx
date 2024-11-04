@@ -157,38 +157,82 @@ export default function RestaurantRegistration() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <radialGradient id="fadeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <radialGradient
+            id="fadeGradient"
+            cx="50%"
+            cy="50%"
+            r="50%"
+            fx="50%"
+            fy="50%"
+          >
             <stop offset="0%" stopColor="#FFF7ED" />
             <stop offset="40%" stopColor="#FFEDD5" />
             <stop offset="100%" stopColor="#FFFFFF" />
           </radialGradient>
-          
-          <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+
+          <pattern
+            id="dots"
+            x="0"
+            y="0"
+            width="40"
+            height="40"
+            patternUnits="userSpaceOnUse"
+          >
             <circle cx="20" cy="20" r="1" fill="#FB923C" opacity="0.15" />
           </pattern>
-          
+
           <filter id="softBlur">
             <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
           </filter>
         </defs>
-        
+
         <rect width="100%" height="100%" fill="url(#fadeGradient)" />
-        
+
         <rect width="100%" height="100%" fill="url(#dots)" />
-        
-        <circle cx="200" cy="150" r="300" fill="#FB923C" opacity="0.03" filter="url(#softBlur)" />
-        <circle cx="1400" cy="200" r="250" fill="#FB923C" opacity="0.03" filter="url(#softBlur)" />
-        
-        <path d="M0,300 Q400,250 800,300 T1600,300" stroke="#FB923C" strokeWidth="1" fill="none" opacity="0.1" />
-        <path d="M0,350 Q400,300 800,350 T1600,350" stroke="#FB923C" strokeWidth="1" fill="none" opacity="0.07" />
+
+        <circle
+          cx="200"
+          cy="150"
+          r="300"
+          fill="#FB923C"
+          opacity="0.03"
+          filter="url(#softBlur)"
+        />
+        <circle
+          cx="1400"
+          cy="200"
+          r="250"
+          fill="#FB923C"
+          opacity="0.03"
+          filter="url(#softBlur)"
+        />
+
+        <path
+          d="M0,300 Q400,250 800,300 T1600,300"
+          stroke="#FB923C"
+          strokeWidth="1"
+          fill="none"
+          opacity="0.1"
+        />
+        <path
+          d="M0,350 Q400,300 800,350 T1600,350"
+          stroke="#FB923C"
+          strokeWidth="1"
+          fill="none"
+          opacity="0.07"
+        />
       </svg>
 
       <Card className="w-full max-w-md z-10 bg-white/95 backdrop-blur-sm shadow-xl border-0">
         <CardHeader className="text-center space-y-2">
-          <CardTitle className={`${splineSans.className} text-3xl font-semibold text-gray-900`}>
+          <CardTitle
+            className={`${splineSans.className} text-3xl font-semibold text-gray-900`}
+          >
             Join Duos as a Partner
           </CardTitle>
-          <CardDescription className={`${splineSans.className} text-base text-gray-600`}>
+          <CardDescription
+            className={`${splineSans.className} text-base text-gray-600`}
+          >
             Grow your restaurant with us
           </CardDescription>
         </CardHeader>
@@ -250,9 +294,9 @@ export default function RestaurantRegistration() {
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-gray-500" />
-                          ) : (
                             <Eye className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <EyeOff className="h-4 w-4 text-gray-500" />
                           )}
                         </Button>
                       </div>

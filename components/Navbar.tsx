@@ -176,7 +176,7 @@ export default async function Navbar() {
                       ) : (
                         <>
                           <Link
-                            href="/restaurant"
+                            href="/restaurant/OrderStats"
                             className="block hover:text-primary text-sm text-muted-foreground"
                           >
                             Dashboard

@@ -100,6 +100,8 @@ export default function RestaurantRegistration() {
 
   const locations = [
     "Uttara",
+    "Dhanmondi",
+    "Bailey Road",
     "Mirpur",
     "Pallabi",
     "Kazipara",

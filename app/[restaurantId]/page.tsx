@@ -1,11 +1,14 @@
 import RestaurantMenu from "@/components/RestaurantMenu";
 import { getRestaurant } from "@/lib/actions";
 
-export default async function Page({
-  params,
-}: {
-  params: { restaurantId: string };
-}) {
+// Correct way to type params in a Next.js page component
+type Props = {
+  params: {
+    restaurantId: string;
+  };
+};
+
+export default async function Page({ params }: Props) {
   const { restaurantId } = params;
   const restaurant = await getRestaurant(restaurantId);
 

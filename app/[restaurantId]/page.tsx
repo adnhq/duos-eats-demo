@@ -3,12 +3,11 @@ import { getRestaurant } from "@/lib/actions";
 import React from "react";
 
 type Params = {
-  restaurantId: string;
+  restaurantId: any;
 };
 
 export default async function Page({ params }: { params: Params }) {
-  const { restaurantId } = await params;
-  const restaurant = await getRestaurant(restaurantId);
+  const restaurant = await getRestaurant(params.restaurantId);
 
   if (restaurant.length === 0) return <h1>No Restaurant found</h1>;
 

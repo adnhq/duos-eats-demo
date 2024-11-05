@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +26,6 @@ export function AuthModal() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [showUserPassword, setShowUserPassword] = useState(false);
-
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
@@ -70,112 +68,103 @@ export function AuthModal() {
           Sign In
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[380px]">
         <DialogHeader>
-          <DialogTitle>Authentication</DialogTitle>
+          <DialogTitle className="text-lg tracking-wider text-primary border-b">
+            SIGN IN
+          </DialogTitle>
         </DialogHeader>
         <Tabs defaultValue="user" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="user">Sign in as User</TabsTrigger>
-            <TabsTrigger value="restaurant">Sign in as Restaurant</TabsTrigger>
+            <TabsTrigger value="user">User</TabsTrigger>
+            <TabsTrigger value="restaurant">Restaurant</TabsTrigger>
           </TabsList>
 
           {/* User Login Tab */}
           <TabsContent value="user">
-            <Card>
-              <form>
-                <CardContent className="space-y-2 pt-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="userEmail">Email</Label>
-                    <Input
-                      id="userEmail"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="userPassword">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="userPassword"
-                        type={showUserPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={userPassword}
-                        onChange={(e) => setUserPassword(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowUserPassword(!showUserPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        {showUserPassword ? (
-                          <Eye className="h-4 w-4" />
-                        ) : (
-                          <EyeOff className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="w-full">
-                    Sign In
-                  </Button>
-                </CardFooter>
-              </form>
-            </Card>
+            <form className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="userEmail">Email</Label>
+                <Input
+                  id="userEmail"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="userPassword">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="userPassword"
+                    type={showUserPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={userPassword}
+                    onChange={(e) => setUserPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowUserPassword(!showUserPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showUserPassword ? (
+                      <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full">
+                Sign In
+              </Button>
+            </form>
           </TabsContent>
 
-          {/* Restaurant Login Tab */}
           <TabsContent value="restaurant">
-            <Card>
-              <form onSubmit={handleRestaurantLogin}>
-                <CardContent className="space-y-2 pt-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="restaurantEmail">Restaurant Email</Label>
-                    <Input
-                      id="restaurantEmail"
-                      type="email"
-                      placeholder="restaurant@example.com"
-                      value={restaurantEmail}
-                      onChange={(e) => setRestaurantEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="restaurantPassword">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="restaurantPassword"
-                        type={showRestaurantPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={restaurantPassword}
-                        onChange={(e) => setRestaurantPassword(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowRestaurantPassword(!showRestaurantPassword)
-                        }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        {showRestaurantPassword ? (
-                          <Eye className="h-4 w-4" />
-                        ) : (
-                          <EyeOff className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="w-full">
-                    Sign In
-                  </Button>
-                </CardFooter>
-              </form>
-            </Card>
+            <form onSubmit={handleRestaurantLogin} className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="restaurantEmail">Restaurant Email</Label>
+                <Input
+                  id="restaurantEmail"
+                  type="email"
+                  placeholder="restaurant@example.com"
+                  value={restaurantEmail}
+                  onChange={(e) => setRestaurantEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="restaurantPassword">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="restaurantPassword"
+                    type={showRestaurantPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={restaurantPassword}
+                    onChange={(e) => setRestaurantPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowRestaurantPassword(!showRestaurantPassword)
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showRestaurantPassword ? (
+                      <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full">
+                Sign In
+              </Button>
+            </form>
           </TabsContent>
         </Tabs>
       </DialogContent>

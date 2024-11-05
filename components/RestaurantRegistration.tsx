@@ -327,10 +327,10 @@ export default function RestaurantRegistration() {
                         />
                       </div>
                     </FormControl>
-                    <FormDescription className="flex gap-2 items-center">
+                    {/* <FormDescription className="flex gap-2 items-center">
                       <Info className="w-4 h-4" />
                       Must be a bKash number
-                    </FormDescription>
+                    </FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}

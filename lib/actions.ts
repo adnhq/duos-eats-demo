@@ -255,6 +255,17 @@ export async function getRestaurantMenu(id: any) {
   return menu;
 }
 
+export async function getRestaurantMenuItem(id: string) {
+  const { data: menu, error } = await supabase
+    .from("Menu")
+    .select("*, MenuParameters(name, options)")
+    .eq("id", id);
+
+  if (error || menu.length === 0) throw new Error("Menu item not found");
+
+  return { ...menu[0], extraParams: menu[0].MenuParameters };
+}
+
 export async function addMenuItem(formData: FormData) {
   // Parse extraParams properly
   const extraParamsString = formData.get("extraParams");

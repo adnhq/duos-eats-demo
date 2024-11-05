@@ -323,10 +323,10 @@ export function RestaurantProfile({ defaultValues, id }: Props) {
             <Button
               type="submit"
               className="w-full"
-              disabled={updateForm.formState.isLoading}
+              disabled={updateForm.formState.isSubmitting}
             >
               <Save className="mr-2 h-4 w-4" />
-              {updateForm.formState.isLoading ? "Saving..." : "Save Changes"}
+              {updateForm.formState.isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </Form>

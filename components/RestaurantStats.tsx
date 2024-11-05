@@ -14,7 +14,7 @@ const weeklyMonthlyStats = {
   monthlyEarnings: 0,
   monthlyOrders: 0,
 };
-const activeOrders = [
+const activeOrders: any[] = [
   // {
   //   orderId: "ORD006",
   //   customerName: "Alice Johnson",
@@ -37,7 +37,7 @@ const activeOrders = [
   // },
 ];
 
-const historicalData = [
+const historicalData: any[] = [
   // {
   //   date: "2023-03-07 19:23",
   //   orderId: "ORD001",
@@ -99,7 +99,13 @@ const historicalData = [
   //   finalEarnings: 285,
   // },
 ];
-export default function RestaurantStats() {
+export default function RestaurantStats({
+  discount,
+  id,
+}: {
+  discount: string;
+  id: any;
+}) {
   return (
     <>
       {/* Stats Grid */}
@@ -150,6 +156,8 @@ export default function RestaurantStats() {
       <OrdersTab
         activeOrders={activeOrders}
         historicalData={historicalData}
+        restaurantId={id}
+        discount={discount}
         todayStats={todayStats}
         weeklyMonthlyStats={weeklyMonthlyStats}
       />

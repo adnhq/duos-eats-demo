@@ -27,6 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { editRestaurant } from "@/lib/actions";
+import { cuisineTypes, locations } from "@/lib/info";
 import { Restaurant } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
@@ -57,48 +58,6 @@ type Props = {
   defaultValues: Restaurant;
   id: any;
 };
-
-const cuisineTypes = [
-  "Bengali",
-  "Chinese",
-  "Indian",
-  "Italian",
-  "Japanese",
-  "Mediterranean",
-  "Mexican",
-  "Thai",
-  "American",
-  "French",
-  "Greek",
-  "Korean",
-  "Vietnamese",
-  "Other",
-];
-
-const locations = [
-  "Uttara",
-  "Mirpur",
-  "Pallabi",
-  "Kazipara",
-  "Kafrul",
-  "Agargaon",
-  "Banani",
-  "Gulshan",
-  "Niketan",
-  "Shahjadpur",
-  "Mohakhali",
-  "Bashundhara",
-  "Banasree",
-  "Aftab Nagar",
-  "Baridhara",
-  "Khilkhet",
-  "Tejgaon",
-  "Farmgate",
-  "Mohammadpur",
-  "Rampura",
-  "Badda",
-  "Khilgaon",
-];
 
 export function RestaurantProfile({ defaultValues, id }: Props) {
   const { toast } = useToast();

@@ -8,6 +8,8 @@ import {
   XCircle,
   ChefHat,
   Receipt,
+  Loader2,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +39,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { editRestaurantDiscount } from "@/lib/actions";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 
 interface OrderItem {
   name: string;
@@ -80,16 +95,63 @@ interface OrdersTabProps {
   historicalData: HistoricalOrder[];
   todayStats: TodayStats;
   weeklyMonthlyStats: WeeklyMonthlyStats;
+  discount: string;
+  restaurantId: string;
 }
+
+const formSchema = z.object({
+  discount: z
+    .string({
+      required_error: "Please provide a valid discount percentage e.g. 15",
+    })
+    .regex(/^(?:[1-9]|[1-4][0-9]|50)$/, {
+      message: "This number must be between 1 and 50",
+    }),
+});
 
 export function OrdersTab({
   activeOrders,
   historicalData,
   todayStats,
   weeklyMonthlyStats,
+  discount,
+  restaurantId,
 }: OrdersTabProps) {
+  const { toast } = useToast();
   const [dateRange, setDateRange] = useState("This Week");
-  const [currentDiscount, setCurrentDiscount] = useState("10%");
+
+  const discountForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      discount,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const formData = new FormData();
+      formData.append("restaurantId", restaurantId);
+      formData.append("discount", values.discount);
+
+      const result = await editRestaurantDiscount(formData);
+
+      if (result.success) {
+        toast({
+          title: "Discount Change Successful!",
+          description:
+            "Your restaurant discount has been updated successfully.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Discount Change Failed",
+        description: (error as any).message,
+        variant: "destructive",
+      });
+    }
+  }
+
+  // const [currentDiscount, setCurrentDiscount] = useState("10%");
 
   // Mobile-responsive card view for orders
   const OrderCard = ({ order }: { order: Order }) => (
@@ -455,8 +517,8 @@ export function OrdersTab({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              <Select
+            {/* <div className="flex items-center gap-4"> */}
+            {/* <Select
                 value={currentDiscount}
                 onValueChange={setCurrentDiscount}
               >
@@ -471,12 +533,52 @@ export function OrdersTab({
                   <SelectItem value="20%">20%</SelectItem>
                   <SelectItem value="25%">25%</SelectItem>
                 </SelectContent>
-              </Select>
-              <span className="text-3xl font-bold">{currentDiscount}</span>
-            </div>
-            <Button className="w-full mt-4" disabled={true}>
-              Apply New Discount
-            </Button>
+              </Select> */}
+
+            <Form {...discountForm}>
+              <form onSubmit={discountForm.handleSubmit(onSubmit)}>
+                <FormField
+                  control={discountForm.control}
+                  name="discount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount Percentage</FormLabel>
+                      <div className="flex gap-4">
+                        <FormControl>
+                          <Input placeholder="15" {...field} type="number" />
+                        </FormControl>
+
+                        <span className="text-3xl font-bold place-content-end mb-1">
+                          {discount}%
+                        </span>
+                      </div>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  className="w-full mt-4"
+                  disabled={discountForm.formState.isSubmitting}
+                >
+                  {discountForm.formState.isSubmitting ? (
+                    <>
+                      <span className="animate-spin">
+                        <Loader2 className="h-4 w-4" />
+                      </span>
+                      <span className="">Updating Discount</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pencil className="ml-2 h-4 w-4" />
+                      Update Discount
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+            {/* </div> */}
           </CardContent>
         </Card>
 

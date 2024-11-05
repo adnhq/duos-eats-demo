@@ -62,6 +62,7 @@ const restaurantFormSchema = z.object({
   address: z.string().min(10),
   location: z.string(),
   logo: z.any().optional(),
+  discount: z.string().regex(/^(?:[1-9]|[1-4][0-9]|50)$/),
 });
 
 export async function registerRestaurant(formData: FormData) {
@@ -74,6 +75,7 @@ export async function registerRestaurant(formData: FormData) {
     address: formData.get("address"),
     location: formData.get("location"),
     logo: formData.get("logo"),
+    discount: formData.get("discount"),
   };
 
   const validatedFields = restaurantFormSchema.safeParse(values);
@@ -118,6 +120,27 @@ export async function registerRestaurant(formData: FormData) {
     console.error("Error during registration:", error);
     return { error: "Failed to register restaurant" };
   }
+}
+
+export async function editRestaurantDiscount(formData: FormData) {
+  const session = await getSession();
+
+  if (
+    Number((session as JWTPayload).id) !== Number(formData.get("restaurantId"))
+  )
+    throw new Error("You are not authorized to edit this item");
+
+  const { error: EditError } = await supabase
+    .from("Restaurants")
+    .update({
+      discount: formData.get("discount"),
+    })
+    .eq("id", formData.get("restaurantId"));
+
+  if (EditError) throw EditError;
+
+  revalidatePath("/restaurant/Settings");
+  return { success: true };
 }
 
 export async function editRestaurant(formData: FormData) {

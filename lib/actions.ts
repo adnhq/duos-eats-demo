@@ -66,6 +66,15 @@ const restaurantFormSchema = z.object({
 });
 
 export async function registerRestaurant(formData: FormData) {
+  const { data: existingData, error: emailAlreadyExistsError } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("email", formData.get("email"));
+
+  if (emailAlreadyExistsError) throw emailAlreadyExistsError;
+
+  if (existingData.length > 0) throw new Error("Email already exists");
+
   const values = {
     name: formData.get("restaurantName"),
     email: formData.get("email"),

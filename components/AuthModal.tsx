@@ -69,7 +69,7 @@ export function AuthModal() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[380px]">
         <DialogHeader>
-          <DialogTitle className="text-lg tracking-wider text-primary border-b">
+          <DialogTitle className="text-lg tracking-wider text-amber-500 border-b">
             SIGN IN
           </DialogTitle>
         </DialogHeader>

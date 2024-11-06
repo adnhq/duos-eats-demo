@@ -126,7 +126,7 @@ export default async function RestaurantMenu({
           </div>
           <div className="flex items-center w-full sm:w-auto">
             <Link
-              href={`https://www.instagram.com/p/DBqsdQbyFNZ`}
+              href={`https://www.instagram.com/duos.eats/`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto"

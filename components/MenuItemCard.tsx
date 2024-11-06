@@ -38,7 +38,7 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
   };
 
   return (
-    <Card className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4 rounded-lg shadow-sm">
+    <Card className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4 rounded-lg shadow-sm hover:shadow-md">
       <div className="relative w-full sm:w-24 h-48 sm:h-24 flex-shrink-0">
         <Image
           src={item.image}
@@ -48,7 +48,7 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
         />
       </div>
       <div className="flex-grow w-full">
-        <h3 className={`${splineSans.className} tracking-wide`}>{item.name}</h3>
+        <h3 className={`${splineSans.className} text-lg tracking-wide`}>{item.name}</h3>
         <p className="text-sm text-muted-foreground">{item.description}</p>
         <div className="mt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
           <div className="flex gap-2">

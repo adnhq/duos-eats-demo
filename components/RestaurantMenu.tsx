@@ -64,7 +64,7 @@ export default async function RestaurantMenu({
   );
 
   // Only add Popular Items category if there are actually popular items
-  const groupedMenuItems =
+  const groupedMenuItems: MenuItemsGrouped =
     popularItems.length > 0
       ? { "Popular Items": popularItems, ...categorizedItems }
       : categorizedItems;
@@ -117,7 +117,7 @@ export default async function RestaurantMenu({
                 </h2>
               </div>
               <p className={`text-3xl font-semibold ${pacificoFont.className}`}>
-                10% Discount
+                {restaurantData.discount}% Discount
               </p>
               <p className="text-sm text-primary-foreground/80">
                 Applied to all orders made through our platform
@@ -192,8 +192,11 @@ export default async function RestaurantMenu({
               <div key={category}>
                 <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
                 <div className="space-y-4">
-                  {groupedMenuItems[category].map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
+                  {groupedMenuItems[category].map((item: MenuItem) => (
+                    <MenuItemCard
+                      key={item.id}
+                      item={{ ...item, discount: restaurantData.discount }}
+                    />
                   ))}
                 </div>
               </div>
@@ -206,7 +209,10 @@ export default async function RestaurantMenu({
           <TabsContent key={category} value={category} className="mt-6">
             <div className="space-y-4">
               {groupedMenuItems[category].map((item) => (
-                <MenuItemCard key={item.id} item={item} />
+                <MenuItemCard
+                  key={item.id}
+                  item={{ ...item, discount: restaurantData.discount }}
+                />
               ))}
             </div>
           </TabsContent>

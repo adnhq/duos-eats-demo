@@ -9,10 +9,14 @@ const splineSans = Spline_Sans({
 
 export default function Page() {
   return (
-    <div className={`min-h-screen text-foreground ${splineSans.className}`}>
+    <>
       <HeroSection />
-      <Restaurants />
-      <Cart />
-    </div>
+      <div
+        className={`max-w-7xl mx-auto text-foreground ${splineSans.className}`}
+      >
+        <Restaurants />
+        <Cart />
+      </div>
+    </>
   );
 }

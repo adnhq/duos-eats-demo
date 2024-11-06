@@ -8,5 +8,9 @@ export default async function Page() {
 
   if (!(session as JWTPayload).isAdmin) return redirect("/");
 
-  return <AdminDashboard />;
+  return (
+    <main className="max-w-7xl mx-auto">
+      <AdminDashboard />;
+    </main>
+  );
 }

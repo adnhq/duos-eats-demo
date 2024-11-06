@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Permanent_Marker } from "next/font/google";
 import Link from "next/link";
+import BackgroundSVG from "./BackgroundSVG";
 
 const permanent_marker = Permanent_Marker({
   subsets: ["latin"],
@@ -38,35 +39,7 @@ export default function HeroSection() {
   return (
     <div className="relative overflow-hidden pt-20 pb-40">
       {/* Enhanced Background illustration */}
-      <svg
-        className="absolute inset-0 w-full h-full"
-        viewBox="0 0 1000 1000"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <defs>
-          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(245, 158, 11, 0.1)" />
-            <stop offset="100%" stopColor="rgba(249, 115, 22, 0.1)" />
-          </linearGradient>
-          <pattern
-            id="grid"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M0 40L40 0M0 0L40 40"
-              stroke="url(#grad1)"
-              strokeWidth="1"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-        <circle cx="500" cy="500" r="400" fill="rgba(245, 158, 11, 0.05)" />
-        <circle cx="500" cy="500" r="300" fill="rgba(249, 115, 22, 0.05)" />
-        <circle cx="500" cy="500" r="200" fill="rgba(253, 186, 116, 0.05)" />
-      </svg>
-
+      <BackgroundSVG />
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-800 mb-6">
@@ -78,7 +51,8 @@ export default function HeroSection() {
             </span>
           </h1>
           <p className="text-base md:text-lg text-gray-600 mb-8 tracking-wide">
-            Enjoy exclusive dine-in discounts and more at your favourite restaurants.
+            Enjoy exclusive dine-in discounts and more at your favourite
+            restaurants.
           </p>
           <Button
             asChild

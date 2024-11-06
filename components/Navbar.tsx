@@ -35,8 +35,9 @@ export default async function Navbar() {
   ];
 
   return (
+    // <nav className="bg-gradient-to-tl from-orange-100 to-orange-50">
     <nav>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 ">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <div className="relative w-32 h-14">
@@ -132,7 +133,11 @@ export default async function Navbar() {
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  // className="hover:bg-orange-200"
+                >
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>

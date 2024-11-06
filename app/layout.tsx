@@ -27,6 +27,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <Footer />
+        {/* new design with new layout */}
       </body>
     </html>
   );

@@ -36,8 +36,8 @@ export default async function Navbar() {
 
   return (
     // <nav className="bg-gradient-to-tl from-orange-100 to-orange-50">
-    <nav>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 ">
+    <nav className="relative max-w-7xl mx-auto ">
+      <div className="absolute z-10 w-full px-4 sm:px-6 lg:px-8 py-4 ">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <div className="relative w-32 h-14">

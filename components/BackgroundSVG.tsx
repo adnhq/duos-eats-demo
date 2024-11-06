@@ -18,8 +18,8 @@ export default function BackgroundSVG() {
       <circle cx="950" cy="150" r="200" fill="rgba(249, 115, 22, 0.05)" />
       <circle cx="950" cy="150" r="150" fill="rgba(253, 186, 116, 0.05)" />
       <path
-        d="M0 400 Q 250 450 500 400 Q 750 350 1000 400 L1000 500 L0 500 Z"
-        fill="rgba(249, 115, 22, 0.1)"
+        d="M0 400 C 150 360, 300 440, 500 400 C 700 360, 850 440, 1000 400 L1000 500 L0 500 Z"
+        fill="#fff"
       />
     </svg>
   );

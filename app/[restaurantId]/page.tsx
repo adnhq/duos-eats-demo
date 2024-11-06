@@ -13,7 +13,7 @@ export default async function Page({
   if (restaurant.length === 0) return <h1>No Restaurant found</h1>;
 
   return (
-    <main className="max-w-7xl mx-auto">
+    <main className="max-w-7xl mx-auto pt-24">
       <RestaurantMenu restaurantData={restaurant[0]} />;
     </main>
   );

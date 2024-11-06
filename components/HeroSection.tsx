@@ -37,7 +37,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="relative overflow-hidden pt-20 pb-40">
+    <div className="relative overflow-hidden pt-40 md:pb-52 pb-72">
       {/* Enhanced Background illustration */}
       <BackgroundSVG />
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,11 +63,11 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 flex justify-around">
+      <div className="absolute md:bottom-8 bottom-24 left-0 right-0 flex justify-around">
         {["🍔", "🍕", "🍣", "🥗", "🍰"].map((emoji, index) => (
           <span
             key={index}
-            className="text-4xl md:text-5xl lg:text-6xl opacity-20"
+            className="text-4xl md:text-5xl lg:text-6xl opacity-50"
           >
             {emoji}
           </span>

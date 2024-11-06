@@ -469,7 +469,8 @@ export default function CreateMenu() {
                                         value={param.name}
                                         onChange={(e) => {
                                           const newParams = [
-                                            ...form.getValues("extraParams"),
+                                            ...(form.getValues("extraParams") ||
+                                              []),
                                           ];
                                           newParams[paramIndex].name =
                                             e.target.value;
@@ -502,9 +503,9 @@ export default function CreateMenu() {
                                             value={option}
                                             onChange={(e) => {
                                               const newParams = [
-                                                ...form.getValues(
+                                                ...(form.getValues(
                                                   "extraParams"
-                                                ),
+                                                ) || []),
                                               ];
                                               newParams[paramIndex].options[
                                                 optionIndex

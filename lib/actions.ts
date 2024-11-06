@@ -62,9 +62,19 @@ const restaurantFormSchema = z.object({
   address: z.string().min(10),
   location: z.string(),
   logo: z.any().optional(),
+  discount: z.string().regex(/^(?:[1-9]|[1-4][0-9]|50)$/),
 });
 
 export async function registerRestaurant(formData: FormData) {
+  const { data: existingData, error: emailAlreadyExistsError } = await supabase
+    .from("Restaurants")
+    .select("*")
+    .eq("email", formData.get("email"));
+
+  if (emailAlreadyExistsError) throw emailAlreadyExistsError;
+
+  if (existingData.length > 0) throw new Error("Email already exists");
+
   const values = {
     name: formData.get("restaurantName"),
     email: formData.get("email"),
@@ -74,6 +84,7 @@ export async function registerRestaurant(formData: FormData) {
     address: formData.get("address"),
     location: formData.get("location"),
     logo: formData.get("logo"),
+    discount: formData.get("discount"),
   };
 
   const validatedFields = restaurantFormSchema.safeParse(values);
@@ -118,6 +129,27 @@ export async function registerRestaurant(formData: FormData) {
     console.error("Error during registration:", error);
     return { error: "Failed to register restaurant" };
   }
+}
+
+export async function editRestaurantDiscount(formData: FormData) {
+  const session = await getSession();
+
+  if (
+    Number((session as JWTPayload).id) !== Number(formData.get("restaurantId"))
+  )
+    throw new Error("You are not authorized to edit this item");
+
+  const { error: EditError } = await supabase
+    .from("Restaurants")
+    .update({
+      discount: formData.get("discount"),
+    })
+    .eq("id", formData.get("restaurantId"));
+
+  if (EditError) throw EditError;
+
+  revalidatePath("/restaurant/Settings");
+  return { success: true };
 }
 
 export async function editRestaurant(formData: FormData) {
@@ -253,6 +285,17 @@ export async function getRestaurantMenu(id: any) {
   if (error) throw error;
 
   return menu;
+}
+
+export async function getRestaurantMenuItem(id: string) {
+  const { data: menu, error } = await supabase
+    .from("Menu")
+    .select("*, MenuParameters(name, options)")
+    .eq("id", id);
+
+  if (error || menu.length === 0) throw new Error("Menu item not found");
+
+  return { ...menu[0], extraParams: menu[0].MenuParameters };
 }
 
 export async function addMenuItem(formData: FormData) {

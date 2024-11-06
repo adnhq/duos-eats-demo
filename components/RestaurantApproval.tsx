@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import {
 } from "./ui/card";
 import { approveRestaurant, rejectRestaurant } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 type Application = {
   id: number;
@@ -29,6 +30,7 @@ type Application = {
   address: string;
   location: string;
   created_at: string;
+  discount: number;
 };
 
 export default function RestaurantApproval({
@@ -36,8 +38,12 @@ export default function RestaurantApproval({
 }: {
   unApprovedRestaurants: Application[];
 }) {
+  const [isApLoading, setIsApLoading] = useState(false);
+  const [isRejLoading, setIsRejLoading] = useState(false);
+
   async function approve(id: number) {
     try {
+      setIsApLoading(true);
       await approveRestaurant(id);
 
       toast({
@@ -50,11 +56,14 @@ export default function RestaurantApproval({
         description: "Could not approve the restaurant",
         variant: "destructive",
       });
+    } finally {
+      setIsApLoading(false);
     }
   }
 
   async function reject(id: number) {
     try {
+      setIsRejLoading(true);
       await rejectRestaurant(id);
 
       toast({
@@ -67,6 +76,8 @@ export default function RestaurantApproval({
         description: "Could not approve the restaurant",
         variant: "destructive",
       });
+    } finally {
+      setIsRejLoading(false);
     }
   }
 
@@ -81,6 +92,7 @@ export default function RestaurantApproval({
               <TableHead>Cuisine</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Applied On</TableHead>
+              <TableHead>Discount</TableHead>
               <TableHead className="text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -117,22 +129,45 @@ export default function RestaurantApproval({
                     {restaurant.location}
                   </TableCell>
                   <TableCell className="whitespace-nowrap">{date}</TableCell>
+                  <TableCell className="text-center">
+                    {restaurant.discount}%
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
                         size="sm"
                         className="bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => approve(restaurant.id)}
+                        disabled={isApLoading || isRejLoading}
                       >
-                        Approve
+                        {isApLoading ? (
+                          <>
+                            <span className="">Approving</span>
+                            <span className="animate-spin">
+                              <Loader2 className="h-4 w-4" />
+                            </span>
+                          </>
+                        ) : (
+                          "Approve"
+                        )}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         className="bg-red-100 text-red-600 hover:bg-red-200"
                         onClick={() => reject(restaurant.id)}
+                        disabled={isApLoading || isRejLoading}
                       >
-                        Reject
+                        {isRejLoading ? (
+                          <>
+                            <span className="">Rejecting</span>
+                            <span className="animate-spin">
+                              <Loader2 className="h-4 w-4" />
+                            </span>
+                          </>
+                        ) : (
+                          "Reject"
+                        )}
                       </Button>
                     </div>
                   </TableCell>
@@ -178,6 +213,10 @@ export default function RestaurantApproval({
                     <p className="font-semibold">Applied On:</p>
                     <p className="whitespace-nowrap">{date}</p>
                   </div>
+                  <div>
+                    <p className="font-semibold">Discount:</p>
+                    <p>{restaurant.discount}%</p>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
@@ -185,16 +224,36 @@ export default function RestaurantApproval({
                   size="sm"
                   className="bg-green-600 hover:bg-green-700 text-white"
                   onClick={() => approve(restaurant.id)}
+                  disabled={isApLoading || isRejLoading}
                 >
-                  Approve
+                  {isApLoading ? (
+                    <>
+                      <span className="">Approving</span>
+                      <span className="animate-spin">
+                        <Loader2 className="h-4 w-4" />
+                      </span>
+                    </>
+                  ) : (
+                    "Approve"
+                  )}
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   className="bg-red-100 text-red-600 hover:bg-red-200"
                   onClick={() => reject(restaurant.id)}
+                  disabled={isApLoading || isRejLoading}
                 >
-                  Reject
+                  {isRejLoading ? (
+                    <>
+                      <span className="">Rejecting</span>
+                      <span className="animate-spin">
+                        <Loader2 className="h-4 w-4" />
+                      </span>
+                    </>
+                  ) : (
+                    "Reject"
+                  )}
                 </Button>
               </CardFooter>
             </Card>

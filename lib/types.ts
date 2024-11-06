@@ -25,6 +25,7 @@ export type Restaurant = {
   approved: boolean;
   cuisine: string;
   location: string;
+  discount: string;
 };
 
 export type CartItem = MenuItem & {

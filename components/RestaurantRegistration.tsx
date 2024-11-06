@@ -31,10 +31,11 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronRight, Eye, EyeOff, Info, Upload } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, Info, Loader2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
 import Image from "next/image";
+import { cuisineTypes, locations } from "@/lib/info";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500", "600"] });
 
@@ -60,6 +61,13 @@ const formSchema = z.object({
   location: z.string({
     required_error: "Please select a location.",
   }),
+  discount: z
+    .string({
+      required_error: "Please provide a valid discount percentage e.g. 15",
+    })
+    .regex(/^(?:[1-9]|[1-4][0-9]|50)$/, {
+      message: "This number must be between 1 and 50",
+    }),
   logo: z.any().optional(),
 });
 
@@ -78,75 +86,44 @@ export default function RestaurantRegistration() {
       cuisine: "",
       address: "",
       location: "",
+      discount: "",
     },
   });
 
-  const cuisineTypes = [
-    "Bengali",
-    "Chinese",
-    "Indian",
-    "Italian",
-    "Japanese",
-    "Mediterranean",
-    "Mexican",
-    "Thai",
-    "American",
-    "French",
-    "Greek",
-    "Korean",
-    "Vietnamese",
-    "Other",
-  ];
-
-  const locations = [
-    "Uttara",
-    "Dhanmondi",
-    "Bailey Road",
-    "Mirpur",
-    "Pallabi",
-    "Kazipara",
-    "Kafrul",
-    "Agargaon",
-    "Banani",
-    "Gulshan",
-    "Niketan",
-    "Shahjadpur",
-    "Mohakhali",
-    "Bashundhara",
-    "Banasree",
-    "Aftab Nagar",
-    "Baridhara",
-    "Khilkhet",
-    "Tejgaon",
-    "Farmgate",
-    "Mohammadpur",
-    "Rampura",
-    "Badda",
-    "Khilgaon",
-  ];
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== null) {
-        formData.append(key, value);
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== null) {
+          formData.append(key, value);
+        }
+      });
+
+      const result = await registerRestaurant(formData);
+
+      if (result.success) {
+        toast({
+          title: "Registration Successful!",
+          description: "Your restaurant has been registered successfully.",
+        });
       }
-    });
-
-    const result = await registerRestaurant(formData);
-
-    if (result.error) {
+    } catch (error) {
       toast({
         title: "Registration Failed",
-        description: result.error,
+        description: (error as any).message,
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Registration Successful!",
-        description: "Your restaurant has been registered successfully.",
+    } finally {
+      form.reset({
+        restaurantName: "",
+        email: "",
+        password: "",
+        phone: "",
+        cuisine: "",
+        address: "",
+        location: "",
+        discount: "",
       });
-      form.reset();
     }
   }
 
@@ -418,6 +395,20 @@ export default function RestaurantRegistration() {
 
               <FormField
                 control={form.control}
+                name="discount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discount Percentage</FormLabel>
+                    <FormControl>
+                      <Input placeholder="15" {...field} type="number" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="logo"
                 render={({ field: { value, onChange, ...field } }) => (
                   <FormItem>
@@ -455,10 +446,22 @@ export default function RestaurantRegistration() {
 
               <Button
                 type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                className="w-full bg-gradient-to-l from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-slate-50"
+                disabled={form.formState.isSubmitting}
               >
-                Apply to become a partner
-                <ChevronRight className="ml-2 h-4 w-4" />
+                {form.formState.isSubmitting ? (
+                  <>
+                    <span className="">Applying</span>
+                    <span className="animate-spin">
+                      <Loader2 className="h-4 w-4" />
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Apply to become a partner{" "}
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </form>
           </Form>

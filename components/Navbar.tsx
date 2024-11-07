@@ -22,15 +22,18 @@ import { redirect } from "next/navigation";
 import duosLogo from "../duos-lg.png";
 import { AuthModal } from "./AuthModal";
 import { Button } from "./ui/button";
-import { Inter_Tight, Permanent_Marker, Roboto, Roboto_Slab } from "next/font/google";
+import {
+  Inter_Tight,
+  Permanent_Marker,
+  Roboto,
+  Roboto_Slab,
+} from "next/font/google";
 const nav_font = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 const partner_font = Permanent_Marker({ subsets: ["latin"], weight: ["400"] });
 export default async function Navbar() {
   const session = await getSession();
-  
 
-  const gradientTextClass =
-    `bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 hover:from-yellow-500 hover:to-amber-600 transition-all duration-300 ${partner_font.className}`;
+  const gradientTextClass = `bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 hover:from-yellow-500 hover:to-amber-600 transition-all duration-300 ${partner_font.className}`;
 
   const navLinks = [
     { href: "/", label: "Restaurants" },

@@ -26,6 +26,8 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { editMenuItem } from "@/lib/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -57,6 +59,7 @@ export default function EditMenuItemForm({
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -76,10 +79,34 @@ export default function EditMenuItemForm({
       console.log(data);
       // Handle form submission here
       // Simulate an API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "extraParams") {
+          formData.append(key, JSON.stringify(value));
+        } else if (value !== null) {
+          formData.append(key, value);
+        }
+
+        formData.append("editMenuId", editMenuId);
+      });
+
+      const editRes = await editMenuItem(formData);
+
+      if (editRes.success) {
+        toast({
+          title: "Item updated",
+          description: "The item has been updated successfully",
+        });
+      } else {
+        throw new Error("Failed to update item");
+      }
     } catch (error) {
-      console.error("Error submitting form:", error);
-    } finally {
+      toast({
+        title: "Item update failed",
+        description: (error as any).message,
+        variant: "destructive",
+      });
     }
   };
 

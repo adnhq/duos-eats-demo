@@ -352,6 +352,94 @@ export async function addMenuItem(formData: FormData) {
   };
 }
 
+export async function editMenuItem(formData: FormData) {
+  // checking authorization first
+  const session = await getSession();
+  if (!session) throw new Error("Please sign in to your account first!");
+
+  // retrieve the old menu item
+  const editMenuId = formData.get("editMenuId");
+  const { data: menuItems, error: notFoundError } = await supabase
+    .from("Menu")
+    .select("*")
+    .eq("id", editMenuId);
+
+  if (notFoundError || menuItems.length === 0) throw notFoundError;
+
+  if (Number((session as JWTPayload).id) !== Number(menuItems[0].restaurantId))
+    throw new Error("You are not authorized to edit this item");
+
+  // parsing the form data properly
+  const extraParamsString = formData.get("extraParams");
+  const extraParams = extraParamsString
+    ? JSON.parse(extraParamsString as string)
+    : [];
+
+  const values = {
+    name: formData.get("name"),
+    price: formData.get("price"),
+    description: formData.get("description"),
+    popular: formData.get("popular"),
+    category: formData.get("category"),
+    image: formData.get("image"),
+  };
+
+  if (values.image instanceof File) {
+    // deleting the old image
+    const imageName = menuItems[0].image.split("menuItemImage/")[1];
+    const { error: fileDeleteError } = await supabase.storage
+      .from("menuItemImage")
+      .remove([imageName]);
+
+    if (fileDeleteError) throw fileDeleteError;
+
+    // uploading the new image
+    const editItemImgName = `${Math.random()}-${
+      (values.image as File).name
+    }`.replaceAll("/", "");
+    const editItemImageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/menuItemImage/${editItemImgName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("menuItemImage")
+      .upload(editItemImgName, values.image as File);
+
+    if (uploadError) throw uploadError;
+
+    values.image = editItemImageUrl;
+  }
+
+  // updating the menu item
+  const { error: editMenuItemError } = await supabase
+    .from("Menu")
+    .update(values)
+    .eq("id", editMenuId);
+
+  if (editMenuItemError) throw editMenuItemError;
+
+  // deleting the old extra parameters
+  const { error: deleteParamsError } = await supabase
+    .from("MenuParameters")
+    .delete()
+    .eq("menuId", editMenuId);
+
+  if (deleteParamsError) throw deleteParamsError;
+
+  // inserting the new extra parameters
+  if (extraParams.length > 0) {
+    for (let i = 0; i < extraParams.length; i++) {
+      const { error: paramUploadError } = await supabase
+        .from("MenuParameters")
+        .insert([{ ...extraParams[i], menuId: editMenuId }])
+        .select();
+
+      if (paramUploadError) throw paramUploadError;
+    }
+  }
+
+  revalidatePath(`/restaurant/EditMenu/${editMenuId}`);
+  return { success: true };
+}
+
 export async function deleteMenuItem(id: any) {
   const session = await getSession();
 

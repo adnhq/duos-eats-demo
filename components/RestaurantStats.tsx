@@ -109,7 +109,7 @@ export default function RestaurantStats({
   return (
     <>
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 pb-4">
         <Card className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white">

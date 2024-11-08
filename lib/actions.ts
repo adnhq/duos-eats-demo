@@ -315,33 +315,53 @@ export async function addMenuItem(formData: FormData) {
     restaurantId: formData.get("restaurantId"),
   };
 
-  const itemImageName = `${Math.random()}-${
-    (values.image as File).name
-  }`.replaceAll("/", "");
+  if (values.image instanceof File) {
+    const itemImageName = `${Math.random()}-${
+      (values.image as File).name
+    }`.replaceAll("/", "");
 
-  const itemImageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/menuItemImage/${itemImageName}`;
+    const itemImageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/menuItemImage/${itemImageName}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("menuItemImage")
-    .upload(itemImageName, values.image as File);
+    const { error: uploadError } = await supabase.storage
+      .from("menuItemImage")
+      .upload(itemImageName, values.image as File);
 
-  if (uploadError) throw uploadError;
+    if (uploadError) throw uploadError;
 
-  const { data: itemData, error: itemUploadError } = await supabase
-    .from("Menu")
-    .insert([{ ...values, image: itemImageUrl }])
-    .select("*");
+    const { data: itemData, error: itemUploadError } = await supabase
+      .from("Menu")
+      .insert([{ ...values, image: itemImageUrl }])
+      .select("*");
 
-  if (itemUploadError) throw itemUploadError;
+    if (itemUploadError) throw itemUploadError;
 
-  if (extraParams.length > 0) {
-    for (let i = 0; i < extraParams.length; i++) {
-      const { data: paramData, error: paramUploadError } = await supabase
-        .from("MenuParameters")
-        .insert([{ ...extraParams[i], menuId: itemData[0].id }])
-        .select();
+    if (extraParams.length > 0) {
+      for (let i = 0; i < extraParams.length; i++) {
+        const { data: paramData, error: paramUploadError } = await supabase
+          .from("MenuParameters")
+          .insert([{ ...extraParams[i], menuId: itemData[0].id }])
+          .select();
 
-      if (paramUploadError) throw paramUploadError;
+        if (paramUploadError) throw paramUploadError;
+      }
+    }
+  } else {
+    const { data: itemData, error: itemUploadError } = await supabase
+      .from("Menu")
+      .insert([values])
+      .select("*");
+
+    if (itemUploadError) throw itemUploadError;
+
+    if (extraParams.length > 0) {
+      for (let i = 0; i < extraParams.length; i++) {
+        const { data: paramData, error: paramUploadError } = await supabase
+          .from("MenuParameters")
+          .insert([{ ...extraParams[i], menuId: itemData[0].id }])
+          .select();
+
+        if (paramUploadError) throw paramUploadError;
+      }
     }
   }
 

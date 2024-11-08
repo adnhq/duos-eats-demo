@@ -28,8 +28,30 @@ export type Restaurant = {
   discount: string;
 };
 
-export type CartItem = MenuItem & {
+export type CartItem = {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  extraParams: {
+    [key: string]: string;
+  };
   quantity: number;
+};
+
+export type Cart = {
+  userId: number;
+  items: CartItem[];
+  totalPrice: number;
+  rating: number;
+};
+
+export type CartInfoState = {
+  cart: Cart;
+};
+
+export type GlobalStoreState = {
+  cart: CartInfoState;
 };
 
 export type Category = {

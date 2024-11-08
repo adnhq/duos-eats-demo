@@ -223,9 +223,11 @@ export default function AdminCreateMenu() {
       } catch (error) {
         toast({
           title: "Error",
-          description: (error as any).message,
+          description: (error as Error).message,
           variant: "destructive",
         });
+      } finally {
+        setMenuItems([]);
       }
     });
   }
@@ -456,7 +458,8 @@ export default function AdminCreateMenu() {
                                         value={param.name}
                                         onChange={(e) => {
                                           const newParams = [
-                                            ...form.getValues("extraParams"),
+                                            ...(form.getValues("extraParams") ||
+                                              []),
                                           ];
                                           newParams[paramIndex].name =
                                             e.target.value;
@@ -489,9 +492,9 @@ export default function AdminCreateMenu() {
                                             value={option}
                                             onChange={(e) => {
                                               const newParams = [
-                                                ...form.getValues(
+                                                ...(form.getValues(
                                                   "extraParams"
-                                                ),
+                                                ) || []),
                                               ];
                                               newParams[paramIndex].options[
                                                 optionIndex

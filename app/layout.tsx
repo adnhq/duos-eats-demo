@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import StoreProvider from "./StoreProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,14 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <Navbar />
-        {children}
-        <Toaster />
-        <Footer />
-        {/* new design with new layout */}
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="en">
+        <body className={`${inter.className} antialiased`}>
+          <Navbar />
+          {children}
+          <Toaster />
+          <Footer />
+          {/* new design with new layout */}
+        </body>
+      </html>
+    </StoreProvider>
   );
 }

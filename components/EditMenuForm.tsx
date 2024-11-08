@@ -28,6 +28,7 @@ import {
 } from "./ui/card";
 import { editMenuItem } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import duosLogo from "../duos-lg.png";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -300,7 +301,7 @@ export default function EditMenuItemForm({
                   ) : (
                     <div className="mt-2 relative w-full h-40">
                       <Image
-                        src={value}
+                        src={value === "undefined" ? duosLogo : value}
                         alt="Preview"
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

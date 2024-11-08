@@ -1,3 +1,4 @@
+"use client";
 import {
   Sheet,
   SheetContent,
@@ -8,8 +9,15 @@ import {
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { ShoppingBag } from "lucide-react";
+import { useAppSelector } from "@/lib/hooks";
+import { getCart } from "@/features/cart/cartSlice";
 
 export default function Cart() {
+  const cart = useAppSelector(getCart);
+  console.log(cart);
+
+  if (cart.items.length === 0) return null;
+
   return (
     <Sheet>
       <SheetTrigger asChild>

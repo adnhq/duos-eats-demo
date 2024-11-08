@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import { Check, Minus, Plus } from "lucide-react";
@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Roboto_Slab } from "next/font/google";
+import duosLogo from "../duos-lg.png";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
@@ -47,10 +48,10 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
           {/* Image Container */}
           <div className="relative w-full h-48 sm:w-24 sm:h-24">
             <Image
-              src={item.image}
+              src={item.image === "undefined" ? duosLogo : item.image}
               alt={item.name}
               fill
-              className="object-cover rounded-md"
+              className="rounded-md object-cover"
             />
           </div>
 
@@ -58,7 +59,9 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
           <div className="flex-1 space-y-2">
             <div>
               <h3 className={`text-lg ${priceFont.className}`}>{item.name}</h3>
-              <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
+              <p className="text-sm text-gray-500 line-clamp-2">
+                {item.description}
+              </p>
             </div>
 
             <div className="flex items-center justify-between">
@@ -83,7 +86,7 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
               {/* Quantity Controls and Add to Cart */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center bg-gray-100 rounded-md">
-                  <Button 
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleQuantityChange(-1)}
@@ -93,7 +96,7 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
                     <Minus className="w-4 h-4" />
                   </Button>
                   <span className="w-8 text-center text-sm">{quantity}</span>
-                  <Button 
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleQuantityChange(1)}

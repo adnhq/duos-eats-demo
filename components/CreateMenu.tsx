@@ -253,9 +253,11 @@ export default function CreateMenu() {
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to add menu items. Please try again.",
+          description: (error as Error).message,
           variant: "destructive",
         });
+      } finally {
+        setMenuItems([]);
       }
     });
   }

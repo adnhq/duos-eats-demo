@@ -4,6 +4,7 @@ import React, { startTransition } from "react";
 import { Card } from "./ui/card";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import duosLogo from "../duos-lg.png";
 import Link from "next/link";
 import { Pencil, Trash } from "lucide-react";
 import {
@@ -60,7 +61,7 @@ export default function EditMenuItemCard({ item }: Props) {
     <Card className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4 rounded-lg shadow-sm">
       <div className="relative w-full sm:w-24 h-48 sm:h-24 flex-shrink-0">
         <Image
-          src={item.image}
+          src={item.image === "undefined" ? duosLogo : item.image}
           alt={item.name}
           fill
           className="rounded-md object-cover"

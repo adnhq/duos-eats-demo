@@ -516,6 +516,7 @@ export async function approveRestaurant(id: number) {
   if (error) throw error;
 
   revalidatePath("/admin-dashboard");
+  return { success: true };
 }
 
 export async function rejectRestaurant(id: number) {

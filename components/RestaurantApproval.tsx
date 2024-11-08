@@ -44,16 +44,20 @@ export default function RestaurantApproval({
   async function approve(id: number) {
     try {
       setIsApLoading(true);
-      await approveRestaurant(id);
+      const result = await approveRestaurant(id);
 
-      toast({
-        title: "Approval Successful.",
-        description: "The restaurant has been approved successfully.",
-      });
+      if (result.success) {
+        toast({
+          title: "Approval Successful.",
+          description: "The restaurant has been approved successfully.",
+        });
+      } else {
+        throw new Error("Approval Failed.");
+      }
     } catch (error) {
       toast({
         title: "Approval Failed.",
-        description: "Could not approve the restaurant",
+        description: (error as Error).message,
         variant: "destructive",
       });
     } finally {

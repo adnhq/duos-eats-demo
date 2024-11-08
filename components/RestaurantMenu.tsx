@@ -165,7 +165,7 @@ export default async function RestaurantMenu({
 
       <Tabs defaultValue="all" className="mb-6">
         <ScrollArea className="w-full whitespace-nowrap pb-4">
-          <TabsList className="w-max rounded-full bg-muted p-1">
+          <TabsList className="flex w-max rounded-full bg-muted p-1">
             <TabsTrigger
               value="all"
               className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
@@ -182,7 +182,10 @@ export default async function RestaurantMenu({
               </TabsTrigger>
             ))}
           </TabsList>
-          <ScrollBar orientation="horizontal" className="invisible" />
+          <ScrollBar
+            orientation="horizontal"
+            // className="invisible md:visible"
+          />
         </ScrollArea>
 
         {/* All Items View - Shows all items grouped by category */}

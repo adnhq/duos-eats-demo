@@ -44,6 +44,7 @@ export type Cart = {
   items: CartItemType[];
   totalPrice: number;
   rating: number;
+  restaurantId: null | number;
 };
 
 export type CartInfoState = {

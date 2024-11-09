@@ -1,25 +1,25 @@
 "use client";
 import {
+  clearCart,
+  getCart,
+  getTotalCartPrice,
+  setCartUserId,
+} from "@/features/cart/cartSlice";
+import { getSession } from "@/lib/actions";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { CartItemType } from "@/lib/types";
+import { BaggageClaim, ShoppingBag, Trash } from "lucide-react";
+import { useEffect } from "react";
+import CartItem from "./CartItem";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { BaggageClaim, ShoppingBag, TicketCheck, Trash } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import {
-  clearCart,
-  getCart,
-  getTotalCartPrice,
-  setCartUserId,
-} from "@/features/cart/cartSlice";
-import { CartItemType } from "@/lib/types";
-import CartItem from "./CartItem";
-import { useEffect } from "react";
-import { getSession } from "@/lib/actions";
 
 export default function Cart() {
   const cart = useAppSelector(getCart);

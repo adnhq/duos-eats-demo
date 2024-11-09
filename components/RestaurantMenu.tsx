@@ -26,6 +26,7 @@ interface MenuItem {
   image: string;
   category: string;
   popular: boolean;
+  restaurantId: number;
 }
 
 interface MenuItemsGrouped {

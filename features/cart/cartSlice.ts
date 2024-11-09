@@ -3,7 +3,13 @@ import { Cart, CartInfoState, GlobalStoreState } from "@/lib/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: CartInfoState = {
-  cart: { userId: null, items: [], totalPrice: 0, rating: 0 },
+  cart: {
+    userId: null,
+    items: [],
+    totalPrice: 0,
+    rating: 0,
+    restaurantId: null,
+  },
 };
 
 const cartSlice = createSlice({
@@ -24,6 +30,7 @@ const cartSlice = createSlice({
 
       state.cart.items.push(action.payload);
       state.cart.totalPrice += action.payload.quantity * action.payload.price;
+      state.cart.restaurantId = action.payload.restaurantId;
     },
 
     increaseItemQuantity(state, action) {
@@ -47,6 +54,7 @@ const cartSlice = createSlice({
         state.cart.items = state.cart.items.filter(
           (item) => item.id !== existingItem.id
         );
+        state.cart.restaurantId = null;
         return;
       }
 
@@ -63,16 +71,20 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         state.cart.totalPrice -= existingItem.quantity * existingItem.price;
-      }
+        state.cart.items = state.cart.items.filter(
+          (item) => item.id !== action.payload
+        );
 
-      state.cart.items = state.cart.items.filter(
-        (item) => item.id !== action.payload
-      );
+        if (state.cart.items.length === 0) {
+          state.cart.restaurantId = null;
+        }
+      }
     },
 
     clearCart(state) {
       state.cart.items = [];
       state.cart.totalPrice = 0;
+      state.cart.restaurantId = null;
     },
 
     setCartUserId(state, action) {
@@ -100,3 +112,6 @@ export const getItemQuantityById = (id: number) => {
   return (state: GlobalStoreState) =>
     state.cart.cart.items.find((item) => item.id === id);
 };
+
+export const prevResturantId = (state: GlobalStoreState) =>
+  state.cart.cart.restaurantId;

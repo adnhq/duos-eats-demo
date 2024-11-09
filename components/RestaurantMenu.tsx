@@ -223,7 +223,7 @@ export default async function RestaurantMenu({
       </Tabs>
 
       {/* Cart Sheet */}
-      <Sheet>
+      {/* <Sheet>
         <SheetTrigger asChild>
           <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
             <ShoppingBag className="h-6 w-6" />
@@ -253,7 +253,7 @@ export default async function RestaurantMenu({
             </Button>
           </div>
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
     </div>
   );
 }

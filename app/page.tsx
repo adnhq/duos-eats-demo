@@ -19,7 +19,6 @@ export default function Page() {
         <Suspense fallback={<Spinner />}>
           <Restaurants />
         </Suspense>
-        <Cart />
       </div>
     </>
   );

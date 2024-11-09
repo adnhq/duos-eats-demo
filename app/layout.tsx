@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StoreProvider from "./StoreProvider";
+import Cart from "@/components/Cart";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <Footer />
+          <Cart />
           {/* new design with new layout */}
         </body>
       </html>

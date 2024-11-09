@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Roboto_Slab } from "next/font/google";
 import duosLogo from "../duos-lg.png";
+import { useAppDispatch } from "@/lib/hooks";
+import { addItem } from "@/features/cart/cartSlice";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
@@ -25,16 +27,23 @@ interface MenuItemProps {
 
 export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
   const [quantity, setQuantity] = useState(0);
+  const dispatch = useAppDispatch();
 
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => Math.max(prev + change, 0));
   };
 
   const handleAddToCart = () => {
-    if (quantity > 0 && onAddToCart) {
-      onAddToCart(item, quantity);
-      setQuantity(0);
-    }
+    const itemToBeAdded = {
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      price: priceWithDiscount(Number(item.price), Number(item.discount)),
+      quantity,
+    };
+
+    dispatch(addItem(itemToBeAdded));
+    setQuantity(0);
   };
 
   const priceWithDiscount = (price: number, discount: number) => {

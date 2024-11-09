@@ -8,15 +8,35 @@ import {
 } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { ShoppingBag } from "lucide-react";
-import { useAppSelector } from "@/lib/hooks";
-import { getCart } from "@/features/cart/cartSlice";
+import { ShoppingBag, Trash } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import {
+  clearCart,
+  getCart,
+  getTotalCartPrice,
+  setCartUserId,
+} from "@/features/cart/cartSlice";
+import { CartItemType } from "@/lib/types";
+import CartItem from "./CartItem";
+import { useEffect } from "react";
+import { getSession } from "@/lib/actions";
 
 export default function Cart() {
   const cart = useAppSelector(getCart);
+  const cartTotalPrice = useAppSelector(getTotalCartPrice);
+  const dispatch = useAppDispatch();
   console.log(cart);
 
-  if (cart.items.length === 0) return null;
+  useEffect(() => {
+    async function getCurrentUser() {
+      const session = await getSession();
+      if (!session) return;
+
+      dispatch(setCartUserId(session.id));
+    }
+
+    getCurrentUser();
+  }, []);
 
   return (
     <Sheet>
@@ -27,21 +47,37 @@ export default function Cart() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
-          <SheetTitle>Your Cart</SheetTitle>
+          <div className="flex justify-between items-center mt-8">
+            <SheetTitle>Your Cart</SheetTitle>
+            <Button
+              variant={"destructive"}
+              onClick={() => dispatch(clearCart())}
+            >
+              <Trash />
+            </Button>
+          </div>
         </SheetHeader>
         <div className="flex-grow overflow-auto">
           <ScrollArea className="h-full">
-            <div className="py-4">
-              <p>Your cart is empty.</p>
+            <div className="grid grid-cols-1 py-4">
+              {cart.items.length === 0 ? (
+                <p>Your cart is empty.</p>
+              ) : (
+                cart.items.map((item: CartItemType) => (
+                  <CartItem key={item.id} item={item} />
+                ))
+              )}
             </div>
           </ScrollArea>
         </div>
         <div className="border-t pt-4 mt-auto">
           <div className="flex justify-between items-center mb-4">
             <span className="font-semibold">Total:</span>
-            <span className="font-semibold">Tk 0.00</span>
+            <span className="font-semibold">
+              Tk {cartTotalPrice.toFixed(2)}
+            </span>
           </div>
-          <Button className="w-full" disabled>
+          <Button className="w-full" disabled={cart.items.length === 0}>
             Checkout
           </Button>
         </div>

@@ -8,7 +8,7 @@ import {
 } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { ShoppingBag, Trash } from "lucide-react";
+import { BaggageClaim, ShoppingBag, TicketCheck, Trash } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   clearCart,
@@ -47,15 +47,7 @@ export default function Cart() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
-          <div className="flex justify-between items-center mt-8">
-            <SheetTitle>Your Cart</SheetTitle>
-            <Button
-              variant={"destructive"}
-              onClick={() => dispatch(clearCart())}
-            >
-              <Trash />
-            </Button>
-          </div>
+          <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
         <div className="flex-grow overflow-auto">
           <ScrollArea className="h-full">
@@ -77,9 +69,22 @@ export default function Cart() {
               Tk {cartTotalPrice.toFixed(2)}
             </span>
           </div>
-          <Button className="w-full" disabled={cart.items.length === 0}>
-            Checkout
-          </Button>
+
+          <div className="flex flex-col gap-4">
+            <Button className="w-full" disabled={cart.items.length === 0}>
+              <BaggageClaim className="h-4 w-4" /> Checkout
+            </Button>
+
+            {cart.items.length > 0 && (
+              <Button
+                className="w-full"
+                variant={"destructive"}
+                onClick={() => dispatch(clearCart())}
+              >
+                <Trash className="h-4 w-4" /> Clear Cart
+              </Button>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

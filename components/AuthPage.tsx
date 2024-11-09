@@ -1,11 +1,12 @@
-'use client'
-import React from 'react';
+"use client";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RestaurantLoginForm from "./RestaurantLoginForm";
 import UserLoginForm from "./UserLoginForm";
-import { useRouter } from 'next/navigation';
-import { Utensils, Users } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import { Utensils, Users } from "lucide-react";
 import { Spline_Sans } from "next/font/google";
+import Link from "next/link";
 
 const spline_sans = Spline_Sans({
   subsets: ["latin"],
@@ -41,19 +42,21 @@ const AuthPage = () => {
   const router = useRouter();
 
   const handleClose = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <main className="min-h-screen w-full flex flex-col justify-center items-center relative bg-gradient-to-b from-white to-orange-50">
       <BackgroundSVG />
-      
+
       <div className="relative z-10 w-full max-w-md mx-auto px-4 py-8">
         {/* Auth Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full">
           {/* Header Section - Now inside the card */}
           <div className="text-center mb-8">
-            <h1 className={`text-3xl font-bold text-gray-900 mb-2 ${spline_sans.className}`}>
+            <h1
+              className={`text-3xl font-bold text-gray-900 mb-2 ${spline_sans.className}`}
+            >
               Welcome Back
             </h1>
             <p className="text-gray-600">Sign in to continue your journey</p>
@@ -61,14 +64,14 @@ const AuthPage = () => {
 
           <Tabs defaultValue="user" className="w-full">
             <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-gray-100 rounded-lg mb-6">
-              <TabsTrigger 
+              <TabsTrigger
                 value="user"
                 className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
               >
                 <Users className="h-4 w-4" />
                 Customer
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="restaurant"
                 className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
               >
@@ -81,9 +84,9 @@ const AuthPage = () => {
               <UserLoginForm />
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
-                  New to our platform?{' '}
-                  <button 
-                    onClick={() => router.push('/signup')} 
+                  New to our platform?{" "}
+                  <button
+                    onClick={() => router.push("/signup")}
                     className="font-medium text-amber-500 hover:text-amber-600"
                   >
                     Create an account
@@ -96,13 +99,13 @@ const AuthPage = () => {
               <RestaurantLoginForm setIsOpen={handleClose} />
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
-                  Want to partner with us?{' '}
-                  <button 
-                    onClick={() => router.push('/restaurant/signup')} 
+                  Want to partner with us?{" "}
+                  <Link
+                    href="/registration"
                     className="font-medium text-amber-500 hover:text-amber-600"
                   >
                     Register your restaurant
-                  </button>
+                  </Link>
                 </p>
               </div>
             </TabsContent>
@@ -115,8 +118,8 @@ const AuthPage = () => {
             Forgot your password?
           </button>
           <div>
-            <button 
-              onClick={() => router.push('/')} 
+            <button
+              onClick={() => router.push("/")}
               className="text-sm text-gray-600 hover:text-amber-500 flex items-center justify-center gap-2 mx-auto"
             >
               ← Back to home

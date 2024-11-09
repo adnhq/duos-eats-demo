@@ -1,6 +1,8 @@
 export const cuisineTypes = [
   "Bengali",
   "Chinese",
+  "Cafe",
+  "Bakery",
   "Indian",
   "Italian",
   "Japanese",

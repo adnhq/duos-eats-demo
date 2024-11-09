@@ -1,18 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getRestaurantMenu } from "@/lib/actions";
 import { Restaurant } from "@/lib/types";
-import { Instagram, Search, ShoppingBag, Sparkles } from "lucide-react";
-import { Pacifico, Spline_Sans } from "next/font/google";
+import { Instagram, Search, Sparkles } from "lucide-react";
+import { Kalam, Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { MenuItemCard } from "./MenuItemCard";
@@ -22,7 +16,7 @@ const splineSans = Spline_Sans({
   weight: ["400", "600", "700"],
 });
 
-const pacificoFont = Pacifico({ subsets: ["latin"], weight: ["400"] });
+const discountFont = Kalam({ subsets: ["latin"], weight: ["700"] });
 
 interface MenuItem {
   id: number;
@@ -116,11 +110,11 @@ export default async function RestaurantMenu({
                   Duos Eats Exclusive
                 </h2>
               </div>
-              <p className={`text-3xl font-semibold ${pacificoFont.className}`}>
+              <p className={`text-3xl font-semibold ${discountFont.className}`}>
                 {restaurantData.discount}% Discount
               </p>
               <p className="text-sm text-primary-foreground/80">
-                Applied to all orders made through our platform
+                Applied to each item on the menu only through our platform.
               </p>
             </div>
           </div>

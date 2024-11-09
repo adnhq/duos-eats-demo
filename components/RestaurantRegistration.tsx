@@ -31,7 +31,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronRight, Eye, EyeOff, Info, Loader2, Upload } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, Info, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
 import Image from "next/image";
@@ -131,78 +131,28 @@ export default function RestaurantRegistration() {
     <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden pb-16 pt-40">
       <svg
         className="absolute inset-0 w-full h-full"
-        viewBox="0 0 1600 1000"
-        preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
+        preserveAspectRatio="none"
       >
-        <defs>
-          <radialGradient
-            id="fadeGradient"
-            cx="50%"
-            cy="50%"
-            r="50%"
-            fx="50%"
-            fy="50%"
-          >
-            <stop offset="0%" stopColor="#FFF7ED" />
-            <stop offset="40%" stopColor="#FFEDD5" />
-            <stop offset="100%" stopColor="#FFFFFF" />
-          </radialGradient>
-
-          <pattern
-            id="dots"
-            x="0"
-            y="0"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="20" cy="20" r="1" fill="#FB923C" opacity="0.15" />
-          </pattern>
-
-          <filter id="softBlur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
-          </filter>
-        </defs>
-
-        <rect width="100%" height="100%" fill="url(#fadeGradient)" />
-
-        <rect width="100%" height="100%" fill="url(#dots)" />
-
-        <circle
-          cx="200"
-          cy="150"
-          r="300"
-          fill="#FB923C"
-          opacity="0.03"
-          filter="url(#softBlur)"
-        />
-        <circle
-          cx="1400"
-          cy="200"
-          r="250"
-          fill="#FB923C"
-          opacity="0.03"
-          filter="url(#softBlur)"
-        />
-
         <path
-          d="M0,300 Q400,250 800,300 T1600,300"
-          stroke="#FB923C"
-          strokeWidth="1"
-          fill="none"
-          opacity="0.1"
-        />
+          fill="rgb(255, 237, 213)"
+          fillOpacity="0.5"
+          d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,85.3C672,75,768,85,864,112C960,139,1056,181,1152,181.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
         <path
-          d="M0,350 Q400,300 800,350 T1600,350"
-          stroke="#FB923C"
-          strokeWidth="1"
-          fill="none"
-          opacity="0.07"
-        />
+          fill="rgb(254, 215, 170)"
+          fillOpacity="0.5"
+          d="M0,192L48,197.3C96,203,192,213,288,202.7C384,192,480,160,576,165.3C672,171,768,213,864,218.7C960,224,1056,192,1152,165.3C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
+        <path
+          fill="rgb(251, 146, 60)"
+          fillOpacity="0.3"
+          d="M0,256L48,261.3C96,267,192,277,288,266.7C384,256,480,224,576,213.3C672,203,768,213,864,224C960,235,1056,245,1152,234.7C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
       </svg>
 
-      <Card className="w-full max-w-md z-10 bg-white/95 backdrop-blur-sm shadow-xl border-0">
+      <Card className="w-full max-w-md z-10 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(0,0,0,0.1)] border-0">
         <CardHeader className="text-center space-y-2">
           <CardTitle
             className={`${splineSans.className} text-3xl font-semibold text-gray-900`}
@@ -218,7 +168,8 @@ export default function RestaurantRegistration() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {/* All form fields remain exactly the same */}
+              {/* Rest of the form fields remain exactly the same */}
+              {/* ... all form fields ... */}
               <FormField
                 control={form.control}
                 name="restaurantName"
@@ -304,10 +255,6 @@ export default function RestaurantRegistration() {
                         />
                       </div>
                     </FormControl>
-                    {/* <FormDescription className="flex gap-2 items-center">
-                      <Info className="w-4 h-4" />
-                      Must be a bKash number
-                    </FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -467,6 +414,16 @@ export default function RestaurantRegistration() {
           </Form>
         </CardContent>
       </Card>
+      <div className="absolute bottom-8 left-0 right-0 flex justify-around">
+        {["🍔", "🍕", "🍣", "🥗", "🍰"].map((emoji, index) => (
+          <span
+            key={index}
+            className="text-4xl md:text-5xl lg:text-6xl opacity-30"
+          >
+            {emoji}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

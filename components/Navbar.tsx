@@ -131,7 +131,9 @@ export default async function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <AuthModal />
+              <Button asChild className="w-full md:w-auto">
+                <Link href="/login">Sign In</Link>
+              </Button>
             )}
           </div>
 
@@ -213,9 +215,9 @@ export default async function Navbar() {
                       </form>
                     </div>
                   ) : (
-                    <div className="pt-4 border-t">
-                      <AuthModal />
-                    </div>
+                    <Button asChild className="w-full md:w-auto">
+                      <Link href="/login">Sign In</Link>
+                    </Button>
                   )}
                 </div>
               </SheetContent>

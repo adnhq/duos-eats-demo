@@ -1,4 +1,3 @@
-import Cart from "@/components/Cart";
 import HeroSection from "@/components/HeroSection";
 import Restaurants from "@/components/Restaurants";
 import Spinner from "@/components/Spinner";
@@ -9,7 +8,7 @@ const splineSans = Spline_Sans({
   weight: ["400", "600", "700"],
 });
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
       <HeroSection />

@@ -66,16 +66,25 @@ export default async function RestaurantMenu({
   // Only add Popular Items category if there are actually popular items
   const groupedMenuItems: MenuItemsGrouped =
     popularItems.length > 0
-      ? { "Popular Items": popularItems, ...categorizedItems }
+      ? { Popular: popularItems, ...categorizedItems }
       : categorizedItems;
 
   // Get categories, ensuring Popular Items comes first if it exists
-  const categories = Object.keys(groupedMenuItems);
+  const categories = Object.keys(groupedMenuItems).sort((a, b) => {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    return 0;
+  });
+
   if (popularItems.length > 0) {
-    const popularIndex = categories.indexOf("Popular Items");
+    const popularIndex = categories.indexOf("Popular");
     if (popularIndex > 0) {
       categories.splice(popularIndex, 1);
-      categories.unshift("Popular Items");
+      categories.unshift("Popular");
     }
   }
 
@@ -170,7 +179,7 @@ export default async function RestaurantMenu({
               value="all"
               className="rounded-full px-3 py-1.5 text-sm font-medium transition-all"
             >
-              All Items
+              All
             </TabsTrigger>
             {categories.map((category) => (
               <TabsTrigger

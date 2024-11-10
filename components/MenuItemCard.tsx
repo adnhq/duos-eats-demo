@@ -12,6 +12,7 @@ import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { MenuItem } from "@/lib/types";
 import { priceWithDiscount } from "@/lib/helper";
+import ItemExtraParamForm from "./ItemExtraParamForm";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
@@ -50,6 +51,10 @@ export function MenuItemCard({ item }: MenuItemProps) {
     };
 
     dispatch(addItem(itemToBeAdded));
+    toast({
+      title: "Item added to cart",
+      description: "You can view and edit your cart from the cart page.",
+    });
     setQuantity(0);
   };
 
@@ -117,16 +122,25 @@ export function MenuItemCard({ item }: MenuItemProps) {
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                <Button
-                  onClick={handleAddToCart}
-                  disabled={!quantity}
-                  size="sm"
-                  variant="default"
-                  className="w-10 sm:w-auto"
-                >
-                  <Check className="w-4 h-4 sm:hidden" />
-                  <span className="hidden sm:inline">Add to Cart</span>
-                </Button>
+
+                {item.MenuParameters?.length === 0 ? (
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={!quantity}
+                    size="sm"
+                    variant="default"
+                    className="w-10 sm:w-auto"
+                  >
+                    <Check className="w-4 h-4 sm:hidden" />
+                    <span className="hidden sm:inline">Add to Cart</span>
+                  </Button>
+                ) : (
+                  <ItemExtraParamForm
+                    item={item}
+                    quantity={quantity}
+                    setQuantity={setQuantity}
+                  />
+                )}
               </div>
             </div>
           </div>

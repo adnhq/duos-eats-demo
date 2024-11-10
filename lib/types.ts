@@ -39,9 +39,7 @@ export type CartItemType = {
   name: string;
   price: number;
   image: string;
-  extraParams?: {
-    [key: string]: string;
-  };
+  extraParams?: string[];
   quantity: number;
 };
 

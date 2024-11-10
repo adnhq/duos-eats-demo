@@ -30,6 +30,13 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
           <div>
             <h3 className="font-semibold">{item.name}</h3>
+            <div className="text-sm text-gray-500">
+              {item?.extraParams?.map((extraParam, idx) => (
+                <p key={idx}>{`${extraParam.split(":")[0]}-${
+                  extraParam.split(":")[1]
+                }`}</p>
+              ))}
+            </div>
             <p className="text-sm text-gray-500">
               Tk {item.price} x {item.quantity}
             </p>

@@ -47,8 +47,8 @@ export default function Cart() {
               {cart.items.length === 0 ? (
                 <p>Your cart is empty.</p>
               ) : (
-                cart.items.map((item: CartItemType) => (
-                  <CartItem key={item.id} item={item} />
+                cart.items.map((item: CartItemType, id) => (
+                  <CartItem key={id} item={item} />
                 ))
               )}
             </div>

@@ -23,7 +23,7 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
-        state.cart.totalPrice += existingItem.quantity * existingItem.price;
+        state.cart.totalPrice += action.payload.quantity * existingItem.price;
         return;
       }
 

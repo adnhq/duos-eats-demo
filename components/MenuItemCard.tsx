@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { MenuItem } from "@/lib/types";
+import { priceWithDiscount } from "@/lib/helper";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
@@ -50,10 +51,6 @@ export function MenuItemCard({ item }: MenuItemProps) {
 
     dispatch(addItem(itemToBeAdded));
     setQuantity(0);
-  };
-
-  const priceWithDiscount = (price: number, discount: number) => {
-    return Math.round(price - (price * discount) / 100);
   };
 
   return (

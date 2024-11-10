@@ -29,7 +29,7 @@ export default function Cart() {
         <div className="fixed bottom-4 right-4">
           <Button className="rounded-full w-16 h-16 shadow-lg relative">
             {cart.items.length !== 0 && (
-              <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-slate-950">
+              <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-zinc-500">
                 {cart.items.length}
               </p>
             )}

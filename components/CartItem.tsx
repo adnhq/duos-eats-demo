@@ -1,30 +1,22 @@
 // components/CartItem.tsx
 
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, X } from "lucide-react";
-import { CartItemType } from "@/lib/types";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   decreaseItemQuantity,
   deleteItem,
-  getItemQuantityById,
   increaseItemQuantity,
 } from "@/features/cart/cartSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { CartItemType } from "@/lib/types";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import React from "react";
 
 type CartItemProps = {
   item: CartItemType;
-  // onUpdateQuantity: (id: number, change: number) => void;
-  // onRemove: (id: number) => void;
 };
 
-const CartItem: React.FC<CartItemProps> = ({
-  item,
-  // onUpdateQuantity,
-  // onRemove,
-}) => {
+const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const dispatch = useAppDispatch();
-  // const itemQuantity = useAppSelector(() => getItemQuantityById(item.id));
 
   return (
     <div className="flex justify-between items-center py-4 border-b">

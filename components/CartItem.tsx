@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, Trash2, X } from "lucide-react";
 import { CartItemType } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
@@ -65,7 +65,7 @@ const CartItem: React.FC<CartItemProps> = ({
           size="icon"
           onClick={() => dispatch(deleteItem(item.id))}
         >
-          <X className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
     </div>

@@ -3,13 +3,10 @@ import {
   clearCart,
   getCart,
   getTotalCartPrice,
-  setCartUserId,
 } from "@/features/cart/cartSlice";
-import { getSession } from "@/lib/actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CartItemType } from "@/lib/types";
 import { BaggageClaim, ShoppingBag, Trash } from "lucide-react";
-import { useEffect } from "react";
 import CartItem from "./CartItem";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -25,25 +22,20 @@ export default function Cart() {
   const cart = useAppSelector(getCart);
   const cartTotalPrice = useAppSelector(getTotalCartPrice);
   const dispatch = useAppDispatch();
-  console.log(cart);
-
-  useEffect(() => {
-    async function getCurrentUser() {
-      const session = await getSession();
-      if (!session) return;
-
-      dispatch(setCartUserId(session.id));
-    }
-
-    getCurrentUser();
-  }, []);
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 shadow-lg">
-          <ShoppingBag className="h-6 w-6" />
-        </Button>
+        <div className="fixed bottom-4 right-4">
+          <Button className="rounded-full w-16 h-16 shadow-lg relative">
+            {cart.items.length !== 0 && (
+              <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-slate-950">
+                {cart.items.length}
+              </p>
+            )}
+            <ShoppingBag className="h-6 w-6" />
+          </Button>
+        </div>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>

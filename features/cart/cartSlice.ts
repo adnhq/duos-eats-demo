@@ -4,7 +4,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: CartInfoState = {
   cart: {
-    userId: null,
     items: [],
     totalPrice: 0,
     rating: 0,
@@ -23,7 +22,7 @@ const cartSlice = createSlice({
       );
 
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += action.payload.quantity;
         state.cart.totalPrice += existingItem.quantity * existingItem.price;
         return;
       }
@@ -86,10 +85,6 @@ const cartSlice = createSlice({
       state.cart.totalPrice = 0;
       state.cart.restaurantId = null;
     },
-
-    setCartUserId(state, action) {
-      state.cart.userId = action.payload;
-    },
   },
 });
 
@@ -99,7 +94,6 @@ export const {
   clearCart,
   decreaseItemQuantity,
   increaseItemQuantity,
-  setCartUserId,
 } = cartSlice.actions;
 export default cartSlice.reducer;
 

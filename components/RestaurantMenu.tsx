@@ -27,6 +27,10 @@ interface MenuItem {
   category: string;
   popular: boolean;
   restaurantId: number;
+  MenuParameters?: {
+    name: string;
+    options: string[];
+  }[];
 }
 
 interface MenuItemsGrouped {

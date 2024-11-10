@@ -10,21 +10,13 @@ import duosLogo from "../duos-lg.png";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
+import { MenuItem } from "@/lib/types";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
-interface MenuItemProps {
-  item: {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-    image: string;
-    popular: boolean;
-    discount: string;
-    restaurantId: number;
-  };
-}
+type MenuItemProps = {
+  item: MenuItem;
+};
 
 export function MenuItemCard({ item }: MenuItemProps) {
   const [quantity, setQuantity] = useState(0);

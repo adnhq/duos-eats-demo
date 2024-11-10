@@ -4,15 +4,6 @@ export type Deal = {
   description: string;
 };
 
-export type MenuItem = {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  description: string;
-  image: string;
-};
-
 export type Restaurant = {
   id: number;
   created_at: string;
@@ -28,6 +19,21 @@ export type Restaurant = {
   discount: string;
 };
 
+export type MenuItem = {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+  popular: boolean;
+  discount: string;
+  restaurantId: number;
+  MenuParameters?: {
+    name: string;
+    options: string[];
+  }[];
+};
+
 export type CartItemType = {
   id: number;
   name: string;
@@ -40,7 +46,6 @@ export type CartItemType = {
 };
 
 export type Cart = {
-  userId: null | number;
   items: CartItemType[];
   totalPrice: number;
   rating: number;

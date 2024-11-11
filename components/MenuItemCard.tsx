@@ -7,47 +7,55 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Roboto_Slab } from "next/font/google";
 import duosLogo from "../duos-lg.png";
-import { useAppDispatch } from "@/lib/hooks";
-import { addItem } from "@/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { addItem, prevResturantId } from "@/features/cart/cartSlice";
+import { useToast } from "@/hooks/use-toast";
+import { MenuItem } from "@/lib/types";
+import { priceWithDiscount } from "@/lib/helper";
+import ItemExtraParamForm from "./ItemExtraParamForm";
 
 const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
-interface MenuItemProps {
-  item: {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-    image: string;
-    popular: boolean;
-    discount: string;
-  };
-  onAddToCart?: (item: any, quantity: number) => void;
-}
+type MenuItemProps = {
+  item: MenuItem;
+};
 
-export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
+export function MenuItemCard({ item }: MenuItemProps) {
   const [quantity, setQuantity] = useState(0);
   const dispatch = useAppDispatch();
+  const prevRestaurantId = useAppSelector(prevResturantId);
+  const { toast } = useToast();
 
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => Math.max(prev + change, 0));
   };
 
   const handleAddToCart = () => {
+    if (prevRestaurantId !== null && prevRestaurantId !== item.restaurantId) {
+      toast({
+        title: "Sorry, could not add the item to cart.",
+        description:
+          "You have items from a different restaurant in the cart. Please clear the cart to add items from this restaurant.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const itemToBeAdded = {
       id: item.id,
       name: item.name,
       image: item.image,
       price: priceWithDiscount(Number(item.price), Number(item.discount)),
       quantity,
+      restaurantId: item.restaurantId,
     };
 
     dispatch(addItem(itemToBeAdded));
+    toast({
+      title: "Item added to cart",
+      description: "You can view and edit your cart from the cart page.",
+    });
     setQuantity(0);
-  };
-
-  const priceWithDiscount = (price: number, discount: number) => {
-    return Math.round(price - (price * discount) / 100);
   };
 
   return (
@@ -114,16 +122,25 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemProps) {
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                <Button
-                  onClick={handleAddToCart}
-                  disabled={!quantity}
-                  size="sm"
-                  variant="default"
-                  className="w-10 sm:w-auto"
-                >
-                  <Check className="w-4 h-4 sm:hidden" />
-                  <span className="hidden sm:inline">Add to Cart</span>
-                </Button>
+
+                {item.MenuParameters?.length === 0 ? (
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={!quantity}
+                    size="sm"
+                    variant="default"
+                    className="w-10 sm:w-auto"
+                  >
+                    <Check className="w-4 h-4 sm:hidden" />
+                    <span className="hidden sm:inline">Add to Cart</span>
+                  </Button>
+                ) : (
+                  <ItemExtraParamForm
+                    item={item}
+                    quantity={quantity}
+                    setQuantity={setQuantity}
+                  />
+                )}
               </div>
             </div>
           </div>

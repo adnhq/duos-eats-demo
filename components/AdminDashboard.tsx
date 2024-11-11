@@ -173,56 +173,53 @@ export default async function AdminDashboard() {
     </div>
   );
 }
-
-// Mobile-friendly card view component for applications
-
-// Mobile-friendly card view component for restaurants
-// const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
-//   <Card className="mb-4">
-//     <CardHeader className="pb-2">
-//       <div className="flex justify-between items-start">
-//         <CardTitle className="text-lg font-semibold">
-//           {restaurant.name}
-//         </CardTitle>
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="ghost" className="h-8 w-8 p-0">
-//               <MoreHorizontal className="h-4 w-4" />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="end">
-//             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//             <DropdownMenuItem>Edit Information</DropdownMenuItem>
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem>View Payment History</DropdownMenuItem>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       </div>
-//     </CardHeader>
-//     <CardContent>
-//       <div className="space-y-2">
-//         <div className="flex justify-between">
-//           <span className="text-sm text-muted-foreground">Pending Dues:</span>
-//           <span className="font-medium">
-//             BDT {restaurant.pendingDues.toLocaleString()}
-//           </span>
-//         </div>
-//         <div className="flex justify-between">
-//           <span className="text-sm text-muted-foreground">Last Payment:</span>
-//           <span>{restaurant.lastPayment}</span>
-//         </div>
-//         <div className="flex justify-between items-center">
-//           <span className="text-sm text-muted-foreground">Status:</span>
-//           <Badge variant="outline" className="bg-green-100 text-green-800">
-//             {restaurant.status}
-//           </Badge>
-//         </div>
-//       </div>
-//     </CardContent>
-//   </Card>
-// );
-
 {
+  // Mobile-friendly card view component for applications
+  // Mobile-friendly card view component for restaurants
+  // const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
+  //   <Card className="mb-4">
+  //     <CardHeader className="pb-2">
+  //       <div className="flex justify-between items-start">
+  //         <CardTitle className="text-lg font-semibold">
+  //           {restaurant.name}
+  //         </CardTitle>
+  //         <DropdownMenu>
+  //           <DropdownMenuTrigger asChild>
+  //             <Button variant="ghost" className="h-8 w-8 p-0">
+  //               <MoreHorizontal className="h-4 w-4" />
+  //             </Button>
+  //           </DropdownMenuTrigger>
+  //           <DropdownMenuContent align="end">
+  //             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  //             <DropdownMenuItem>Edit Information</DropdownMenuItem>
+  //             <DropdownMenuSeparator />
+  //             <DropdownMenuItem>View Payment History</DropdownMenuItem>
+  //           </DropdownMenuContent>
+  //         </DropdownMenu>
+  //       </div>
+  //     </CardHeader>
+  //     <CardContent>
+  //       <div className="space-y-2">
+  //         <div className="flex justify-between">
+  //           <span className="text-sm text-muted-foreground">Pending Dues:</span>
+  //           <span className="font-medium">
+  //             BDT {restaurant.pendingDues.toLocaleString()}
+  //           </span>
+  //         </div>
+  //         <div className="flex justify-between">
+  //           <span className="text-sm text-muted-foreground">Last Payment:</span>
+  //           <span>{restaurant.lastPayment}</span>
+  //         </div>
+  //         <div className="flex justify-between items-center">
+  //           <span className="text-sm text-muted-foreground">Status:</span>
+  //           <Badge variant="outline" className="bg-green-100 text-green-800">
+  //             {restaurant.status}
+  //           </Badge>
+  //         </div>
+  //       </div>
+  //     </CardContent>
+  //   </Card>
+  // );
   /* <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Restaurant List</CardTitle>

@@ -1,61 +1,45 @@
 "use client";
 import {
+  clearCart,
+  getCart,
+  getTotalCartPrice,
+} from "@/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { CartItemType } from "@/lib/types";
+import { BaggageClaim, ShoppingBag, Trash } from "lucide-react";
+import CartItem from "./CartItem";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { ShoppingBag, Trash } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import {
-  clearCart,
-  getCart,
-  getTotalCartPrice,
-  setCartUserId,
-} from "@/features/cart/cartSlice";
-import { CartItemType } from "@/lib/types";
-import CartItem from "./CartItem";
-import { useEffect } from "react";
-import { getSession } from "@/lib/actions";
 
 export default function Cart() {
   const cart = useAppSelector(getCart);
   const cartTotalPrice = useAppSelector(getTotalCartPrice);
   const dispatch = useAppDispatch();
-  console.log(cart);
-
-  useEffect(() => {
-    async function getCurrentUser() {
-      const session = await getSession();
-      if (!session) return;
-
-      dispatch(setCartUserId(session.id));
-    }
-
-    getCurrentUser();
-  }, []);
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className="fixed bottom-4 right-4 rounded-full w-16 h-16 shadow-lg">
-          <ShoppingBag className="h-6 w-6" />
-        </Button>
+        <div className="fixed bottom-4 right-4">
+          <Button className="rounded-full w-16 h-16 shadow-lg relative">
+            {cart.items.length !== 0 && (
+              <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-zinc-500">
+                {cart.items.length}
+              </p>
+            )}
+            <ShoppingBag className="h-6 w-6" />
+          </Button>
+        </div>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
-          <div className="flex justify-between items-center mt-8">
-            <SheetTitle>Your Cart</SheetTitle>
-            <Button
-              variant={"destructive"}
-              onClick={() => dispatch(clearCart())}
-            >
-              <Trash />
-            </Button>
-          </div>
+          <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
         <div className="flex-grow overflow-auto">
           <ScrollArea className="h-full">
@@ -63,8 +47,8 @@ export default function Cart() {
               {cart.items.length === 0 ? (
                 <p>Your cart is empty.</p>
               ) : (
-                cart.items.map((item: CartItemType) => (
-                  <CartItem key={item.id} item={item} />
+                cart.items.map((item: CartItemType, id) => (
+                  <CartItem key={id} item={item} />
                 ))
               )}
             </div>
@@ -77,9 +61,22 @@ export default function Cart() {
               Tk {cartTotalPrice.toFixed(2)}
             </span>
           </div>
-          <Button className="w-full" disabled={cart.items.length === 0}>
-            Checkout
-          </Button>
+
+          <div className="flex flex-col gap-4">
+            <Button className="w-full" disabled={cart.items.length === 0}>
+              <BaggageClaim className="h-4 w-4" /> Checkout
+            </Button>
+
+            {cart.items.length > 0 && (
+              <Button
+                className="w-full"
+                variant={"destructive"}
+                onClick={() => dispatch(clearCart())}
+              >
+                <Trash className="h-4 w-4" /> Clear Cart
+              </Button>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

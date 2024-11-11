@@ -1,6 +1,7 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { UserSessionInfo } from "./types";
 
 const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET_KEY);
 
@@ -24,9 +25,9 @@ export async function decrypt(session: string | undefined = "") {
   }
 }
 
-export async function createSession(user: any, isAdmin: boolean) {
+export async function createSession(user: UserSessionInfo) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ ...user, isAdmin, expiresAt });
+  const session = await encrypt({ ...user, expiresAt });
   (await cookies()).set("session", session, {
     httpOnly: true,
     secure: true,

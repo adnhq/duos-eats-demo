@@ -4,7 +4,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getRestaurantMenu } from "@/lib/actions";
-import { Restaurant } from "@/lib/types";
+import { MenuItem, Restaurant } from "@/lib/types";
 import { Instagram, Search, Sparkles } from "lucide-react";
 import { Kalam, Spline_Sans } from "next/font/google";
 import Image from "next/image";
@@ -18,24 +18,9 @@ const splineSans = Spline_Sans({
 
 const discountFont = Kalam({ subsets: ["latin"], weight: ["700"] });
 
-interface MenuItem {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  image: string;
-  category: string;
-  popular: boolean;
-  restaurantId: number;
-  MenuParameters?: {
-    name: string;
-    options: string[];
-  }[];
-}
-
-interface MenuItemsGrouped {
+type MenuItemsGrouped = {
   [category: string]: MenuItem[];
-}
+};
 
 export default async function RestaurantMenu({
   restaurantData,

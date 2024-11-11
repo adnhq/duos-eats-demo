@@ -1,7 +1,8 @@
-export type Deal = {
-  type: "DUO" | "REGULAR";
-  discount: string;
-  description: string;
+export type UserSessionInfo = {
+  id: number;
+  email: string;
+  name: string;
+  role: "restaurant" | "user" | "admin";
 };
 
 export type Restaurant = {

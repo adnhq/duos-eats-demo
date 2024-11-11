@@ -37,13 +37,8 @@ export default function RestaurantCard({
   restaurant: Restaurant;
 }) {
   return (
-    <Link href={`/${restaurant.id}`}>
-      <Card
-        className="overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl group
-                       hover:-translate-y-1 active:translate-y-0
-                       sm:hover:scale-105 sm:active:scale-100
-                       cursor-pointer"
-      >
+    <Link href={`/view-restaurant/${restaurant.id}`}>
+      <Card className="overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl group cursor-pointer">
         <CardContent className="p-0">
           <div className="relative aspect-[4/3] overflow-hidden">
             <Image
@@ -51,7 +46,7 @@ export default function RestaurantCard({
               alt={restaurant.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transform transition-transform duration-300"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
             <div className="absolute top-2 right-2">

@@ -45,7 +45,9 @@ export default function HeroSection() {
       <BackgroundSVG />
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
-          <h1 className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-6 ${spline_sans.className}`}>
+          <h1
+            className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-6 ${spline_sans.className}`}
+          >
             Enhance Your Dine-In Experience With <br />
             <span
               className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${permanent_marker.className}`}

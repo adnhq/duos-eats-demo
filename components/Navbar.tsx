@@ -20,7 +20,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import duosLogo from "../duos-lg.png";
-import { AuthModal } from "./AuthModal";
 import { Button } from "./ui/button";
 import {
   Inter_Tight,
@@ -96,13 +95,14 @@ export default async function Navbar() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {session?.isAdmin ? (
+                  {session?.role === "admin" && (
                     <DropdownMenuItem>
                       <Link href="/admin-dashboard" className="w-full">
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                  ) : (
+                  )}
+                  {session?.role === "restaurant" && (
                     <>
                       <DropdownMenuItem>
                         <Link href="/restaurant" className="w-full">
@@ -179,14 +179,15 @@ export default async function Navbar() {
                           {(session as JWTPayload).name as string}
                         </p>
                       </div>
-                      {session?.isAdmin ? (
+                      {session?.role === "admin" && (
                         <Link
                           href="/admin-dashboard"
                           className="block hover:text-primary text-base text-muted-foreground"
                         >
                           Dashboard
                         </Link>
-                      ) : (
+                      )}
+                      {session?.role === "restaurant" && (
                         <>
                           <Link
                             href="/restaurant/OrderStats"

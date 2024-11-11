@@ -7,21 +7,25 @@ import { z } from "zod";
 import { createSession, decrypt, deleteSession } from "./session";
 import { supabase } from "./supabase";
 import { JWTPayload } from "jose";
+
 // authentication
 
-export async function login(formData: FormData) {
+export async function restaurantLogin(formData: FormData) {
   const user = {
     email: formData.get("email"),
     password: formData.get("password"),
   };
 
-  const { data: restaurant, error } = await supabase
+  const { data: restaurant, error: restaurantLoginError } = await supabase
     .from("Restaurants")
     .select("*")
     .eq("email", user.email)
     .eq("approved", true);
 
-  if (restaurant === null || restaurant?.length === 0) return;
+  if (restaurantLoginError) throw restaurantLoginError;
+
+  if (restaurant === null || restaurant?.length === 0)
+    throw new Error("Restaurant not found");
 
   const isPasswordSame = await bcrypt.compare(
     user.password as string,
@@ -30,16 +34,45 @@ export async function login(formData: FormData) {
 
   if (!isPasswordSame) throw new Error("Incorrect password");
 
-  const isAdmin = restaurant[0].email === process.env.ADMIN_EMAIL;
+  await createSession({
+    name: restaurant[0].name,
+    email: restaurant[0].email,
+    id: restaurant[0].id,
+    role: "restaurant",
+  });
+}
 
-  await createSession(
-    {
-      name: restaurant[0].name,
-      email: restaurant[0].email,
-      id: restaurant[0].id,
-    },
-    isAdmin
+export async function userLogin(formData: FormData) {
+  const user = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  const { data: fetchedUsers, error: userLoginError } = await supabase
+    .from("Users")
+    .select("*")
+    .eq("email", user.email);
+
+  if (userLoginError) throw userLoginError;
+
+  if (fetchedUsers === null || fetchedUsers?.length === 0)
+    throw new Error("User not found");
+
+  const isPasswordSame = await bcrypt.compare(
+    user.password as string,
+    fetchedUsers[0].password
   );
+
+  if (!isPasswordSame) throw new Error("Incorrect password");
+
+  const isAdmin = fetchedUsers[0].email === process.env.ADMIN_EMAIL;
+
+  await createSession({
+    name: fetchedUsers[0].name,
+    email: fetchedUsers[0].email,
+    id: fetchedUsers[0].id,
+    role: isAdmin ? "admin" : "user",
+  });
 }
 
 export async function logout() {
@@ -51,6 +84,43 @@ export async function getSession() {
   const session = cookieStore.get("session")?.value;
   if (!session) return null;
   return await decrypt(session);
+}
+
+export async function registerUser(formData: FormData) {
+  const { data: existingData, error: emailAlreadyExistsError } = await supabase
+    .from("Users")
+    .select("*")
+    .eq("email", formData.get("email"));
+
+  if (emailAlreadyExistsError) throw emailAlreadyExistsError;
+
+  if (existingData.length > 0) throw new Error("Email already exists");
+
+  const values = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    phoneNumber: formData.get("phoneNumber"),
+  };
+
+  // Hash the password with bcrypt
+
+  const hashedPassword = await bcrypt.hash(
+    values.password as string,
+    Number(process.env.BCRYPT_SALT_ROUNDS)
+  );
+
+  // Replace the plain password with the hashed one
+  const dataToInsert = {
+    ...values,
+    password: hashedPassword,
+  };
+
+  const { error } = await supabase.from("Users").insert([dataToInsert]);
+
+  if (error) throw error;
+
+  return { success: true };
 }
 
 const restaurantFormSchema = z.object({

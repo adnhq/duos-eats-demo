@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { getSession, login } from "@/lib/actions";
+import { getSession, restaurantLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -45,28 +45,27 @@ export default function RestaurantLoginForm({
 
   const onRestaurantSubmit = async (data: LoginFormValues) => {
     try {
-      // Implement restaurant login logic here
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         if (value !== null) {
           formData.append(key, value);
         }
       });
-      await login(formData);
+      await restaurantLogin(formData);
       const session = await getSession();
 
       if (session !== null) {
         toast({
           title: "Logged in successfully",
-          description: "Welcome back!",
+          description: "Welcome back to Duos Eats!",
         });
       } else {
-        throw new Error("Invalid");
+        throw new Error("Invalid Session");
       }
     } catch (error) {
       toast({
         title: "Login failed",
-        description: "Invalid email or password",
+        description: (error as Error).message,
         variant: "destructive",
       });
     } finally {

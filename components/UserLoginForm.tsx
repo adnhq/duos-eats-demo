@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { getSession, userLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,7 +29,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function UserLoginForm() {
-  const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
@@ -41,18 +42,33 @@ export default function UserLoginForm() {
 
   const onUserSubmit = async (data: LoginFormValues) => {
     try {
-      // Implement user login logic here
-      console.log("User login:", data);
-      setIsOpen(false);
-      toast({
-        title: "Logged in successfully",
-        description: "Welcome back!",
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== null) {
+          formData.append(key, value);
+        }
       });
+      await userLogin(formData);
+      const session = await getSession();
+
+      if (session !== null) {
+        toast({
+          title: "Logged in successfully",
+          description: "Welcome back to Duos Eats!",
+        });
+      } else {
+        throw new Error("Invalid Session");
+      }
     } catch (error) {
       toast({
         title: "Login failed",
-        description: "Invalid email or password",
+        description: (error as Error).message,
         variant: "destructive",
+      });
+    } finally {
+      userForm.reset({
+        email: "",
+        password: "",
       });
     }
   };
@@ -108,8 +124,21 @@ export default function UserLoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Sign In
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={userForm.formState.isSubmitting}
+        >
+          {userForm.formState.isSubmitting ? (
+            <>
+              <span className="">Signing in</span>
+              <span className="animate-spin">
+                <Loader2 className="h-4 w-4" />
+              </span>
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </form>
     </Form>

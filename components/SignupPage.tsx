@@ -1,22 +1,23 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Spline_Sans } from "next/font/google";
-import { Users, Eye, EyeOff } from "lucide-react";
 import {
+  Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-  Form,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { registerUser } from "@/lib/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Users } from "lucide-react";
+import { Spline_Sans } from "next/font/google";
+import Link from "next/link";
+import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const spline_sans = Spline_Sans({
   subsets: ["latin"],
@@ -24,16 +25,18 @@ const spline_sans = Spline_Sans({
 });
 
 // Form validation schema
-const signupSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().min(10, "Phone number must be 10 digits"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const signupSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    phoneNumber: z.string().min(10, "Phone number must be 10 digits"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -63,34 +66,63 @@ const BackgroundSVG = () => (
 );
 
 const SignupPage = () => {
-  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { toast } = useToast();
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      fullName: "",
-      phone: "",
+      name: "",
+      phoneNumber: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = async (data: SignupFormData) => {
-    setIsLoading(true);
+  const onSubmit = async (values: SignupFormData) => {
     // Handle signup logic here
-    console.log(data);
-    setIsLoading(false);
+    console.log(values);
+
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== null) {
+          formData.append(key, value);
+        }
+      });
+
+      const result = await registerUser(formData);
+
+      if (result.success) {
+        toast({
+          title: "Registration Successful!",
+          description: "Your account has been created successfully.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: (error as any).message,
+        variant: "destructive",
+      });
+    } finally {
+      form.reset({
+        name: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+        confirmPassword: "",
+      });
+    }
   };
 
   return (
     <main className="min-h-screen w-full flex flex-col justify-center items-center relative bg-gradient-to-b from-white to-orange-50 py-16 md:py-0">
       <BackgroundSVG />
 
-      <div className="relative z-10 w-full max-w-md mx-auto px-4">
+      <div className="relative z-10 w-full max-w-md mx-auto px-4 mt-20">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8 w-full">
           <div className="text-center mb-6 md:mb-8">
             <div className="flex justify-center mb-4">
@@ -110,7 +142,7 @@ const SignupPage = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
@@ -124,7 +156,7 @@ const SignupPage = () => {
 
               <FormField
                 control={form.control}
-                name="phone"
+                name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
@@ -153,7 +185,11 @@ const SignupPage = () => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="you@example.com" {...field} type="email" />
+                      <Input
+                        placeholder="you@example.com"
+                        {...field}
+                        type="email"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -201,14 +237,16 @@ const SignupPage = () => {
                     <FormControl>
                       <div className="relative">
                         <Input
-                        placeholder="••••••••"
+                          placeholder="••••••••"
                           {...field}
                           type={showConfirmPassword ? "text" : "password"}
                           className="pr-10"
                         />
                         <button
                           type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                         >
                           {showConfirmPassword ? (
@@ -224,12 +262,14 @@ const SignupPage = () => {
                 )}
               />
 
-              <Button 
-                type="submit" 
-                className="w-full bg-amber-500 hover:bg-amber-600"
-                disabled={isLoading}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {form.formState.isSubmitting
+                  ? "Creating Account..."
+                  : "Create Account"}
               </Button>
             </form>
           </Form>
@@ -237,24 +277,24 @@ const SignupPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <button
-                onClick={() => router.push("/login")}
+              <Link
+                href="/login"
                 className="font-medium text-amber-500 hover:text-amber-600"
               >
                 Sign in
-              </button>
+              </Link>
             </p>
           </div>
         </div>
 
         {/* Footer Links */}
         <div className="text-center space-y-4 w-full mt-6">
-          <button
-            onClick={() => router.push("/")}
+          <Link
+            href="/"
             className="text-sm text-gray-600 hover:text-amber-500 flex items-center justify-center gap-2 mx-auto"
           >
             ← Back to home
-          </button>
+          </Link>
         </div>
       </div>
 

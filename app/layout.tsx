@@ -1,11 +1,11 @@
+import Cart from "@/components/Cart";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import StoreProvider from "./StoreProvider";
-import Cart from "@/components/Cart";
 
 const inter = Inter({
   subsets: ["latin"],

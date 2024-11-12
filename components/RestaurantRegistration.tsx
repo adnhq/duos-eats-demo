@@ -1,13 +1,22 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Spline_Sans } from "next/font/google";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -15,27 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { ChevronRight, Eye, EyeOff, Info, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { registerRestaurant } from "@/lib/actions";
-import Image from "next/image";
 import { cuisineTypes, locations } from "@/lib/info";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronRight, Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const formSchema = z.object({
   restaurantName: z.string().min(2, {
@@ -108,7 +106,7 @@ export default function RestaurantRegistration() {
     } catch (error) {
       toast({
         title: "Registration Failed",
-        description: (error as any).message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     } finally {

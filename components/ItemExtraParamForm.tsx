@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, Minus, Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, Minus, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,11 +24,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
+import { priceWithDiscount } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { MenuItem } from "@/lib/types";
-import { addItem, prevResturantId } from "@/features/cart/cartSlice";
-import { priceWithDiscount } from "@/lib/helper";
 
 type Props = {
   item: MenuItem;
@@ -52,7 +51,7 @@ export default function ItemExtraParamForm({
 
   // Dynamically create the Zod schema based on MenuParameters
   const createFormSchema = (item: MenuItem) => {
-    const schemaFields: Record<string, z.ZodType<any, any>> = {};
+    const schemaFields: Record<string, z.ZodType<string>> = {};
     item.MenuParameters?.forEach((param) => {
       schemaFields[param.name] = z.string({
         required_error: `Please select a ${param.name.toLowerCase()}.`,
@@ -153,7 +152,7 @@ export default function ItemExtraParamForm({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {item.MenuParameters?.map((menuParameter, idx) => (
+            {item.MenuParameters?.map((menuParameter) => (
               <FormField
                 key={menuParameter.name}
                 control={form.control}

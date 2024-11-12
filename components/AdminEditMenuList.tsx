@@ -13,7 +13,7 @@ export default async function AdminEditMenuList({
 
   return (
     <div className="space-y-4">
-      {menuItems?.map((menuItem, id) => (
+      {menuItems?.map((menuItem) => (
         <EditMenuItemCard
           key={menuItem.id}
           item={menuItem}

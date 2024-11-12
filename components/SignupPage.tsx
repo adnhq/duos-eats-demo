@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { registerUser } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Users } from "lucide-react";
-import { Spline_Sans } from "next/font/google";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -99,7 +98,7 @@ const SignupPage = () => {
     } catch (error) {
       toast({
         title: "Registration Failed",
-        description: (error as any).message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     } finally {

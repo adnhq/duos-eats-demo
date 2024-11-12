@@ -12,52 +12,52 @@ import { getUnapprovedRestaurants } from "@/lib/actions";
 import Link from "next/link";
 import RestaurantApproval from "./RestaurantApproval";
 
-interface Restaurant {
-  id: number;
-  name: string;
-  pendingDues: number;
-  lastPayment: string;
-  status: string;
-}
+// interface Restaurant {
+//   id: number;
+//   name: string;
+//   pendingDues: number;
+//   lastPayment: string;
+//   status: string;
+// }
 
 // Mock data
-const restaurantsData: Restaurant[] = [
-  {
-    id: 1,
-    name: "Tasty Bites",
-    pendingDues: 2500,
-    lastPayment: "2023-05-15",
-    status: "active",
-  },
-  {
-    id: 2,
-    name: "Spice Haven",
-    pendingDues: 1800,
-    lastPayment: "2023-05-20",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Burger Palace",
-    pendingDues: 3200,
-    lastPayment: "2023-05-10",
-    status: "active",
-  },
-  {
-    id: 4,
-    name: "Sushi Express",
-    pendingDues: 900,
-    lastPayment: "2023-05-22",
-    status: "active",
-  },
-  {
-    id: 5,
-    name: "Pizza Paradise",
-    pendingDues: 1500,
-    lastPayment: "2023-05-18",
-    status: "active",
-  },
-];
+// const restaurantsData: Restaurant[] = [
+//   {
+//     id: 1,
+//     name: "Tasty Bites",
+//     pendingDues: 2500,
+//     lastPayment: "2023-05-15",
+//     status: "active",
+//   },
+//   {
+//     id: 2,
+//     name: "Spice Haven",
+//     pendingDues: 1800,
+//     lastPayment: "2023-05-20",
+//     status: "active",
+//   },
+//   {
+//     id: 3,
+//     name: "Burger Palace",
+//     pendingDues: 3200,
+//     lastPayment: "2023-05-10",
+//     status: "active",
+//   },
+//   {
+//     id: 4,
+//     name: "Sushi Express",
+//     pendingDues: 900,
+//     lastPayment: "2023-05-22",
+//     status: "active",
+//   },
+//   {
+//     id: 5,
+//     name: "Pizza Paradise",
+//     pendingDues: 1500,
+//     lastPayment: "2023-05-18",
+//     status: "active",
+//   },
+// ];
 
 // const pendingApplications: Application[] = [
 //   {

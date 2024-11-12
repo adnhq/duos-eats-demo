@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getRestaurantMenu } from "@/lib/actions";
 import { MenuItem, Restaurant } from "@/lib/types";
 import { Instagram, Search, Sparkles } from "lucide-react";
-import { Kalam, Spline_Sans } from "next/font/google";
+import { Kalam } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { MenuItemCard } from "./MenuItemCard";

@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { deleteMenuItem } from "@/lib/actions";
 import { MenuItem } from "@/lib/types";
 import { Pencil, Trash } from "lucide-react";
-import { Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import duosLogo from "../duos-lg.png";
@@ -23,7 +22,7 @@ import { Card } from "./ui/card";
 
 type Props = {
   item: MenuItem;
-  role: any;
+  role: string | unknown;
 };
 
 export default function EditMenuItemCard({ item, role }: Props) {
@@ -42,7 +41,7 @@ export default function EditMenuItemCard({ item, role }: Props) {
     } catch (error) {
       toast({
         title: "Deleting failed",
-        description: (error as any)?.message,
+        description: (error as Error)?.message,
         variant: "destructive",
       });
     }

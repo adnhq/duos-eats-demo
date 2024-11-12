@@ -5,7 +5,7 @@ import { UserSessionInfo } from "./types";
 
 const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET_KEY);
 
-export async function encrypt(payload: any) {
+export async function encrypt(payload: UserSessionInfo & { expiresAt: Date }) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()

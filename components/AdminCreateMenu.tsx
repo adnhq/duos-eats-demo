@@ -23,12 +23,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { addMenuItem, getAllRestaurants, getSession } from "@/lib/actions";
+import { addMenuItem, getAllRestaurants } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { JWTPayload } from "jose";
 import { Check, Edit2, InfoIcon, Plus, Star, Trash2, X } from "lucide-react";
-import { Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -40,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Restaurant } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -93,7 +92,7 @@ export default function AdminCreateMenu() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
   const [restaurantId, setRestaurantId] = useState("");
-  const [restaurants, setRestaurants] = useState<any>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
     async function getRestaurants() {
@@ -260,11 +259,13 @@ export default function AdminCreateMenu() {
                 <SelectContent>
                   {restaurants.length > 0 && (
                     <>
-                      {restaurants.map((restaurant: any, idx: number) => (
-                        <SelectItem key={idx} value={restaurant.id}>
-                          {restaurant.name}
-                        </SelectItem>
-                      ))}
+                      {restaurants.map(
+                        (restaurant: Restaurant, idx: number) => (
+                          <SelectItem key={idx} value={`${restaurant.id}`}>
+                            {restaurant.name}
+                          </SelectItem>
+                        )
+                      )}
                     </>
                   )}
                 </SelectContent>

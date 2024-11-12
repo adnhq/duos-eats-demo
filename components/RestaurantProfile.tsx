@@ -56,7 +56,7 @@ const updateFormSchema = z.object({
 
 type Props = {
   defaultValues: Restaurant;
-  id: any;
+  id: string | unknown;
 };
 
 export function RestaurantProfile({ defaultValues, id }: Props) {
@@ -77,7 +77,7 @@ export function RestaurantProfile({ defaultValues, id }: Props) {
           formData.append(key, value);
         }
       });
-      formData.append("id", id);
+      formData.append("id", id as string);
       const result = await editRestaurant(formData);
 
       if (result.success) {
@@ -100,7 +100,9 @@ export function RestaurantProfile({ defaultValues, id }: Props) {
     <Card>
       <CardHeader>
         <CardTitle>Your Restaurant Profile</CardTitle>
-        <CardDescription>Update your restaurant's information</CardDescription>
+        <CardDescription>
+          Update your restaurant&apos;s information
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...updateForm}>

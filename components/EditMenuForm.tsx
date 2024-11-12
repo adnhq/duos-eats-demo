@@ -120,7 +120,7 @@ export default function EditMenuItemForm({
     } catch (error) {
       toast({
         title: "Item update failed",
-        description: (error as any).message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }

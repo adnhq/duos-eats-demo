@@ -1,12 +1,10 @@
 "use client";
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, Utensils } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import RestaurantLoginForm from "./RestaurantLoginForm";
 import UserLoginForm from "./UserLoginForm";
-import { useRouter } from "next/navigation";
-import { Utensils, Users } from "lucide-react";
-import { Spline_Sans } from "next/font/google";
-import Link from "next/link";
 
 const BackgroundSVG = () => (
   <svg

@@ -42,7 +42,11 @@ const passwordFormSchema = z
     path: ["confirmPassword"],
   });
 
-export default function EditRestaurantPassword({ id }: { id: any }) {
+export default function EditRestaurantPassword({
+  id,
+}: {
+  id: string | unknown;
+}) {
   const { toast } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -65,7 +69,7 @@ export default function EditRestaurantPassword({ id }: { id: any }) {
           formData.append(key, value);
         }
       });
-      formData.append("id", id);
+      formData.append("id", id as string);
       const result = await editRestaurantPassword(formData);
 
       if (result.success) {
@@ -82,7 +86,7 @@ export default function EditRestaurantPassword({ id }: { id: any }) {
     } catch (error) {
       toast({
         title: "Update Failed",
-        description: (error as any)?.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }

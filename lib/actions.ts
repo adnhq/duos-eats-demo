@@ -318,7 +318,7 @@ export async function getAllRestaurants() {
   return Restaurants;
 }
 
-export async function getRestaurant(restaurantId: any) {
+export async function getRestaurant(restaurantId: string | unknown) {
   const { data: Restaurant, error } = await supabase
     .from("Restaurants")
     .select("*")
@@ -329,7 +329,7 @@ export async function getRestaurant(restaurantId: any) {
   return Restaurant;
 }
 
-export async function getRestaurantMenuCategories(id: any) {
+export async function getRestaurantMenuCategories(id: string | unknown) {
   const { data: menuCategories, error } = await supabase
     .from("Menu")
     .select("category")
@@ -337,16 +337,16 @@ export async function getRestaurantMenuCategories(id: any) {
 
   if (error) throw error;
 
-  let categories: string[] = [];
+  const categories: string[] = [];
 
-  menuCategories?.forEach((value, idx) => {
+  menuCategories?.forEach((value) => {
     if (!categories.includes(value.category)) categories.push(value.category);
   });
 
   return categories;
 }
 
-export async function getRestaurantMenu(id: any) {
+export async function getRestaurantMenu(id: string | unknown) {
   const { data: menu, error } = await supabase
     .from("Menu")
     .select("*, MenuParameters(name, options)")
@@ -408,7 +408,7 @@ export async function addMenuItem(formData: FormData) {
 
     if (extraParams.length > 0) {
       for (let i = 0; i < extraParams.length; i++) {
-        const { data: paramData, error: paramUploadError } = await supabase
+        const { error: paramUploadError } = await supabase
           .from("MenuParameters")
           .insert([{ ...extraParams[i], menuId: itemData[0].id }])
           .select();
@@ -426,7 +426,7 @@ export async function addMenuItem(formData: FormData) {
 
     if (extraParams.length > 0) {
       for (let i = 0; i < extraParams.length; i++) {
-        const { data: paramData, error: paramUploadError } = await supabase
+        const { error: paramUploadError } = await supabase
           .from("MenuParameters")
           .insert([{ ...extraParams[i], menuId: itemData[0].id }])
           .select();
@@ -539,7 +539,7 @@ export async function editMenuItem(formData: FormData) {
   return { success: true };
 }
 
-export async function deleteMenuItem(id: any) {
+export async function deleteMenuItem(id: string | unknown) {
   const session = await getSession();
 
   const { data: menuItems, error: notFoundError } = await supabase

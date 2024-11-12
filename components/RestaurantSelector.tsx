@@ -34,8 +34,8 @@ export default function RestaurantSelector({
       <SelectContent>
         {restaurants.length > 0 && (
           <>
-            {restaurants.map((restaurant: any, idx: number) => (
-              <SelectItem key={idx} value={restaurant.id}>
+            {restaurants.map((restaurant: Restaurant, idx: number) => (
+              <SelectItem key={idx} value={`${restaurant.id}`}>
                 {restaurant.name}
               </SelectItem>
             ))}

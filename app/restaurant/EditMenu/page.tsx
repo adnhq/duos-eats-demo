@@ -14,7 +14,7 @@ export default async function Page() {
   return (
     <div className="container mx-auto px-4">
       <div className="space-y-4">
-        {menuItems?.map((menuItem, id) => (
+        {menuItems?.map((menuItem) => (
           <EditMenuItemCard
             key={menuItem.id}
             item={menuItem}

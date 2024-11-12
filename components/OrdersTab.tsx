@@ -1,26 +1,7 @@
 "use client";
 // components/OrdersTab.tsx
-import { useState } from "react";
-import {
-  Utensils,
-  Eye,
-  CheckCircle,
-  XCircle,
-  ChefHat,
-  Receipt,
-  Loader2,
-  Pencil,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,20 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { editRestaurantDiscount } from "@/lib/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChefHat, Loader2, Pencil, Receipt, Utensils } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -53,29 +29,29 @@ import {
   FormMessage,
 } from "./ui/form";
 
-interface OrderItem {
-  name: string;
-  price: number;
-  quantity: number;
-}
+// interface OrderItem {
+//   name: string;
+//   price: number;
+//   quantity: number;
+// }
 
-interface Order {
-  orderId: string;
-  customerName: string;
-  items: OrderItem[];
-  totalAmount: number;
-  orderTime: string;
-}
+// interface Order {
+//   orderId: string;
+//   customerName: string;
+//   items: OrderItem[];
+//   totalAmount: number;
+//   orderTime: string;
+// }
 
-interface HistoricalOrder {
-  date: string;
-  orderId: string;
-  items: OrderItem[];
-  originalAmount: number;
-  discount: number;
-  platformFee: number;
-  finalEarnings: number;
-}
+// interface HistoricalOrder {
+//   date: string;
+//   orderId: string;
+//   items: OrderItem[];
+//   originalAmount: number;
+//   discount: number;
+//   platformFee: number;
+//   finalEarnings: number;
+// }
 
 interface WeeklyMonthlyStats {
   weeklyEarnings: number;
@@ -91,12 +67,12 @@ interface TodayStats {
 }
 
 interface OrdersTabProps {
-  activeOrders: Order[];
-  historicalData: HistoricalOrder[];
+  // activeOrders: Order[];
+  // historicalData: HistoricalOrder[];
   todayStats: TodayStats;
   weeklyMonthlyStats: WeeklyMonthlyStats;
   discount: string;
-  restaurantId: string;
+  restaurantId: string | unknown;
 }
 
 const formSchema = z.object({
@@ -110,8 +86,8 @@ const formSchema = z.object({
 });
 
 export function OrdersTab({
-  activeOrders,
-  historicalData,
+  // activeOrders,
+  // historicalData,
   todayStats,
   weeklyMonthlyStats,
   discount,
@@ -130,7 +106,7 @@ export function OrdersTab({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const formData = new FormData();
-      formData.append("restaurantId", restaurantId);
+      formData.append("restaurantId", restaurantId as string);
       formData.append("discount", values.discount);
 
       const result = await editRestaurantDiscount(formData);
@@ -145,7 +121,7 @@ export function OrdersTab({
     } catch (error) {
       toast({
         title: "Discount Change Failed",
-        description: (error as any).message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
@@ -154,155 +130,155 @@ export function OrdersTab({
   // const [currentDiscount, setCurrentDiscount] = useState("10%");
 
   // Mobile-responsive card view for orders
-  const OrderCard = ({ order }: { order: Order }) => (
-    <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <p className="font-medium">Order #{order.orderId}</p>
-          <p className="text-sm text-muted-foreground">{order.customerName}</p>
-        </div>
-        <p className="text-sm text-muted-foreground">{order.orderTime}</p>
-      </div>
+  // const OrderCard = ({ order }: { order: Order }) => (
+  //   <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
+  //     <div className="flex justify-between items-start mb-3">
+  //       <div>
+  //         <p className="font-medium">Order #{order.orderId}</p>
+  //         <p className="text-sm text-muted-foreground">{order.customerName}</p>
+  //       </div>
+  //       <p className="text-sm text-muted-foreground">{order.orderTime}</p>
+  //     </div>
 
-      <div className="mb-3">
-        <p className="text-sm font-medium">Amount: BDT {order.totalAmount}</p>
-      </div>
+  //     <div className="mb-3">
+  //       <p className="text-sm font-medium">Amount: BDT {order.totalAmount}</p>
+  //     </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="flex-1">
-              <Eye className="mr-2 h-4 w-4" />
-              View Items
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Order Details</DialogTitle>
-              <DialogDescription>
-                Order #{order.orderId} • {order.orderTime}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              {order.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center py-2 border-b"
-                >
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      BDT {item.price} × {item.quantity}
-                    </p>
-                  </div>
-                  <p className="font-medium">
-                    BDT {item.price * item.quantity}
-                  </p>
-                </div>
-              ))}
-              <div className="flex justify-between items-center pt-2">
-                <p className="font-bold">Total</p>
-                <p className="font-bold">BDT {order.totalAmount}</p>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Button variant="default" size="sm" className="flex-1">
-          <CheckCircle className="mr-2 h-4 w-4" />
-          Accept
-        </Button>
-        <Button variant="destructive" size="sm" className="flex-1">
-          <XCircle className="mr-2 h-4 w-4" />
-          Decline
-        </Button>
-      </div>
-    </div>
-  );
+  //     <div className="flex flex-wrap gap-2">
+  //       <Dialog>
+  //         <DialogTrigger asChild>
+  //           <Button variant="outline" size="sm" className="flex-1">
+  //             <Eye className="mr-2 h-4 w-4" />
+  //             View Items
+  //           </Button>
+  //         </DialogTrigger>
+  //         <DialogContent className="sm:max-w-[425px]">
+  //           <DialogHeader>
+  //             <DialogTitle>Order Details</DialogTitle>
+  //             <DialogDescription>
+  //               Order #{order.orderId} • {order.orderTime}
+  //             </DialogDescription>
+  //           </DialogHeader>
+  //           <div className="space-y-4">
+  //             {order.items.map((item, idx) => (
+  //               <div
+  //                 key={idx}
+  //                 className="flex justify-between items-center py-2 border-b"
+  //               >
+  //                 <div>
+  //                   <p className="font-medium">{item.name}</p>
+  //                   <p className="text-sm text-muted-foreground">
+  //                     BDT {item.price} × {item.quantity}
+  //                   </p>
+  //                 </div>
+  //                 <p className="font-medium">
+  //                   BDT {item.price * item.quantity}
+  //                 </p>
+  //               </div>
+  //             ))}
+  //             <div className="flex justify-between items-center pt-2">
+  //               <p className="font-bold">Total</p>
+  //               <p className="font-bold">BDT {order.totalAmount}</p>
+  //             </div>
+  //           </div>
+  //         </DialogContent>
+  //       </Dialog>
+  //       <Button variant="default" size="sm" className="flex-1">
+  //         <CheckCircle className="mr-2 h-4 w-4" />
+  //         Accept
+  //       </Button>
+  //       <Button variant="destructive" size="sm" className="flex-1">
+  //         <XCircle className="mr-2 h-4 w-4" />
+  //         Decline
+  //       </Button>
+  //     </div>
+  //   </div>
+  // );
 
   // Mobile-responsive card view for historical orders
-  const HistoricalOrderCard = ({ order }: { order: HistoricalOrder }) => (
-    <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <p className="font-medium">Order #{order.orderId}</p>
-          <p className="text-sm text-muted-foreground">{order.date}</p>
-        </div>
-      </div>
+  // const HistoricalOrderCard = ({ order }: { order: HistoricalOrder }) => (
+  //   <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
+  //     <div className="flex justify-between items-start mb-3">
+  //       <div>
+  //         <p className="font-medium">Order #{order.orderId}</p>
+  //         <p className="text-sm text-muted-foreground">{order.date}</p>
+  //       </div>
+  //     </div>
 
-      <div className="space-y-2 mb-3">
-        <div className="flex justify-between">
-          <p className="text-sm text-muted-foreground">Original Amount</p>
-          <p className="text-sm font-medium">BDT {order.originalAmount}</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-sm text-muted-foreground">Discount</p>
-          <p className="text-sm font-medium">{order.discount}%</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-sm text-muted-foreground">Platform Fee</p>
-          <p className="text-sm font-medium">BDT {order.platformFee}</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-sm font-medium">Final Earnings</p>
-          <p className="text-sm font-medium">BDT {order.finalEarnings}</p>
-        </div>
-      </div>
+  //     <div className="space-y-2 mb-3">
+  //       <div className="flex justify-between">
+  //         <p className="text-sm text-muted-foreground">Original Amount</p>
+  //         <p className="text-sm font-medium">BDT {order.originalAmount}</p>
+  //       </div>
+  //       <div className="flex justify-between">
+  //         <p className="text-sm text-muted-foreground">Discount</p>
+  //         <p className="text-sm font-medium">{order.discount}%</p>
+  //       </div>
+  //       <div className="flex justify-between">
+  //         <p className="text-sm text-muted-foreground">Platform Fee</p>
+  //         <p className="text-sm font-medium">BDT {order.platformFee}</p>
+  //       </div>
+  //       <div className="flex justify-between">
+  //         <p className="text-sm font-medium">Final Earnings</p>
+  //         <p className="text-sm font-medium">BDT {order.finalEarnings}</p>
+  //       </div>
+  //     </div>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="w-full">
-            <Eye className="mr-2 h-4 w-4" />
-            View Details
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Order Details</DialogTitle>
-            <DialogDescription>
-              Order #{order.orderId} • {order.date}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            {order.items.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex justify-between items-center py-2 border-b"
-              >
-                <div>
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    BDT {item.price} × {item.quantity}
-                  </p>
-                </div>
-                <p className="font-medium">BDT {item.price * item.quantity}</p>
-              </div>
-            ))}
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <p>Subtotal</p>
-                <p>BDT {order.originalAmount}</p>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <p>Discount ({order.discount}%)</p>
-                <p>
-                  - BDT{" "}
-                  {((order.originalAmount * order.discount) / 100).toFixed(2)}
-                </p>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <p>Platform Fee</p>
-                <p>- BDT {order.platformFee}</p>
-              </div>
-              <div className="flex justify-between font-bold pt-2 border-t">
-                <p>Final Earnings</p>
-                <p>BDT {order.finalEarnings}</p>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
+  //     <Dialog>
+  //       <DialogTrigger asChild>
+  //         <Button variant="outline" size="sm" className="w-full">
+  //           <Eye className="mr-2 h-4 w-4" />
+  //           View Details
+  //         </Button>
+  //       </DialogTrigger>
+  //       <DialogContent className="sm:max-w-[425px]">
+  //         <DialogHeader>
+  //           <DialogTitle>Order Details</DialogTitle>
+  //           <DialogDescription>
+  //             Order #{order.orderId} • {order.date}
+  //           </DialogDescription>
+  //         </DialogHeader>
+  //         <div className="space-y-4">
+  //           {order.items.map((item, idx) => (
+  //             <div
+  //               key={idx}
+  //               className="flex justify-between items-center py-2 border-b"
+  //             >
+  //               <div>
+  //                 <p className="font-medium">{item.name}</p>
+  //                 <p className="text-sm text-muted-foreground">
+  //                   BDT {item.price} × {item.quantity}
+  //                 </p>
+  //               </div>
+  //               <p className="font-medium">BDT {item.price * item.quantity}</p>
+  //             </div>
+  //           ))}
+  //           <div className="space-y-2">
+  //             <div className="flex justify-between">
+  //               <p>Subtotal</p>
+  //               <p>BDT {order.originalAmount}</p>
+  //             </div>
+  //             <div className="flex justify-between text-muted-foreground">
+  //               <p>Discount ({order.discount}%)</p>
+  //               <p>
+  //                 - BDT{" "}
+  //                 {((order.originalAmount * order.discount) / 100).toFixed(2)}
+  //               </p>
+  //             </div>
+  //             <div className="flex justify-between text-muted-foreground">
+  //               <p>Platform Fee</p>
+  //               <p>- BDT {order.platformFee}</p>
+  //             </div>
+  //             <div className="flex justify-between font-bold pt-2 border-t">
+  //               <p>Final Earnings</p>
+  //               <p>BDT {order.finalEarnings}</p>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </DialogContent>
+  //     </Dialog>
+  //   </div>
+  // );
 
   return (
     <Tabs defaultValue="orders" className="space-y-6">
@@ -320,7 +296,7 @@ export function OrdersTab({
           </CardHeader>
           <CardContent>
             {/* Mobile view */}
-            <div className="md:hidden space-y-4">
+            {/* <div className="md:hidden space-y-4">
               {activeOrders.length > 0 ? (
                 activeOrders.map((order) => (
                   <OrderCard key={order.orderId} order={order} />
@@ -330,7 +306,7 @@ export function OrdersTab({
                   No active orders
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* Desktop view */}
             <div className="hidden md:block">
@@ -344,7 +320,7 @@ export function OrdersTab({
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                {/* <TableBody>
                   {activeOrders.map((order) => (
                     <TableRow key={order.orderId}>
                       <TableCell>{order.orderId}</TableCell>
@@ -405,7 +381,7 @@ export function OrdersTab({
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
+                </TableBody> */}
               </Table>
             </div>
           </CardContent>
@@ -424,7 +400,7 @@ export function OrdersTab({
                   <Utensils className="h-6 w-6 mr-4 text-primary" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Today's Order Count
+                      Today&apos;s Order Count
                     </p>
                     <p className="text-2xl font-bold">{todayStats.orders}</p>
                   </div>
@@ -435,7 +411,7 @@ export function OrdersTab({
                     <p className="text-sm font-medium text-muted-foreground">
                       Pending Orders
                     </p>
-                    <p className="text-2xl font-bold">{activeOrders.length}</p>
+                    {/* <p className="text-2xl font-bold">{activeOrders.length}</p> */}
                   </div>
                 </div>
               </div>
@@ -619,7 +595,7 @@ export function OrdersTab({
           </CardHeader>
           <CardContent>
             {/* Mobile view */}
-            <div className="md:hidden space-y-4">
+            {/* <div className="md:hidden space-y-4">
               {historicalData.length > 0 ? (
                 historicalData.map((order) => (
                   <HistoricalOrderCard key={order.orderId} order={order} />
@@ -629,7 +605,7 @@ export function OrdersTab({
                   No pending orders
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* Desktop view */}
             <div className="hidden md:block">
@@ -645,7 +621,7 @@ export function OrdersTab({
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                {/* <TableBody>
                   {historicalData.map((order) => (
                     <TableRow key={order.orderId}>
                       <TableCell>{order.date}</TableCell>
@@ -716,7 +692,7 @@ export function OrdersTab({
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
+                </TableBody> */}
               </Table>
             </div>
           </CardContent>

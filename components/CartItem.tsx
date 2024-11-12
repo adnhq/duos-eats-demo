@@ -9,6 +9,7 @@ import {
 import { useAppDispatch } from "@/lib/hooks";
 import { CartItemType } from "@/lib/types";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 type CartItemProps = {
@@ -22,10 +23,12 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
     <div className="flex justify-between items-center py-4 border-b">
       <div className="flex-1">
         <div className="flex gap-2 items-center">
-          <img
+          <Image
             src={item.image}
             alt={item.name}
-            className="w-16 h-16 rounded-md"
+            width={80}
+            height={80}
+            className="rounded-md"
           />
 
           <div>

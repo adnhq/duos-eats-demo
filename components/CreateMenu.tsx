@@ -28,7 +28,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { JWTPayload } from "jose";
 import { Check, Edit2, InfoIcon, Plus, Star, Trash2, X } from "lucide-react";
-import { Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -85,7 +84,7 @@ export default function CreateMenu() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [restaurantId, setRestaurantId] = useState<any>("");
+  const [restaurantId, setRestaurantId] = useState<string | unknown>("");
 
   useEffect(() => {
     async function getRestaurantId() {
@@ -202,7 +201,7 @@ export default function CreateMenu() {
             } else if (value !== null) {
               formData.append(key, value);
             }
-            formData.append("restaurantId", restaurantId);
+            formData.append("restaurantId", restaurantId as string);
           });
 
           // Return the promise from addMenuItem

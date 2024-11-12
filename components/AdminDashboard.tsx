@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { getUnapprovedRestaurants } from "@/lib/actions";
 import Link from "next/link";
-import AdminCreateMenu from "./AdminCreateMenu";
 import RestaurantApproval from "./RestaurantApproval";
 
 interface Restaurant {
@@ -96,8 +95,8 @@ export default async function AdminDashboard() {
   const unApprovedRestaurants = await getUnapprovedRestaurants();
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto p-4 space-y-6">
+    <div className="min-h-screen">
+      <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
@@ -114,7 +113,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
           {platformStats.map((stat, index) => (
             <Card
               key={index}
@@ -167,8 +166,6 @@ export default async function AdminDashboard() {
             <RestaurantApproval unApprovedRestaurants={unApprovedRestaurants} />
           </CardContent>
         </Card>
-
-        <AdminCreateMenu />
       </div>
     </div>
   );

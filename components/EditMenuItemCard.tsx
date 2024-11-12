@@ -1,12 +1,4 @@
 "use client";
-import { Spline_Sans } from "next/font/google";
-import React, { startTransition } from "react";
-import { Card } from "./ui/card";
-import Image from "next/image";
-import { Button } from "./ui/button";
-import duosLogo from "../duos-lg.png";
-import Link from "next/link";
-import { Pencil, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,17 +10,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteMenuItem } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import { deleteMenuItem } from "@/lib/actions";
 import { MenuItem } from "@/lib/types";
+import { Pencil, Trash } from "lucide-react";
+import { Spline_Sans } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
+import duosLogo from "../duos-lg.png";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500"] });
 
 type Props = {
   item: MenuItem;
+  role: any;
 };
 
-export default function EditMenuItemCard({ item }: Props) {
+export default function EditMenuItemCard({ item, role }: Props) {
   const { toast } = useToast();
 
   async function handleDelete() {
@@ -87,7 +87,13 @@ export default function EditMenuItemCard({ item }: Props) {
           <p className="font-semibold">Tk {item.price}</p>
           <div className="flex gap-2">
             <Button asChild variant={"outline"}>
-              <Link href={`/restaurant/EditMenu/${item.id}`}>
+              <Link
+                href={
+                  role === "admin"
+                    ? `/admin/EditMenu/${item.id}`
+                    : `/restaurant/EditMenu/${item.id}`
+                }
+              >
                 <Pencil className="w-4 h-4" />
               </Link>
             </Button>

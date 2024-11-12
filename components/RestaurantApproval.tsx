@@ -87,7 +87,7 @@ export default function RestaurantApproval({
 
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden xl:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -182,7 +182,7 @@ export default function RestaurantApproval({
         </Table>
       </div>
 
-      <div className="md:hidden space-y-4">
+      <div className="xl:hidden space-y-4">
         {unApprovedRestaurants.map((restaurant) => {
           const date = new Date(restaurant.created_at).toLocaleString("en-US", {
             month: "short",

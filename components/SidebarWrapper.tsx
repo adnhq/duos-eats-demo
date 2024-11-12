@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 
 export default async function SidebarWrapper() {
   const session = await getSession();
-  if (!session || (session as JWTPayload).isAdmin) return redirect("/");
+  if (!session || (session as JWTPayload).role !== "restaurant")
+    return redirect("/");
   const restaurants = await getRestaurant((session as JWTPayload).id);
 
   return (

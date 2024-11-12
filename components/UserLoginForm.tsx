@@ -61,7 +61,7 @@ export default function UserLoginForm() {
       });
 
       if (session.role === "admin") {
-        router.push("/admin-dashboard");
+        router.push("/admin/Dashboard");
       } else {
         router.push("/");
       }

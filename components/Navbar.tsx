@@ -86,7 +86,7 @@ export default async function Navbar() {
 
                   {session?.role === "admin" && (
                     <DropdownMenuItem>
-                      <Link href="/admin-dashboard" className="w-full">
+                      <Link href="/admin/Dashboard" className="w-full">
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
@@ -183,7 +183,7 @@ export default async function Navbar() {
                       </div>
                       {session?.role === "admin" && (
                         <Link
-                          href="/admin-dashboard"
+                          href="/admin/Dashboard"
                           className="block hover:text-primary text-base text-muted-foreground"
                         >
                           Dashboard

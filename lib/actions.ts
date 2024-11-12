@@ -457,8 +457,12 @@ export async function editMenuItem(formData: FormData) {
 
   if (notFoundError || menuItems.length === 0) throw notFoundError;
 
-  if (Number((session as JWTPayload).id) !== Number(menuItems[0].restaurantId))
-    throw new Error("You are not authorized to edit this item");
+  if ((session as JWTPayload).role !== "admin") {
+    if (
+      Number((session as JWTPayload).id) !== Number(menuItems[0].restaurantId)
+    )
+      throw new Error("You are not authorized to delete this item");
+  }
 
   // parsing the form data properly
   const extraParamsString = formData.get("extraParams");
@@ -527,7 +531,11 @@ export async function editMenuItem(formData: FormData) {
     }
   }
 
-  revalidatePath(`/restaurant/EditMenu/${editMenuId}`);
+  if ((session as JWTPayload).role === "admin") {
+    revalidatePath(`/admin/EditMenu/${editMenuId}`);
+  } else {
+    revalidatePath(`/restaurant/EditMenu/${editMenuId}`);
+  }
   return { success: true };
 }
 
@@ -541,8 +549,12 @@ export async function deleteMenuItem(id: any) {
 
   if (notFoundError || menuItems.length === 0) throw notFoundError;
 
-  if (Number((session as JWTPayload).id) !== Number(menuItems[0].restaurantId))
-    throw new Error("You are not authorized to delete this item");
+  if ((session as JWTPayload).role !== "admin") {
+    if (
+      Number((session as JWTPayload).id) !== Number(menuItems[0].restaurantId)
+    )
+      throw new Error("You are not authorized to delete this item");
+  }
 
   const { error: deleteError } = await supabase
     .from("Menu")
@@ -560,7 +572,11 @@ export async function deleteMenuItem(id: any) {
 
   if (fileDeleteError) throw fileDeleteError;
 
-  revalidatePath("/restaurant/EditMenu");
+  if ((session as JWTPayload).role === "admin") {
+    revalidatePath(`/admin/EditMenu/restaurantId=${menuItems[0].restaurantId}`);
+  } else {
+    revalidatePath("/restaurant/EditMenu");
+  }
 
   return { success: true };
 }
@@ -586,7 +602,7 @@ export async function approveRestaurant(id: number) {
 
   if (error) throw error;
 
-  revalidatePath("/admin-dashboard");
+  revalidatePath("/admin/Dashboard");
   return { success: true };
 }
 
@@ -614,5 +630,5 @@ export async function rejectRestaurant(id: number) {
 
   if (fileDeleteError) throw fileDeleteError;
 
-  revalidatePath("/admin-dashboard");
+  revalidatePath("/admin/Dashboard");
 }

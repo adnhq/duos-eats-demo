@@ -144,7 +144,7 @@ export default function ItemExtraParamForm({
         <DialogHeader>
           <DialogTitle>{item.name}</DialogTitle>
           <p className="text-sm font-semibold">
-            Tk - ${currentPrice.toFixed(2)}
+            Tk - {(currentPrice * quantity).toFixed(2)}
           </p>
           <p className="text-muted-foreground text-sm">
             Choose from the available options to customize your item

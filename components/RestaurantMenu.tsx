@@ -78,6 +78,13 @@ export default async function RestaurantMenu({
             fill
             className="object-cover"
           />
+
+          <div className="absolute top-2 right-2">
+            <span className="px-4 py-1 text-xs font-medium tracking-wider text-primary-foreground bg-primary rounded-full uppercase">
+              {restaurantData.cuisine}
+            </span>
+          </div>
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white">
             <h1
@@ -85,19 +92,15 @@ export default async function RestaurantMenu({
             >
               {restaurantData.name}
             </h1>
-            <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2 uppercase">
-              {restaurantData.cuisine}
+
+            <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2">
+              {restaurantData.address}
             </p>
+
             <div className="flex items-center text-sm sm:text-base">
               <span className="text-yellow-400 mr-1">★</span>
               <span className="font-semibold">{"0.0"}</span>
             </div>
-          </div>
-
-          <div className="absolute bottom-0 right-0 p-3 text-white">
-            <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2">
-              {restaurantData.address}
-            </p>
           </div>
         </div>
 

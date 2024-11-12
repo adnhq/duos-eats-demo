@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await getSession();
-  if (!session || (session as JWTPayload).role === "admin")
-    return redirect("/");
+
+  if ((session as JWTPayload).role !== "restaurant") return redirect("/");
+
   const restaurants = await getRestaurant((session as JWTPayload).id);
 
   if (restaurants.length === 0) return null;

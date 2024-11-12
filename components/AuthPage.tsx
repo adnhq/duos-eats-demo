@@ -41,10 +41,6 @@ const BackgroundSVG = () => (
 const AuthPage = () => {
   const router = useRouter();
 
-  const handleClose = () => {
-    router.push("/");
-  };
-
   return (
     <main className="min-h-screen w-full flex flex-col justify-center items-center relative bg-gradient-to-b from-white to-orange-50">
       <BackgroundSVG />
@@ -96,7 +92,7 @@ const AuthPage = () => {
             </TabsContent>
 
             <TabsContent value="restaurant" className="mt-0">
-              <RestaurantLoginForm setIsOpen={handleClose} />
+              <RestaurantLoginForm />
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   Want to partner with us?{" "}

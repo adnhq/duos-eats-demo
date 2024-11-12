@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getSession, userLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -31,6 +31,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function UserLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const userForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -48,16 +49,21 @@ export default function UserLoginForm() {
           formData.append(key, value);
         }
       });
+
       await userLogin(formData);
       const session = await getSession();
 
-      if (session !== null) {
-        toast({
-          title: "Logged in successfully",
-          description: "Welcome back to Duos Eats!",
-        });
+      if (session === null) throw new Error("Invalid Session");
+
+      toast({
+        title: `Logged in as ${session.name} successfully`,
+        description: "Welcome back to Duos Eats!",
+      });
+
+      if (session.role === "admin") {
+        router.push("/admin-dashboard");
       } else {
-        throw new Error("Invalid Session");
+        router.push("/");
       }
     } catch (error) {
       toast({

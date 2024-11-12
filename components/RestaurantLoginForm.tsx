@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getSession, restaurantLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,13 +28,10 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function RestaurantLoginForm({
-  setIsOpen,
-}: {
-  setIsOpen: (isOpen: boolean) => void;
-}) {
+export default function RestaurantLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const restaurantForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -54,13 +52,15 @@ export default function RestaurantLoginForm({
       await restaurantLogin(formData);
       const session = await getSession();
 
-      if (session !== null) {
-        toast({
-          title: "Logged in successfully",
-          description: "Welcome back to Duos Eats!",
-        });
-      } else {
-        throw new Error("Invalid Session");
+      if (session === null) throw new Error("Invalid Session");
+
+      toast({
+        title: `Logged in as ${session.name} successfully`,
+        description: "Welcome back to Duos Eats!",
+      });
+
+      if (session.role === "restaurant") {
+        router.push("/restaurant/OrderStats");
       }
     } catch (error) {
       toast({
@@ -73,7 +73,6 @@ export default function RestaurantLoginForm({
         email: "",
         password: "",
       });
-      setIsOpen(false);
     }
   };
 

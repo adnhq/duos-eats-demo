@@ -58,7 +58,7 @@ export default function EditMenuItemCard({ item }: Props) {
   }
 
   return (
-    <Card className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4 rounded-lg shadow-sm">
+    <Card className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 p-4 rounded-lg shadow-sm">
       <div className="relative w-full sm:w-24 h-48 sm:h-24 flex-shrink-0">
         <Image
           src={item.image === "undefined" ? duosLogo : item.image}

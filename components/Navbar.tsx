@@ -50,8 +50,7 @@ export default async function Navbar() {
                 src={duosLogo}
                 alt="DUOS Logo"
                 fill
-                style={{ objectFit: "contain" }}
-                priority
+                className="object-contain"
               />
             </div>
           </Link>
@@ -77,10 +76,7 @@ export default async function Navbar() {
                 </Link>
               )}
             </div>
-          </div>
 
-          {/* Desktop Auth Section */}
-          <div className="hidden md:flex items-center space-x-6">
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-2">
@@ -132,10 +128,13 @@ export default async function Navbar() {
               </DropdownMenu>
             ) : (
               <Button asChild className="w-full md:w-auto">
-                <Link href="/login">Sign In</Link>
+                <Link href="/login">Log in</Link>
               </Button>
             )}
           </div>
+
+          {/* Desktop Auth Section */}
+          {/* <div className="hidden md:flex items-center space-x-6"></div> */}
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">

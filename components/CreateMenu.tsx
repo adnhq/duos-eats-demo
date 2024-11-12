@@ -12,6 +12,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,8 +25,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { addMenuItem, getSession } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { JWTPayload } from "jose";
-import { Check, Edit2, Plus, Star, Trash2, X } from "lucide-react";
+import { Check, Edit2, InfoIcon, Plus, Star, Trash2, X } from "lucide-react";
 import { Spline_Sans } from "next/font/google";
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -41,9 +43,13 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
-  price: z.number().min(0, {
-    message: "Price must be a positive number.",
-  }),
+  price: z
+    .string({
+      required_error: "Price field can't be empty",
+    })
+    .regex(/^[1-9]\d*$/, {
+      message: "Please provide a valid price",
+    }),
   description: z.string().optional(),
   category: z.string().min(1, {
     message: "Category is required.",
@@ -54,7 +60,18 @@ const formSchema = z.object({
     .array(
       z.object({
         name: z.string().min(1, "Parameter name is required"),
-        options: z.array(z.string().min(1, "Option cannot be empty")),
+        options: z.array(
+          z.object({
+            name: z.string().min(1, "Option name cannot be empty"),
+            price: z
+              .string({
+                required_error: "Price field can't be empty",
+              })
+              .regex(/^[0-9]\d*$/, {
+                message: "Please provide a valid price",
+              }),
+          })
+        ),
       })
     )
     .optional(),
@@ -88,7 +105,7 @@ export default function CreateMenu() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      price: undefined, // Changed from 0 to undefined to prevent the 404 error
+      price: "",
       description: "",
       category: "",
       popular: false,
@@ -134,7 +151,7 @@ export default function CreateMenu() {
     const currentExtraParams = form.getValues("extraParams") || [];
     form.setValue("extraParams", [
       ...currentExtraParams,
-      { name: "", options: [""] },
+      { name: "", options: [{ name: "", price: "" }] },
     ]);
   };
 
@@ -149,7 +166,7 @@ export default function CreateMenu() {
   const handleAddOption = (paramIndex: number) => {
     const currentExtraParams = form.getValues("extraParams") || [];
     const updatedParams = [...currentExtraParams];
-    updatedParams[paramIndex].options.push("");
+    updatedParams[paramIndex].options.push({ name: "", price: "" });
     form.setValue("extraParams", updatedParams);
   };
 
@@ -175,44 +192,6 @@ export default function CreateMenu() {
       category.toLowerCase().includes(lowercasedInput)
     );
   };
-
-  // async function handleSubmit() {
-  //   startTransition(async () => {
-  //     try {
-  //       for (let i = 0; i < menuItems.length; i++) {
-  //         let formData = new FormData();
-  //         Object.entries(menuItems[i]).forEach(([key, value]) => {
-  //           if (key === "extraParams") {
-  //             formData.append(key, JSON.stringify(value));
-  //           } else {
-  //             if (value !== null) {
-  //               formData.append(key, value);
-  //             }
-  //           }
-  //           formData.append("restaurantId", restaurantId);
-  //         });
-
-  //         const result = await addMenuItem(formData);
-  //         if (result.success) {
-  //           toast({
-  //             title: "Success",
-  //             description: result.message,
-  //           });
-  //         } else {
-  //           throw new Error("Failed to add menu items");
-  //         }
-  //       }
-
-  //       setMenuItems([]);
-  //     } catch (error) {
-  //       toast({
-  //         title: "Error",
-  //         description: "Failed to add menu items. Please try again.",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   });
-  // }
 
   async function handleSubmit() {
     startTransition(async () => {
@@ -279,7 +258,7 @@ export default function CreateMenu() {
                 onClick={() => {
                   form.reset({
                     name: "",
-                    price: undefined,
+                    price: "",
                     description: "",
                     category: "",
                     popular: false,
@@ -336,9 +315,7 @@ export default function CreateMenu() {
                               value={field.value || ""}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                field.onChange(
-                                  value === "" ? undefined : parseFloat(value)
-                                );
+                                field.onChange(value);
                               }}
                             />
                           </FormControl>
@@ -455,6 +432,10 @@ export default function CreateMenu() {
                       render={() => (
                         <FormItem>
                           <FormLabel>Extra Parameters</FormLabel>
+                          <FormDescription className="flex items-center gap-2">
+                            <InfoIcon className="h-4 w-4" />
+                            Please enter 0 for the price if the option is free
+                          </FormDescription>
                           <FormControl>
                             <div>
                               {form
@@ -485,7 +466,6 @@ export default function CreateMenu() {
                                       <Button
                                         type="button"
                                         variant="outline"
-                                        size="icon"
                                         onClick={() =>
                                           handleRemoveExtraParam(paramIndex)
                                         }
@@ -501,8 +481,7 @@ export default function CreateMenu() {
                                         >
                                           <Input
                                             placeholder="Option"
-                                            className="focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
-                                            value={option}
+                                            value={option.name}
                                             onChange={(e) => {
                                               const newParams = [
                                                 ...(form.getValues(
@@ -511,7 +490,26 @@ export default function CreateMenu() {
                                               ];
                                               newParams[paramIndex].options[
                                                 optionIndex
-                                              ] = e.target.value;
+                                              ].name = e.target.value;
+                                              form.setValue(
+                                                "extraParams",
+                                                newParams
+                                              );
+                                            }}
+                                          />
+                                          <Input
+                                            type="number"
+                                            placeholder="Price"
+                                            value={option.price}
+                                            onChange={(e) => {
+                                              const newParams = [
+                                                ...(form.getValues(
+                                                  "extraParams"
+                                                ) || []),
+                                              ];
+                                              newParams[paramIndex].options[
+                                                optionIndex
+                                              ].price = e.target.value;
                                               form.setValue(
                                                 "extraParams",
                                                 newParams
@@ -521,7 +519,6 @@ export default function CreateMenu() {
                                           <Button
                                             type="button"
                                             variant="outline"
-                                            size="icon"
                                             onClick={() =>
                                               handleRemoveOption(
                                                 paramIndex,
@@ -612,7 +609,7 @@ export default function CreateMenu() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground">
-                    Price: Tk {item.price.toFixed(2)} | Category:{" "}
+                    Price: Tk {Number(item.price).toFixed(2)} | Category:{" "}
                     {item.category}
                   </p>
                 </CardContent>
@@ -679,7 +676,7 @@ export default function CreateMenu() {
                             {item.description}
                           </p>
                           <p className="text-sm font-semibold mt-1">
-                            Tk {item.price.toFixed(2)}
+                            Tk {Number(item.price).toFixed(2)}
                           </p>
                           {item.extraParams && item.extraParams.length > 0 && (
                             <div className="mt-2">
@@ -689,7 +686,19 @@ export default function CreateMenu() {
                               <ul className="text-xs text-muted-foreground">
                                 {item.extraParams.map((param, paramIndex) => (
                                   <li key={paramIndex}>
-                                    {param.name}: {param.options.join(", ")}
+                                    {param.name}:
+                                    {param.options.map(
+                                      (option, optionIndex) => (
+                                        <span key={optionIndex}>
+                                          {option.name} (Tk{" "}
+                                          {Number(option.price).toFixed(2)})
+                                          {optionIndex <
+                                          param.options.length - 1
+                                            ? ", "
+                                            : ""}
+                                        </span>
+                                      )
+                                    )}
                                   </li>
                                 ))}
                               </ul>

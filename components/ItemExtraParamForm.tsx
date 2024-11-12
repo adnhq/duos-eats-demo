@@ -43,6 +43,9 @@ export default function ItemExtraParamForm({
   setQuantity,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState(
+    priceWithDiscount(Number(item.price), Number(item.discount))
+  );
   const dispatch = useAppDispatch();
   const prevRestaurantId = useAppSelector(prevResturantId);
   const { toast } = useToast();
@@ -64,13 +67,39 @@ export default function ItemExtraParamForm({
     resolver: zodResolver(FormSchema),
   });
 
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      let newPrice = priceWithDiscount(
+        Number(item.price),
+        Number(item.discount)
+      );
+      Object.entries(value).forEach(([paramName, optionName]) => {
+        const param = item.MenuParameters?.find((p) => p.name === paramName);
+        const option = param?.options.find((o) => o.name === optionName);
+        if (option && option.price > 0) {
+          newPrice = priceWithDiscount(option.price, Number(item.discount));
+        }
+      });
+      setCurrentPrice(newPrice);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, item]);
+
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => Math.max(prev + change, 0));
   };
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    // console.log(data);
-    // // Here you would typically dispatch an action to add the item to the cart
+    if (prevRestaurantId !== null && prevRestaurantId !== item.restaurantId) {
+      toast({
+        title: "Sorry, could not add the item to cart.",
+        description:
+          "You have items from a different restaurant in the cart. Please clear the cart to add items from this restaurant.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const selectedOptions = Object.entries(data).map(
       ([key, value]) => `${key}:${value}`
     );
@@ -79,7 +108,7 @@ export default function ItemExtraParamForm({
       id: item.id + ":" + selectedOptions.join(","),
       name: item.name,
       image: item.image,
-      price: priceWithDiscount(Number(item.price), Number(item.discount)),
+      price: currentPrice,
       quantity,
       restaurantId: item.restaurantId,
       extraParams: selectedOptions,
@@ -113,10 +142,13 @@ export default function ItemExtraParamForm({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Select Options</DialogTitle>
-          <DialogDescription>
+          <DialogTitle>{item.name}</DialogTitle>
+          <p className="text-sm font-semibold">
+            Tk - ${currentPrice.toFixed(2)}
+          </p>
+          <p className="text-muted-foreground text-sm">
             Choose from the available options to customize your item
-          </DialogDescription>
+          </p>
         </DialogHeader>
 
         <Form {...form}>
@@ -137,14 +169,19 @@ export default function ItemExtraParamForm({
                       >
                         {menuParameter.options.map((option) => (
                           <FormItem
-                            key={option}
+                            key={option.name}
                             className="flex items-center space-x-3 space-y-0"
                           >
                             <FormControl>
-                              <RadioGroupItem value={option} />
+                              <RadioGroupItem value={option.name} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {option}
+                              {option.price > 0
+                                ? `${option.name} - Tk ${priceWithDiscount(
+                                    option.price,
+                                    Number(item.discount)
+                                  ).toFixed(2)}`
+                                : `${option.name}`}
                             </FormLabel>
                           </FormItem>
                         ))}

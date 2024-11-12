@@ -375,6 +375,7 @@ export async function addMenuItem(formData: FormData) {
     ? JSON.parse(extraParamsString as string)
     : [];
 
+  console.log(extraParams);
   const values = {
     name: formData.get("name"),
     price: formData.get("price"),

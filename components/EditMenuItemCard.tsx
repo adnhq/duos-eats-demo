@@ -20,19 +20,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteMenuItem } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import { MenuItem } from "@/lib/types";
 
 const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500"] });
 
 type Props = {
-  item: {
-    id: string;
-    name: string;
-    price: number;
-    description: string;
-    image: string;
-    popular: boolean;
-    MenuParameters: any[];
-  };
+  item: MenuItem;
 };
 
 export default function EditMenuItemCard({ item }: Props) {
@@ -78,7 +71,13 @@ export default function EditMenuItemCard({ item }: Props) {
               <div key={idx} className="text-xs flex gap-2">
                 <p className="font-semibold">{parameter.name}</p>
                 <p> - </p>
-                <p>{parameter.options.join(", ")}</p>
+                <div className="flex gap-1">
+                  {parameter.options.map((option, id) => (
+                    <p key={id}>{`${option.name}${
+                      parameter.options.length - 1 !== id ? "," : ""
+                    }`}</p>
+                  ))}
+                </div>
               </div>
             ))}
           </>

@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Check, Loader2, Pencil, Plus, X } from "lucide-react";
+import { Check, InfoIcon, Loader2, Pencil, Plus, X } from "lucide-react";
 import Image from "next/image";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,7 +20,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { editMenuItem } from "@/lib/actions";
+import duosLogo from "../duos-lg.png";
 import {
   Card,
   CardContent,
@@ -26,13 +30,16 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { editMenuItem } from "@/lib/actions";
-import { useToast } from "@/hooks/use-toast";
-import duosLogo from "../duos-lg.png";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  price: z.number().min(0, "Price must be a positive number"),
+  price: z
+    .string({
+      required_error: "Price field can't be empty",
+    })
+    .regex(/^[1-9]\d*$/, {
+      message: "Please provide a valid price",
+    }),
   category: z.string().min(1, {
     message: "Category is required.",
   }),
@@ -43,7 +50,18 @@ const formSchema = z.object({
     .array(
       z.object({
         name: z.string().min(1, "Parameter name is required"),
-        options: z.array(z.string().min(1, "Option cannot be empty")),
+        options: z.array(
+          z.object({
+            name: z.string().min(1, "Option name cannot be empty"),
+            price: z
+              .string({
+                required_error: "Price field can't be empty",
+              })
+              .regex(/^[0-9]\d*$/, {
+                message: "Please provide a valid price",
+              }),
+          })
+        ),
       })
     )
     .optional(),
@@ -66,7 +84,7 @@ export default function EditMenuItemForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      price: undefined,
+      price: "",
       category: "",
       description: "",
       extraParams: [],
@@ -78,9 +96,6 @@ export default function EditMenuItemForm({
   const onSubmit = async (data: FormValues) => {
     try {
       console.log(data);
-      // Handle form submission here
-      // Simulate an API call
-      // await new Promise((resolve) => setTimeout(resolve, 2000));
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         if (key === "extraParams") {
@@ -115,7 +130,7 @@ export default function EditMenuItemForm({
     const currentParams = form.getValues("extraParams") || [];
     form.setValue("extraParams", [
       ...currentParams,
-      { name: "", options: [""] },
+      { name: "", options: [{ name: "", price: "" }] },
     ]);
   };
 
@@ -129,7 +144,7 @@ export default function EditMenuItemForm({
 
   const handleAddOption = (paramIndex: number) => {
     const currentParams = form.getValues("extraParams") || [];
-    currentParams[paramIndex].options.push("");
+    currentParams[paramIndex].options.push({ name: "", price: "" });
     form.setValue("extraParams", currentParams);
   };
 
@@ -187,13 +202,7 @@ export default function EditMenuItemForm({
                       type="number"
                       placeholder="Enter price"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value === ""
-                            ? undefined
-                            : parseFloat(e.target.value)
-                        )
-                      }
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -341,6 +350,10 @@ export default function EditMenuItemForm({
               render={() => (
                 <FormItem>
                   <FormLabel>Extra Parameters</FormLabel>
+                  <FormDescription className="flex items-center gap-2">
+                    <InfoIcon className="h-4 w-4" />
+                    Please enter 0 for the price if the option is free
+                  </FormDescription>
                   <FormControl>
                     <div>
                       {form.watch("extraParams")?.map((param, paramIndex) => (
@@ -363,7 +376,6 @@ export default function EditMenuItemForm({
                             <Button
                               type="button"
                               variant="outline"
-                              size="icon"
                               onClick={() => handleRemoveExtraParam(paramIndex)}
                             >
                               <X className="h-4 w-4" />
@@ -373,20 +385,35 @@ export default function EditMenuItemForm({
                             <div key={optionIndex} className="flex gap-2 mt-2">
                               <Input
                                 placeholder="Option"
-                                value={option}
+                                value={option.name}
                                 onChange={(e) => {
                                   const newParams = [
                                     ...(form.getValues("extraParams") || []),
                                   ];
-                                  newParams[paramIndex].options[optionIndex] =
-                                    e.target.value;
+                                  newParams[paramIndex].options[
+                                    optionIndex
+                                  ].name = e.target.value;
+                                  form.setValue("extraParams", newParams);
+                                }}
+                              />
+                              <Input
+                                type="number"
+                                placeholder="Price"
+                                value={`${option.price}`}
+                                onChange={(e) => {
+                                  const newParams = [
+                                    ...(form.getValues("extraParams") || []),
+                                  ];
+
+                                  newParams[paramIndex].options[
+                                    optionIndex
+                                  ].price = e.target.value;
                                   form.setValue("extraParams", newParams);
                                 }}
                               />
                               <Button
                                 type="button"
                                 variant="outline"
-                                size="icon"
                                 onClick={() =>
                                   handleRemoveOption(paramIndex, optionIndex)
                                 }

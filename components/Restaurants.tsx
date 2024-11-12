@@ -1,37 +1,9 @@
 import { getAllRestaurants } from "@/lib/actions";
 import { Restaurant } from "@/lib/types";
 import RestaurantCard from "./RestaurantCard";
-import { Suspense } from "react";
-import Spinner from "./Spinner";
-
-const locations = [
-  "Uttara",
-  "Mirpur",
-  "Pallabi",
-  "Kazipara",
-  "Kafrul",
-  "Agargaon",
-  "Banani",
-  "Gulshan",
-  "Niketan",
-  "Shahjadpur",
-  "Mohakhali",
-  "Bashundhara",
-  "Banasree",
-  "Aftab Nagar",
-  "Baridhara",
-  "Khilkhet",
-  "Tejgaon",
-  "Farmgate",
-  "Mohammadpur",
-  "Rampura",
-  "Badda",
-  "Khilgaon",
-];
 
 export default async function Restaurants() {
   const restaurants = await getAllRestaurants();
-  // const restaurants = [];
 
   return (
     <div

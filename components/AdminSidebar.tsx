@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { ChefHat, PencilRuler, User, Utensils } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "./ui/button";
 
 export default function AdminSidebar() {
   const sidebarItems = [

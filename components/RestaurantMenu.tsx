@@ -11,11 +11,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { MenuItemCard } from "./MenuItemCard";
 
-const splineSans = Spline_Sans({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
 const discountFont = Kalam({ subsets: ["latin"], weight: ["700"] });
 
 type MenuItemsGrouped = {
@@ -86,7 +81,7 @@ export default async function RestaurantMenu({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white">
             <h1
-              className={`text-3xl sm:text-4xl font-semibold mb-1 sm:mb-2 tracking-wide ${splineSans.className}`}
+              className={`text-3xl sm:text-4xl font-semibold mb-1 sm:mb-2 tracking-wide`}
             >
               {restaurantData.name}
             </h1>
@@ -98,6 +93,12 @@ export default async function RestaurantMenu({
               <span className="font-semibold">{"0.0"}</span>
             </div>
           </div>
+
+          <div className="absolute bottom-0 right-0 p-3 text-white">
+            <p className="text-sm sm:text-lg opacity-90 mb-1 sm:mb-2">
+              {restaurantData.address}
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[40rem_auto] md:gap-8 items-center sm:items-stretch justify-between gap-4">
@@ -105,9 +106,7 @@ export default async function RestaurantMenu({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-yellow-500" />
-                <h2 className={`text-lg ${splineSans.className}`}>
-                  Duos Eats Exclusive
-                </h2>
+                <h2 className={`text-lg`}>Duos Eats Exclusive</h2>
               </div>
               <p className={`text-3xl font-semibold ${discountFont.className}`}>
                 {restaurantData.discount}% Discount
@@ -135,7 +134,6 @@ export default async function RestaurantMenu({
                  transition-all duration-300 
                  hover:shadow-xl hover:scale-105
                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500
-                 ${splineSans.className}
                  `}
               >
                 <Instagram />
@@ -214,39 +212,6 @@ export default async function RestaurantMenu({
           </TabsContent>
         ))}
       </Tabs>
-
-      {/* Cart Sheet */}
-      {/* <Sheet>
-        <SheetTrigger asChild>
-          <Button className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg transition-all duration-300 hover:scale-105">
-            <ShoppingBag className="h-6 w-6" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent className="w-full sm:max-w-md flex flex-col">
-          <SheetHeader>
-            <SheetTitle className="text-2xl font-bold font-spline-sans">
-              Your Cart
-            </SheetTitle>
-          </SheetHeader>
-          <ScrollArea className="flex-grow">
-            <p className="text-center text-muted-foreground mt-4">
-              Your cart is empty.
-            </p>
-          </ScrollArea>
-          <div className="mt-auto pt-4 border-t">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-semibold text-lg">Total:</span>
-              <span className="font-bold text-xl">Tk 0</span>
-            </div>
-            <Button
-              className="w-full h-12 text-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
-              disabled={true}
-            >
-              Checkout
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet> */}
     </div>
   );
 }

@@ -34,11 +34,6 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-const splineSans = Spline_Sans({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -243,11 +238,7 @@ export default function CreateMenu() {
 
   return (
     <div className="container mx-auto px-4">
-      <h1
-        className={`text-2xl md:text-3xl font-bold mb-6 ${splineSans.className}`}
-      >
-        Add Menu Items
-      </h1>
+      <h1 className={`text-2xl md:text-3xl font-bold mb-6`}>Add Menu Items</h1>
 
       <div className="space-y-8">
         <div>
@@ -569,9 +560,7 @@ export default function CreateMenu() {
         </div>
 
         <div>
-          <h2 className={`text-xl font-semibold mb-4 ${splineSans.className}`}>
-            Menu Items
-          </h2>
+          <h2 className={`text-xl font-semibold mb-4`}>Menu Items</h2>
           <ScrollArea className="h-[300px] md:h-[400px] w-full rounded-md border p-4">
             {menuItems.map((item, index) => (
               <Card key={index} className="mb-4">
@@ -627,9 +616,7 @@ export default function CreateMenu() {
         )}
 
         <div>
-          <h2 className={`text-xl font-semibold mb-4 ${splineSans.className}`}>
-            Menu Preview
-          </h2>
+          <h2 className={`text-xl font-semibold mb-4`}>Menu Preview</h2>
           <Tabs defaultValue={categories[0]} className="w-full">
             <ScrollArea className="w-full pb-4">
               <TabsList className="inline-flex space-x-2 rounded-full bg-muted p-1">

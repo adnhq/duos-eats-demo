@@ -37,8 +37,6 @@ import { registerRestaurant } from "@/lib/actions";
 import Image from "next/image";
 import { cuisineTypes, locations } from "@/lib/info";
 
-const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500", "600"] });
-
 const formSchema = z.object({
   restaurantName: z.string().min(2, {
     message: "Restaurant name must be at least 2 characters.",
@@ -154,14 +152,10 @@ export default function RestaurantRegistration() {
 
       <Card className="w-full max-w-md z-10 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(0,0,0,0.1)] border-0">
         <CardHeader className="text-center space-y-2">
-          <CardTitle
-            className={`${splineSans.className} text-3xl font-semibold text-gray-900`}
-          >
+          <CardTitle className={` text-3xl font-semibold text-gray-900`}>
             Join Duos as a Partner
           </CardTitle>
-          <CardDescription
-            className={`${splineSans.className} text-base text-gray-600`}
-          >
+          <CardDescription className={` text-base text-gray-600`}>
             Grow your restaurant with us
           </CardDescription>
         </CardHeader>

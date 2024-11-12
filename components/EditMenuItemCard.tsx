@@ -21,8 +21,6 @@ import duosLogo from "../duos-lg.png";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
-const splineSans = Spline_Sans({ subsets: ["latin"], weight: ["500"] });
-
 type Props = {
   item: MenuItem;
   role: any;
@@ -61,7 +59,7 @@ export default function EditMenuItemCard({ item, role }: Props) {
         />
       </div>
       <div className="flex-grow w-full">
-        <h3 className={`${splineSans.className} tracking-wide`}>{item.name}</h3>
+        <h3 className={"tracking-wide text-lg font-semibold"}>{item.name}</h3>
         <p className="text-sm text-muted-foreground">{item.description}</p>
         {item?.MenuParameters.length > 0 && (
           <>

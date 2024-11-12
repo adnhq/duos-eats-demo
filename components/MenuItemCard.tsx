@@ -1,20 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import { Check, Minus, Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { Roboto_Slab } from "next/font/google";
-import duosLogo from "../duos-lg.png";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { Card, CardContent } from "@/components/ui/card";
 import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
-import { MenuItem } from "@/lib/types";
 import { priceWithDiscount } from "@/lib/helper";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { MenuItem } from "@/lib/types";
+import { Check, Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import duosLogo from "../duos-lg.png";
 import ItemExtraParamForm from "./ItemExtraParamForm";
-
-const priceFont = Roboto_Slab({ subsets: ["latin"], weight: ["400"] });
 
 type MenuItemProps = {
   item: MenuItem;
@@ -75,7 +72,7 @@ export function MenuItemCard({ item }: MenuItemProps) {
           {/* Content Container */}
           <div className="flex-1 space-y-2">
             <div>
-              <h3 className={`text-lg ${priceFont.className}`}>{item.name}</h3>
+              <h3 className={`text-lg font-semibold`}>{item.name}</h3>
               <p className="text-sm text-gray-500 line-clamp-2">
                 {item.description}
               </p>
@@ -83,7 +80,7 @@ export function MenuItemCard({ item }: MenuItemProps) {
 
             <div className="flex items-center justify-between">
               {/* Price Section */}
-              <div className={`flex items-center gap-2 ${priceFont.className}`}>
+              <div className={`flex items-center gap-2 `}>
                 {Number(item.discount) > 0 ? (
                   <>
                     <span className="font-semibold">

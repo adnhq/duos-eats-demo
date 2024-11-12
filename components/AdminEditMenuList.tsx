@@ -1,7 +1,5 @@
 import { getRestaurantMenu, getSession } from "@/lib/actions";
-import React from "react";
 import EditMenuItemCard from "./EditMenuItemCard";
-import { JWTPayload } from "jose";
 
 export default async function AdminEditMenuList({
   restaurantId,

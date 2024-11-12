@@ -5,17 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Restaurant } from "@/lib/types";
 
-type RestaurantCardProps = {
-  restaurant: {
-    name: string;
-    image: string;
-    rating: number;
-    priceLevel: number;
-    cuisine: string;
-    category: string;
-  };
-};
-
 const PriceIndicator: React.FC<{ level: number }> = ({ level }) => (
   <div className="flex items-center space-x-0.5">
     {Array(3)

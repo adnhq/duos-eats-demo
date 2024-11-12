@@ -19,11 +19,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-const spline_sans = Spline_Sans({
-  subsets: ["latin"],
-  weight: ["600"],
-});
-
 // Form validation schema
 const signupSchema = z
   .object({
@@ -130,9 +125,7 @@ const SignupPage = () => {
                 <Users className="h-6 w-6 text-amber-600" />
               </div>
             </div>
-            <h1
-              className={`text-2xl md:text-3xl font-bold text-gray-900 mb-2 ${spline_sans.className}`}
-            >
+            <h1 className={`text-2xl md:text-3xl font-bold text-gray-900 mb-2`}>
               Create Account
             </h1>
             <p className="text-gray-600">Join us for a delicious journey</p>

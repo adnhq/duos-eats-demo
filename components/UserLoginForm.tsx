@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getSession, userLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";

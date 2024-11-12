@@ -8,11 +8,6 @@ import { Utensils, Users } from "lucide-react";
 import { Spline_Sans } from "next/font/google";
 import Link from "next/link";
 
-const spline_sans = Spline_Sans({
-  subsets: ["latin"],
-  weight: ["600"],
-});
-
 const BackgroundSVG = () => (
   <svg
     className="absolute inset-0 w-full h-full"
@@ -50,9 +45,7 @@ const AuthPage = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full">
           {/* Header Section - Now inside the card */}
           <div className="text-center mb-8">
-            <h1
-              className={`text-3xl font-bold text-gray-900 mb-2 ${spline_sans.className}`}
-            >
+            <h1 className={`text-3xl font-bold text-gray-900 mb-2`}>
               Welcome Back
             </h1>
             <p className="text-gray-600">Sign in to continue your journey</p>

@@ -1,4 +1,4 @@
-export default function BackgroundSVG() {
+export default function HeroBackgroundSVG() {
   return (
     <svg
       className="absolute inset-0 w-full h-full"

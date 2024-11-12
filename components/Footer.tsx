@@ -21,12 +21,6 @@ export default async function Footer() {
     },
   ];
 
-  // const quickLinks = [
-  //   { name: "Find Restaurants", href: "/" },
-  //   { name: "About Us", href: "/about" },
-  //   { name: "Partner with Us", href: "/registration" },
-  // ];
-
   return (
     <footer className="bg-white  text-gray-800 py-16 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4">

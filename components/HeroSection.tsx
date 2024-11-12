@@ -1,19 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Permanent_Marker, Spline_Sans } from "next/font/google";
+import { Permanent_Marker } from "next/font/google";
 import Link from "next/link";
-import BackgroundSVG from "./BackgroundSVG";
+import { useEffect } from "react";
+import HeroBackgroundSVG from "./HeroBackgroundSVG";
 
 const permanent_marker = Permanent_Marker({
   subsets: ["latin"],
   weight: ["400"],
 });
-const spline_sans = Spline_Sans({
-  subsets: ["latin"],
-  weight: ["600"],
-});
+
 export default function HeroSection() {
   useEffect(() => {
     const handleSmoothScroll = (e: MouseEvent) => {
@@ -42,11 +39,11 @@ export default function HeroSection() {
   return (
     <div className="relative overflow-hidden pt-40 md:pb-52 pb-72">
       {/* Enhanced Background illustration */}
-      <BackgroundSVG />
+      <HeroBackgroundSVG />
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h1
-            className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-6 ${spline_sans.className}`}
+            className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-6 `}
           >
             Enhance Your Dine-In Experience With <br />
             <span

@@ -3,13 +3,14 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 
-const inter = Inter({
+const man_rope = Manrope({
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,13 +26,12 @@ export default function RootLayout({
   return (
     <StoreProvider>
       <html lang="en">
-        <body className={`${inter.className} antialiased`}>
+        <body className={`${man_rope.className} antialiased`}>
           <Navbar />
           {children}
           <Toaster />
           <Footer />
           <Cart />
-          {/* new design with new layout */}
         </body>
       </html>
     </StoreProvider>

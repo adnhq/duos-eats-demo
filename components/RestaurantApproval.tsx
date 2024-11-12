@@ -19,19 +19,9 @@ import {
 import { approveRestaurant, rejectRestaurant } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Restaurant } from "@/lib/types";
 
-type Application = {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-  cuisine: string;
-  address: string;
-  location: string;
-  created_at: string;
-  discount: number;
-};
+type Application = Restaurant & { created_at: string };
 
 export default function RestaurantApproval({
   unApprovedRestaurants,

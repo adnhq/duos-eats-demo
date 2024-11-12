@@ -44,15 +44,8 @@ export default async function Navbar() {
     <nav className={`relative max-w-7xl mx-auto ${nav_font.className}`}>
       <div className="absolute z-10 w-full px-4 sm:px-6 lg:px-8 py-4 ">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            <div className="relative w-32 h-14">
-              <Image
-                src={duosLogo}
-                alt="DUOS Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
+          <Link href="/" className="cursor-pointer">
+            <Image src={duosLogo} alt="DUOS Logo" width={128} height={56} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -127,9 +120,19 @@ export default async function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild className="w-full md:w-auto">
-                <Link href="/login">Log in</Link>
-              </Button>
+              <>
+                <Button
+                  asChild
+                  variant={"outline"}
+                  className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
+                >
+                  <Link href="/login">Log in</Link>
+                </Button>
+
+                <Button asChild className="w-full md:w-auto">
+                  <Link href="/signup">Sign up</Link>
+                </Button>
+              </>
             )}
           </div>
 
@@ -215,9 +218,19 @@ export default async function Navbar() {
                       </form>
                     </div>
                   ) : (
-                    <Button asChild className="w-full md:w-auto">
-                      <Link href="/login">Sign In</Link>
-                    </Button>
+                    <>
+                      <Button
+                        asChild
+                        variant={"outline"}
+                        className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
+                      >
+                        <Link href="/login">Log in</Link>
+                      </Button>
+
+                      <Button asChild className="w-full md:w-auto">
+                        <Link href="/signup">Sign up</Link>
+                      </Button>
+                    </>
                   )}
                 </div>
               </SheetContent>

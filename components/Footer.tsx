@@ -32,15 +32,14 @@ export default async function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           <div className="space-y-6">
-            <div className="relative w-48 h-32">
+            <Link href="/" className="cursor-pointer">
               <Image
                 src={duosLogo}
                 alt="DUOS EATS Logo"
-                fill
-                className="object-contain"
-                priority
+                width={192}
+                height={128}
               />
-            </div>
+            </Link>
             <p className="text-gray-600 leading-relaxed">
               Discover and book the best dine-in experiences at your favorite
               local restaurants.

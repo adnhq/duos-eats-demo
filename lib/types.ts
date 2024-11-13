@@ -52,6 +52,8 @@ export type Cart = {
   totalPrice: number;
   rating: number;
   restaurantId: null | number;
+  discount: number;
+  totalPriceAfterDiscount: number;
 };
 
 export type CartInfoState = {
@@ -64,4 +66,11 @@ export type GlobalStoreState = {
 
 export type Category = {
   category: string;
+};
+
+export type User = {
+  id: number;
+  email: string;
+  name: string;
+  phoneNumber: string;
 };

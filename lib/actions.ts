@@ -632,3 +632,15 @@ export async function rejectRestaurant(id: number) {
 
   revalidatePath("/admin/Dashboard");
 }
+
+export async function getUser(id: number | unknown) {
+  const { data: user, error } = await supabase
+    .from("Users")
+    .select("id, name, email, phoneNumber")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+
+  return user;
+}

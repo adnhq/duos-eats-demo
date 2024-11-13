@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,9 +41,7 @@ export default function ItemExtraParamForm({
   setQuantity,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [currentPrice, setCurrentPrice] = useState(
-    priceWithDiscount(Number(item.price), Number(item.discount))
-  );
+  const [currentPrice, setCurrentPrice] = useState(Number(item.price));
   const dispatch = useAppDispatch();
   const prevRestaurantId = useAppSelector(prevResturantId);
   const { toast } = useToast();
@@ -68,15 +65,13 @@ export default function ItemExtraParamForm({
 
   useEffect(() => {
     const subscription = form.watch((value) => {
-      let newPrice = priceWithDiscount(
-        Number(item.price),
-        Number(item.discount)
-      );
+      let newPrice = Number(item.price);
+
       Object.entries(value).forEach(([paramName, optionName]) => {
         const param = item.MenuParameters?.find((p) => p.name === paramName);
         const option = param?.options.find((o) => o.name === optionName);
         if (option && option.price > 0) {
-          newPrice = priceWithDiscount(option.price, Number(item.discount));
+          newPrice = option.price;
         }
       });
       setCurrentPrice(newPrice);
@@ -108,6 +103,7 @@ export default function ItemExtraParamForm({
       name: item.name,
       image: item.image,
       price: currentPrice,
+      discount: Number(item.discount),
       quantity,
       restaurantId: item.restaurantId,
       extraParams: selectedOptions,
@@ -143,7 +139,10 @@ export default function ItemExtraParamForm({
         <DialogHeader>
           <DialogTitle>{item.name}</DialogTitle>
           <p className="text-sm font-semibold">
-            Tk - {(currentPrice * quantity).toFixed(2)}
+            Tk -{" "}
+            {(
+              priceWithDiscount(currentPrice, Number(item.discount)) * quantity
+            ).toFixed(2)}
           </p>
           <p className="text-muted-foreground text-sm">
             Choose from the available options to customize your item
@@ -194,7 +193,7 @@ export default function ItemExtraParamForm({
           </form>
         </Form>
 
-        <DialogFooter className="border-t pt-3 sm:flex sm:flex-row sm:justify-between w-full">
+        <div className="flex justify-between border-t pt-2">
           <div className="flex items-center bg-gray-100 rounded-md">
             <Button
               variant="ghost"
@@ -222,7 +221,7 @@ export default function ItemExtraParamForm({
           >
             Confirm
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

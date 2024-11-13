@@ -2,11 +2,13 @@
 import {
   clearCart,
   getCart,
-  getTotalCartPrice,
+  getTotalCartPriceAfterDiscount,
 } from "@/features/cart/cartSlice";
+import { getSession } from "@/lib/actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CartItemType } from "@/lib/types";
 import { BaggageClaim, ShoppingBag, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import CartItem from "./CartItem";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -20,8 +22,20 @@ import {
 
 export default function Cart() {
   const cart = useAppSelector(getCart);
-  const cartTotalPrice = useAppSelector(getTotalCartPrice);
+  const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  async function handleCheckout() {
+    const session = await getSession();
+    if (session === null) return router.push("/login");
+
+    if (session.role === "user") {
+      return router.push("/users/checkout");
+    } else {
+      return router.push("/login");
+    }
+  }
 
   return (
     <Sheet>
@@ -58,12 +72,16 @@ export default function Cart() {
           <div className="flex justify-between items-center mb-4">
             <span className="font-semibold">Total:</span>
             <span className="font-semibold">
-              Tk {cartTotalPrice.toFixed(2)}
+              Tk {cartTotalDiscountPrice.toFixed(2)}
             </span>
           </div>
 
           <div className="flex flex-col gap-4">
-            <Button className="w-full" disabled={cart.items.length === 0}>
+            <Button
+              className="w-full"
+              disabled={cart.items.length === 0}
+              onClick={handleCheckout}
+            >
               <BaggageClaim className="h-4 w-4" /> Checkout
             </Button>
 

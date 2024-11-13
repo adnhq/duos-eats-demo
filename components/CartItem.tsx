@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  currentDiscount,
   decreaseItemQuantity,
   deleteItem,
   increaseItemQuantity,
 } from "@/features/cart/cartSlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { priceWithDiscount } from "@/lib/helper";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CartItemType } from "@/lib/types";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -18,18 +20,20 @@ type CartItemProps = {
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const dispatch = useAppDispatch();
+  const discount = useAppSelector(currentDiscount);
 
   return (
     <div className="flex justify-between items-center py-4 border-b">
       <div className="flex-1">
         <div className="flex gap-2 items-center">
-          <Image
-            src={item.image}
-            alt={item.name}
-            width={80}
-            height={80}
-            className="rounded-md"
-          />
+          <div className="w-16 h-16 relative">
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              className="object-cover rounded-md"
+            />
+          </div>
 
           <div>
             <h3 className="font-semibold">{item.name}</h3>
@@ -41,7 +45,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
               ))}
             </div>
             <p className="text-sm text-gray-500">
-              Tk {item.price} x {item.quantity}
+              Tk {priceWithDiscount(item.price, discount)} x {item.quantity}
             </p>
           </div>
         </div>

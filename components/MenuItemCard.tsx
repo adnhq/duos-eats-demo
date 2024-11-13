@@ -42,7 +42,8 @@ export function MenuItemCard({ item }: MenuItemProps) {
       id: item.id,
       name: item.name,
       image: item.image,
-      price: priceWithDiscount(Number(item.price), Number(item.discount)),
+      price: Number(item.price),
+      discount: Number(item.discount),
       quantity,
       restaurantId: item.restaurantId,
     };

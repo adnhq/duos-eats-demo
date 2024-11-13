@@ -38,6 +38,21 @@ export type MenuItem = {
   }[];
 };
 
+export type OrderData = {
+  userId: number;
+  restaurantId: number;
+  actualTotal: number;
+  discount: number;
+  discountTotal: number;
+  items: {
+    id: number;
+    name: string;
+    price: number;
+    extraParams: string[];
+    quantity: number;
+  }[];
+};
+
 export type CartItemType = {
   id: number;
   name: string;
@@ -45,6 +60,7 @@ export type CartItemType = {
   image: string;
   extraParams?: string[];
   quantity: number;
+  actualId: number;
 };
 
 export type Cart = {

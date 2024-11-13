@@ -99,6 +99,7 @@ export default function ItemExtraParamForm({
     );
 
     const itemToBeAdded = {
+      actualId: item.id,
       id: item.id + ":" + selectedOptions.join(","),
       name: item.name,
       image: item.image,

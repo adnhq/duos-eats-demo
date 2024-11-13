@@ -39,6 +39,7 @@ export function MenuItemCard({ item }: MenuItemProps) {
     }
 
     const itemToBeAdded = {
+      actualId: item.id,
       id: item.id,
       name: item.name,
       image: item.image,

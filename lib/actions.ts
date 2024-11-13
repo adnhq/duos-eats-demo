@@ -7,8 +7,9 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { createSession, decrypt, deleteSession } from "./session";
 import { supabase } from "./supabase";
+import { OrderData } from "./types";
 
-// authentication
+// authentication functions
 
 export async function restaurantLogin(formData: FormData) {
   const user = {
@@ -643,4 +644,61 @@ export async function getUser(id: number | unknown) {
   if (error) throw error;
 
   return user;
+}
+
+export async function placeOrder(orderData: OrderData) {
+  const newOrder = {
+    userId: orderData.userId,
+    rating: 0,
+    restaurantId: orderData.restaurantId,
+    actualTotal: orderData.actualTotal,
+    discount: orderData.discount,
+    discountTotal: orderData.discountTotal,
+    status: "pending",
+  };
+
+  const { data: newlyCreatedOrder, error: orderError } = await supabase
+    .from("Orders")
+    .insert([newOrder])
+    .select("id")
+    .single();
+
+  if (orderError) throw orderError;
+
+  if (newlyCreatedOrder.id) {
+    for (let i = 0; i < orderData.items.length; i++) {
+      const orderItem = {
+        orderId: newlyCreatedOrder.id,
+        itemId: orderData.items[i].id,
+        quantity: orderData.items[i].quantity,
+        actualCurrentPrice: orderData.items[i].price,
+        extraParams: orderData.items[i].extraParams,
+      };
+
+      const { error: orderItemError } = await supabase
+        .from("OrderItems")
+        .insert([orderItem]);
+
+      if (orderItemError) throw orderItemError;
+    }
+  }
+
+  return { success: true, orderId: newlyCreatedOrder.id };
+}
+
+export async function getOrder(orderId: number | unknown) {
+  const session = (await getSession()) as JWTPayload;
+
+  const { data: order, error } = await supabase
+    .from("Orders")
+    .select("*, Restaurants(name, email)")
+    .eq("id", orderId)
+    .single();
+
+  if (error) throw error;
+
+  if (Number((session as JWTPayload).id) !== Number(order.userId))
+    throw new Error("You are not authorized to view this order!");
+
+  return order;
 }

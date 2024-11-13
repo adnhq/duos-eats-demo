@@ -122,8 +122,8 @@ export default async function Navbar() {
               <>
                 <Button
                   asChild
-                  variant={"outline"}
-                  className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
+                  variant={"secondary"}
+                  // className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
                 >
                   <Link href="/login">Log in</Link>
                 </Button>
@@ -220,8 +220,8 @@ export default async function Navbar() {
                     <>
                       <Button
                         asChild
-                        variant={"outline"}
-                        className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
+                        variant={"secondary"}
+                        // className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
                       >
                         <Link href="/login">Log in</Link>
                       </Button>

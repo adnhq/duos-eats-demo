@@ -45,9 +45,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (pathname.startsWith("/users")) {
+    if (session.role !== "user") {
+      // If not an admin user, redirect to home
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/restaurant/:path*", "/admin/:path*"],
+  matcher: ["/restaurant/:path*", "/admin/:path*", "/users/:path*"],
 };

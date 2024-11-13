@@ -8,21 +8,24 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
+  clearCart,
   currentDiscount,
   getCart,
   getTotalCartPrice,
   getTotalCartPriceAfterDiscount,
   prevResturantId,
 } from "@/features/cart/cartSlice";
-import { getRestaurant, getSession, getUser } from "@/lib/actions";
-import { useAppSelector } from "@/lib/hooks";
-import { CartItemType, Restaurant, User } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import CartItem from "./CartItem";
+import { useToast } from "@/hooks/use-toast";
+import { getRestaurant, getSession, getUser, placeOrder } from "@/lib/actions";
 import { priceWithDiscount } from "@/lib/helper";
-import { Button } from "./ui/button";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { CartItemType, Restaurant, User } from "@/lib/types";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import CartItem from "./CartItem";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 
 const BackgroundSVG = () => (
@@ -57,15 +60,17 @@ export default function Checkout() {
   const cartTotalPrice = useAppSelector(getTotalCartPrice);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
 
-  // const dispatch = useAppDispatch();
-  // const router = useRouter();
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurant | null>(null);
   const [userInfo, setUserInfo] = useState<User | null>(null);
-
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function getInfo() {
+      if (cart.items.length === 0) return;
+
       const restaurant = await getRestaurant(restaurantId);
       setRestaurantInfo(restaurant[0]);
 
@@ -77,7 +82,57 @@ export default function Checkout() {
     }
 
     getInfo();
-  }, [restaurantId, router]);
+  }, [restaurantId, router, cart.items.length]);
+
+  async function handleCheckout() {
+    if (!userInfo) {
+      toast({
+        title: "Error",
+        description: "User information is missing. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const orderData = {
+      userId: userInfo.id,
+      restaurantId: restaurantId as number,
+      actualTotal: cartTotalPrice,
+      discount: discount,
+      discountTotal: cartTotalDiscountPrice,
+      items: cart.items.map((item) => ({
+        id: item.actualId,
+        name: item.name,
+        price: item.price,
+        extraParams: item.extraParams as string[],
+        quantity: item.quantity,
+      })),
+    };
+
+    startTransition(async () => {
+      try {
+        const res = await placeOrder(orderData);
+
+        if (res.success) {
+          toast({
+            title: "Success",
+            description: "Your order has been placed successfully!",
+          });
+
+          router.push(`/users/checkout-success?orderId=${res.orderId}`);
+          dispatch(clearCart());
+        } else {
+          throw new Error("Failed to place order");
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: (error as Error).message,
+          variant: "destructive",
+        });
+      }
+    });
+  }
 
   return (
     <div className="bg-orange-50 relative overflow-hidden min-h-screen">
@@ -191,7 +246,22 @@ export default function Checkout() {
             </CardContent>
 
             <CardFooter>
-              <Button className="w-full">Place Order</Button>
+              <Button
+                className="w-full"
+                disabled={isPending || cart.items.length === 0}
+                onClick={handleCheckout}
+              >
+                {isPending ? (
+                  <>
+                    <span className="">Placing order</span>
+                    <span className="animate-spin">
+                      <Loader2 className="h-4 w-4" />
+                    </span>
+                  </>
+                ) : (
+                  <>Place order</>
+                )}
+              </Button>
             </CardFooter>
           </Card>
         </div>

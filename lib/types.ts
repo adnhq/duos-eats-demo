@@ -100,6 +100,7 @@ export type OrderType = {
   status: string;
   OrderItems: OrderItemType[];
   Users: UserType;
+  Restaurants: Restaurant;
 };
 
 export type OrderItemType = {

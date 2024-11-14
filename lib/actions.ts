@@ -706,7 +706,7 @@ export async function getOrder(orderId: number | unknown) {
 export async function getOrdersByRestaurant(restaurantId: number | unknown) {
   const { data: Orders, error } = await supabase
     .from("Orders")
-    .select("*, OrderItems(*, Menu(*)), Users(name)")
+    .select("*, OrderItems(*, Menu(*)), Users(name), Restaurants(name)")
     .eq("restaurantId", restaurantId)
     .order("id", {
       ascending: false,
@@ -720,7 +720,7 @@ export async function getOrdersByRestaurant(restaurantId: number | unknown) {
 export async function getOrdersByUser(userId: number | unknown) {
   const { data: Orders, error } = await supabase
     .from("Orders")
-    .select("*, OrderItems(*, Menu(*)), Users(name)")
+    .select("*, OrderItems(*, Menu(*)), Users(name), Restaurants(name)")
     .eq("userId", userId)
     .order("id", {
       ascending: false,
@@ -765,4 +765,16 @@ export async function completeOrder(orderId: number) {
 
   revalidatePath("/restaurant/OrderStats");
   return { success: true };
+}
+
+export async function getUserName(userId: number | unknown) {
+  const { data: user, error } = await supabase
+    .from("Users")
+    .select("name")
+    .eq("id", userId)
+    .single();
+
+  if (error) throw error;
+
+  return user.name;
 }

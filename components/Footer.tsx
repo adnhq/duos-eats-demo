@@ -97,7 +97,7 @@ export default async function Footer() {
             </p>
             <Button asChild>
               <Link
-                href="mailto:duos.eats@gmail.com"
+                href="mailto:duoseats.official@gmail.com"
                 className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 transition-all"
               >
                 Send Message

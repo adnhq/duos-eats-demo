@@ -213,6 +213,15 @@ export default async function Navbar() {
                           </Link>
                         </>
                       )}
+                      {session?.role === "user" && (
+                        //
+                        <Link
+                          href="/users/Dashboard/orders"
+                          className="block hover:text-primary text-sm text-muted-foreground"
+                        >
+                          Dashboard
+                        </Link>
+                      )}
                       <form
                         action={async () => {
                           "use server";

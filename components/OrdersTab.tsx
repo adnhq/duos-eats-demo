@@ -36,6 +36,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
+import OrderCard from "./OrderCard";
 
 // interface OrderItem {
 //   name: string;
@@ -105,8 +106,6 @@ export function OrdersTab({
 }: OrdersTabProps) {
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState("This Week");
-
-  console.log(restaurantOrders);
 
   const discountForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -308,20 +307,14 @@ export function OrdersTab({
           </CardHeader>
           <CardContent>
             {/* Mobile view */}
-            {/* <div className="md:hidden space-y-4">
-              {activeOrders.length > 0 ? (
-                activeOrders.map((order) => (
-                  <OrderCard key={order.orderId} order={order} />
-                ))
-              ) : (
-                <p className="text-center text-muted-foreground text-sm">
-                  No active orders
-                </p>
-              )}
-            </div> */}
+            <div className="xl:hidden grid grid-cols-1 gap-4">
+              {restaurantOrders?.map((restaurantOrder) => (
+                <OrderCard key={restaurantOrder.id} order={restaurantOrder} />
+              ))}
+            </div>
 
             {/* Desktop view */}
-            <div className="hidden md:block">
+            <div className="hidden xl:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -342,68 +335,6 @@ export function OrdersTab({
                     />
                   ))}
                 </TableBody>
-                {/* <TableBody>
-                  {activeOrders.map((order) => (
-                    <TableRow key={order.orderId}>
-                      <TableCell>{order.orderId}</TableCell>
-                      <TableCell>{order.customerName}</TableCell>
-                      <TableCell>BDT {order.totalAmount}</TableCell>
-                      <TableCell>{order.orderTime}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Eye className="mr-2 h-4 w-4" />
-                                View
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                              <DialogHeader>
-                                <DialogTitle>Order Details</DialogTitle>
-                                <DialogDescription>
-                                  Order #{order.orderId} • {order.orderTime}
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                {order.items.map((item, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex justify-between items-center py-2 border-b"
-                                  >
-                                    <div>
-                                      <p className="font-medium">{item.name}</p>
-                                      <p className="text-sm text-muted-foreground">
-                                        BDT {item.price} × {item.quantity}
-                                      </p>
-                                    </div>
-                                    <p className="font-medium">
-                                      BDT {item.price * item.quantity}
-                                    </p>
-                                  </div>
-                                ))}
-                                <div className="flex justify-between items-center pt-2">
-                                  <p className="font-bold">Total</p>
-                                  <p className="font-bold">
-                                    BDT {order.totalAmount}
-                                  </p>
-                                </div>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                          <Button variant="default" size="sm">
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Accept
-                          </Button>
-                          <Button variant="destructive" size="sm">
-                            <XCircle className="mr-2 h-4 w-4" />
-                            Decline
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody> */}
               </Table>
             </div>
           </CardContent>

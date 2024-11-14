@@ -90,3 +90,25 @@ export type User = {
   name: string;
   phoneNumber: string;
 };
+export type OrderType = {
+  id: number;
+  actualTotal: number;
+  discountTotal: number;
+  created_at: string;
+  rating: 0;
+  discount: number;
+  status: string;
+  OrderItems: OrderItemType[];
+  Users: UserType;
+};
+
+export type OrderItemType = {
+  extraParams: null | string[];
+  Menu: MenuItem;
+  quantity: number;
+  actualCurrentPrice: number;
+};
+
+export type UserType = {
+  name: string;
+};

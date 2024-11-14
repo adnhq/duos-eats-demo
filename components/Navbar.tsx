@@ -90,6 +90,15 @@ export default async function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                   )}
+
+                  {session?.role === "user" && (
+                    <DropdownMenuItem>
+                      <Link href="/users/Dashboard/orders" className="w-full">
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
                   {session?.role === "restaurant" && (
                     <>
                       <DropdownMenuItem>

@@ -702,3 +702,67 @@ export async function getOrder(orderId: number | unknown) {
 
   return order;
 }
+
+export async function getOrdersByRestaurant(restaurantId: number | unknown) {
+  const { data: Orders, error } = await supabase
+    .from("Orders")
+    .select("*, OrderItems(*, Menu(*)), Users(name)")
+    .eq("restaurantId", restaurantId)
+    .order("id", {
+      ascending: false,
+    });
+
+  if (error) throw error;
+
+  return Orders;
+}
+
+export async function getOrdersByUser(userId: number | unknown) {
+  const { data: Orders, error } = await supabase
+    .from("Orders")
+    .select("*, OrderItems(*, Menu(*)), Users(name)")
+    .eq("userId", userId)
+    .order("id", {
+      ascending: false,
+    });
+
+  if (error) throw error;
+
+  return Orders;
+}
+
+export async function processOrder(orderId: number) {
+  const { error } = await supabase
+    .from("Orders")
+    .update({ status: "processing" })
+    .eq("id", orderId);
+
+  if (error) throw error;
+
+  revalidatePath("/restaurant/OrderStats");
+  return { success: true };
+}
+
+export async function cancelOrder(orderId: number) {
+  const { error } = await supabase
+    .from("Orders")
+    .update({ status: "cancelled" })
+    .eq("id", orderId);
+
+  if (error) throw error;
+
+  revalidatePath("/restaurant/OrderStats");
+  return { success: true };
+}
+
+export async function completeOrder(orderId: number) {
+  const { error } = await supabase
+    .from("Orders")
+    .update({ status: "completed" })
+    .eq("id", orderId);
+
+  if (error) throw error;
+
+  revalidatePath("/restaurant/OrderStats");
+  return { success: true };
+}

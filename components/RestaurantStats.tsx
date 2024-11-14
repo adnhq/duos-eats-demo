@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Receipt, Utensils } from "lucide-react";
 import { OrdersTab } from "./OrdersTab";
+import { getOrdersByRestaurant } from "@/lib/actions";
 
 const todayStats = {
   earnings: 0,
@@ -99,13 +100,14 @@ const weeklyMonthlyStats = {
 //   finalEarnings: 285,
 // },
 // ];
-export default function RestaurantStats({
+export default async function RestaurantStats({
   discount,
   id,
 }: {
   discount: string;
   id: string | unknown;
 }) {
+  const restaurantOrders = await getOrdersByRestaurant(id);
   return (
     <>
       {/* Stats Grid */}
@@ -156,6 +158,7 @@ export default function RestaurantStats({
       <OrdersTab
         // activeOrders={activeOrders}
         // historicalData={historicalData}
+        restaurantOrders={restaurantOrders}
         restaurantId={id}
         discount={discount}
         todayStats={todayStats}

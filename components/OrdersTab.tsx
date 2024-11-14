@@ -11,15 +11,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { editRestaurantDiscount } from "@/lib/actions";
+import { OrderType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChefHat, Loader2, Pencil, Receipt, Utensils } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import OrderTableRow from "./OrderTableRow";
 import {
   Form,
   FormControl,
@@ -66,14 +74,15 @@ interface TodayStats {
   averageOrderValue: number;
 }
 
-interface OrdersTabProps {
+type OrdersTabProps = {
   // activeOrders: Order[];
   // historicalData: HistoricalOrder[];
+  restaurantOrders: OrderType[];
   todayStats: TodayStats;
   weeklyMonthlyStats: WeeklyMonthlyStats;
   discount: string;
   restaurantId: string | unknown;
-}
+};
 
 const formSchema = z.object({
   discount: z
@@ -88,6 +97,7 @@ const formSchema = z.object({
 export function OrdersTab({
   // activeOrders,
   // historicalData,
+  restaurantOrders,
   todayStats,
   weeklyMonthlyStats,
   discount,
@@ -95,6 +105,8 @@ export function OrdersTab({
 }: OrdersTabProps) {
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState("This Week");
+
+  console.log(restaurantOrders);
 
   const discountForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -318,8 +330,18 @@ export function OrdersTab({
                     <TableHead>Total Amount</TableHead>
                     <TableHead>Order Time</TableHead>
                     <TableHead>Actions</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
+
+                <TableBody>
+                  {restaurantOrders?.map((restaurantOrder) => (
+                    <OrderTableRow
+                      key={restaurantOrder.id}
+                      order={restaurantOrder}
+                    />
+                  ))}
+                </TableBody>
                 {/* <TableBody>
                   {activeOrders.map((order) => (
                     <TableRow key={order.orderId}>

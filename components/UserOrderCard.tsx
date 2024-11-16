@@ -1,9 +1,5 @@
 "use client";
 
-import { priceWithDiscount } from "@/lib/helper";
-import { OrderType } from "@/lib/types";
-import { format } from "date-fns";
-import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { OrderType } from "@/lib/types";
+import { format } from "date-fns";
+import { Eye } from "lucide-react";
 
 export default function UserOrderCard({ order }: { order: OrderType }) {
   const orderCreatingTime = format(
@@ -52,7 +51,12 @@ export default function UserOrderCard({ order }: { order: OrderType }) {
       <CardContent>
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{orderCreatingTime}</p>
+
           <p className="font-medium">Total: BDT {order.discountTotal}</p>
+
+          <Badge variant="secondary" className="bg-green-100 text-green-800">
+            {order.discount}% discount applied
+          </Badge>
         </div>
       </CardContent>
       <CardFooter>
@@ -85,20 +89,11 @@ export default function UserOrderCard({ order }: { order: OrderType }) {
                         } - ${extraParam.split(":")[1]}`}</p>
                       ))}
                     <p className="text-sm text-muted-foreground">
-                      BDT{" "}
-                      {priceWithDiscount(
-                        item.actualCurrentPrice,
-                        order.discount
-                      )}{" "}
-                      × {item.quantity}
+                      BDT {item.actualCurrentPrice} × {item.quantity}
                     </p>
                   </div>
                   <p className="font-medium">
-                    BDT{" "}
-                    {priceWithDiscount(
-                      item.actualCurrentPrice,
-                      order.discount
-                    ) * item.quantity}
+                    BDT {item.actualCurrentPrice * item.quantity}
                   </p>
                 </div>
               ))}

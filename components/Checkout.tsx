@@ -11,13 +11,17 @@ import {
   clearCart,
   currentDiscount,
   getCart,
-  getTotalCartPrice,
+  getTotalCartActualPrice,
   getTotalCartPriceAfterDiscount,
   prevResturantId,
 } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { getRestaurant, getSession, getUser, placeOrder } from "@/lib/actions";
-import { priceWithDiscount } from "@/lib/helper";
+import {
+  calcPlatformFee,
+  DUOS_PERCENTAGE,
+  priceWithDiscount,
+} from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CartItemType, Restaurant, User } from "@/lib/types";
 import { Loader2 } from "lucide-react";
@@ -27,6 +31,7 @@ import CartItem from "./CartItem";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
+import Spinner from "./Spinner";
 
 const BackgroundSVG = () => (
   <svg
@@ -57,28 +62,31 @@ export default function Checkout() {
   const cart = useAppSelector(getCart);
   const restaurantId = useAppSelector(prevResturantId);
   const discount = useAppSelector(currentDiscount);
-  const cartTotalPrice = useAppSelector(getTotalCartPrice);
+  const cartTotalPrice = useAppSelector(getTotalCartActualPrice);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
 
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurant | null>(null);
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isFetching, startFetchTransition] = useTransition();
   const { toast } = useToast();
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function getInfo() {
-      if (cart.items.length === 0) return;
+      startFetchTransition(async () => {
+        if (cart.items.length === 0) return;
 
-      const restaurant = await getRestaurant(restaurantId);
-      setRestaurantInfo(restaurant[0]);
+        const restaurant = await getRestaurant(restaurantId);
+        setRestaurantInfo(restaurant[0]);
 
-      const session = await getSession();
-      if (session === null) return router.push("/login");
+        const session = await getSession();
+        if (session === null) return router.push("/login");
 
-      const user = await getUser(session.id);
-      setUserInfo(user);
+        const user = await getUser(session.id);
+        setUserInfo(user);
+      });
     }
 
     getInfo();
@@ -98,12 +106,17 @@ export default function Checkout() {
       userId: userInfo.id,
       restaurantId: restaurantId as number,
       actualTotal: cartTotalPrice,
-      discount: discount,
       discountTotal: cartTotalDiscountPrice,
+      restaurantEarning: priceWithDiscount(
+        cartTotalPrice,
+        discount + DUOS_PERCENTAGE
+      ),
+      platformFee: calcPlatformFee(cartTotalPrice),
+      discount: discount,
       items: cart.items.map((item) => ({
-        id: item.actualId,
+        id: item.id,
         name: item.name,
-        price: item.price,
+        price: item.priceAfterDiscount,
         extraParams: item.extraParams as string[],
         quantity: item.quantity,
       })),
@@ -140,131 +153,133 @@ export default function Checkout() {
       <div className="max-w-7xl mx-auto px-8 py-8 relative z-10 mt-32">
         <h1 className="text-3xl font-bold mb-8 text-orange-800">Checkout</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[0.65fr_0.35fr] gap-8">
-          {/* Left Column - Order Items */}
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Your order</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 py-4">
-                {cart.items.length === 0 ? (
-                  <p>Your cart is empty.</p>
-                ) : (
-                  cart.items.map((item: CartItemType, id) => (
-                    <CartItem key={id} item={item} />
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        {isFetching ? (
+          <Spinner />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[0.65fr_0.35fr] gap-8">
+            {/* Left Column - Order Items */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Your order</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 py-4">
+                  {cart.items.length === 0 ? (
+                    <p>Your cart is empty.</p>
+                  ) : (
+                    cart.items.map((item: CartItemType, id) => (
+                      <CartItem key={id} item={item} />
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Right Column - Order Summary */}
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="space-y-6 pt-6">
-              <div>
-                <h3 className="font-semibold mb-2">Your Personal Details</h3>
-                <p className="text-sm">
-                  <span className="font-medium">Name:</span> {userInfo?.name}
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">Email:</span> {userInfo?.email}
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">Phone:</span> 0
-                  {userInfo?.phoneNumber}
-                </p>
-              </div>
+            {/* Right Column - Order Summary */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="space-y-6 pt-6">
+                <div>
+                  <h3 className="font-semibold mb-2">Your Personal Details</h3>
+                  <p className="text-sm">
+                    <span className="font-medium">Name:</span> {userInfo?.name}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Email:</span>{" "}
+                    {userInfo?.email}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Phone:</span> 0
+                    {userInfo?.phoneNumber}
+                  </p>
+                </div>
 
-              <Separator />
-              <div>
-                <h2 className="text-xl font-semibold mb-2">
-                  Ordering from {restaurantInfo?.name}
-                </h2>
+                <Separator />
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">
+                    Ordering from {restaurantInfo?.name}
+                  </h2>
 
-                {cart.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between text-sm mt-1"
-                  >
-                    <span>
-                      {item.quantity}x {item.name}
-                    </span>
-                    <span>
-                      Tk -{" "}
-                      {priceWithDiscount(
-                        item.price * item.quantity,
-                        discount
-                      ).toFixed(2)}
+                  {cart.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between text-sm mt-1"
+                    >
+                      <span>
+                        {item.quantity}x {item.name}
+                      </span>
+                      <span>
+                        Tk -{" "}
+                        {(item.priceAfterDiscount * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Subtotal</span>
+                    <span>Tk {cartTotalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Discount</span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-100 text-green-800"
+                    >
+                      {discount}% OFF
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Total</span>
+                    <span className="text-green-600">
+                      Tk {cartTotalDiscountPrice.toFixed(2)}
                     </span>
                   </div>
-                ))}
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>Tk {cartTotalPrice.toFixed(2)}</span>
+                  <p className="text-xs text-muted-foreground text-right">
+                    (incl. discount and tax)
+                  </p>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Discount</span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-100 text-green-800"
-                  >
-                    {discount}% OFF
-                  </Badge>
-                </div>
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span className="text-green-600">
-                    Tk {cartTotalDiscountPrice.toFixed(2)}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground text-right">
-                  (incl. discount and tax)
-                </p>
-              </div>
 
-              <div className="mt-4">
-                <p className="text-sm font-medium mb-1">Savings</p>
-                <Progress
-                  value={
-                    ((cartTotalPrice - cartTotalDiscountPrice) /
-                      cartTotalPrice) *
-                    100
-                  }
-                  className="h-2"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  You saved Tk{" "}
-                  {(cartTotalPrice - cartTotalDiscountPrice).toFixed(2)}
-                </p>
-              </div>
-            </CardContent>
+                <div className="mt-4">
+                  <p className="text-sm font-medium mb-1">Savings</p>
+                  <Progress
+                    value={
+                      ((cartTotalPrice - cartTotalDiscountPrice) /
+                        cartTotalPrice) *
+                      100
+                    }
+                    className="h-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    You saved Tk{" "}
+                    {(cartTotalPrice - cartTotalDiscountPrice).toFixed(2)}
+                  </p>
+                </div>
+              </CardContent>
 
-            <CardFooter>
-              <Button
-                className="w-full"
-                disabled={isPending || cart.items.length === 0}
-                onClick={handleCheckout}
-              >
-                {isPending ? (
-                  <>
-                    <span className="">Placing order</span>
-                    <span className="animate-spin">
-                      <Loader2 className="h-4 w-4" />
-                    </span>
-                  </>
-                ) : (
-                  <>Place order</>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  disabled={isPending || cart.items.length === 0}
+                  onClick={handleCheckout}
+                >
+                  {isPending ? (
+                    <>
+                      <span className="">Placing order</span>
+                      <span className="animate-spin">
+                        <Loader2 className="h-4 w-4" />
+                      </span>
+                    </>
+                  ) : (
+                    <>Place order</>
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

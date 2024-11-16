@@ -45,9 +45,13 @@ const formSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
-  phone: z.string().min(10, {
-    message: "Please enter a valid phone number.",
-  }),
+  phone: z
+    .string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d{10}$/, "Phone number must contain only digits")
+    .refine((value) => value !== "0000000000", {
+      message: "Phone number cannot be all zeros",
+    }),
   cuisine: z.string({
     required_error: "Please select a cuisine type.",
   }),

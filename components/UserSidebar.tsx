@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Cog, User, Utensils } from "lucide-react";
+import { User, Utensils } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,12 +13,12 @@ export default function UserSidebar({ username }: { username: string }) {
       icon: Utensils,
     },
 
-    {
-      id: "settings",
-      name: "Settings",
-      href: "/users/Dashboard/Settings",
-      icon: Cog,
-    },
+    // {
+    //   id: "settings",
+    //   name: "Settings",
+    //   href: "/users/Dashboard/Settings",
+    //   icon: Cog,
+    // },
   ];
 
   const pathName = usePathname();

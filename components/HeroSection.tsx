@@ -43,14 +43,14 @@ export default function HeroSection() {
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h1
-            className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-6 `}
+            className={`text-4xl md:text-5xl tracking-wide lg:text-6xl font-semibold text-gray-800 mb-4 `}
           >
-            Enhance Your Dine-In Experience With <br />
-            <span
-              className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${bebas_neue.className}`}
-            >
-              Duos Eats
-            </span>
+            Enhance Your Dine-In Experience With
+          </h1>
+          <h1
+            className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${bebas_neue.className}`}
+          >
+            Duos Eats
           </h1>
           <p className="text-base md:text-lg text-gray-600 mb-8 tracking-wide">
             Enjoy exclusive dine-in discounts and more at your favourite

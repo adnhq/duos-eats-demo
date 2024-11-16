@@ -3,6 +3,7 @@ import {
   clearCart,
   getCart,
   getTotalCartPriceAfterDiscount,
+  getTotalCartQuantity,
 } from "@/features/cart/cartSlice";
 import { getSession } from "@/lib/actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -23,6 +24,7 @@ import { useState } from "react";
 
 export default function Cart() {
   const cart = useAppSelector(getCart);
+  const cartCurrentQuantity = useAppSelector(getTotalCartQuantity);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -51,9 +53,9 @@ export default function Cart() {
       <SheetTrigger asChild>
         <div className="fixed bottom-4 right-4">
           <Button className="rounded-full w-16 h-16 shadow-lg relative">
-            {cart.items.length !== 0 && (
+            {cartCurrentQuantity !== 0 && (
               <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-zinc-500">
-                {cart.items.length}
+                {cartCurrentQuantity}
               </p>
             )}
             <ShoppingBag className="h-6 w-6" />

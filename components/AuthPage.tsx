@@ -1,10 +1,19 @@
 "use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Utensils } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import RestaurantLoginForm from "./RestaurantLoginForm";
 import UserLoginForm from "./UserLoginForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const BackgroundSVG = () => (
   <svg
@@ -39,80 +48,71 @@ const AuthPage = () => {
       <BackgroundSVG />
 
       <div className="relative z-10 w-full max-w-md mx-auto px-4 py-8">
-        {/* Auth Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full">
-          {/* Header Section - Now inside the card */}
-          <div className="text-center mb-8">
-            <h1 className={`text-3xl font-bold text-gray-900 mb-2`}>
+        <Card className="backdrop-blur-sm shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center">
               Welcome Back
-            </h1>
-            <p className="text-gray-600">Sign in to continue your journey</p>
-          </div>
+            </CardTitle>
+            <CardDescription className="text-center">
+              Sign in to continue your journey
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="user" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-gray-100 rounded-lg mb-6">
+                <TabsTrigger
+                  value="user"
+                  className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
+                >
+                  <Users className="h-4 w-4" />
+                  Customer
+                </TabsTrigger>
+                <TabsTrigger
+                  value="restaurant"
+                  className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
+                >
+                  <Utensils className="h-4 w-4" />
+                  Restaurant
+                </TabsTrigger>
+              </TabsList>
 
-          <Tabs defaultValue="user" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-gray-100 rounded-lg mb-6">
-              <TabsTrigger
-                value="user"
-                className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                Customer
-              </TabsTrigger>
-              <TabsTrigger
-                value="restaurant"
-                className="h-full data-[state=active]:bg-white data-[state=active]:text-amber-500 data-[state=active]:shadow-sm rounded-md transition-all flex items-center justify-center gap-2"
-              >
-                <Utensils className="h-4 w-4" />
-                Restaurant
-              </TabsTrigger>
-            </TabsList>
+              <TabsContent value="user" className="mt-0">
+                <UserLoginForm />
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-muted-foreground font-medium">
+                    New to our platform?{" "}
+                    <button
+                      onClick={() => router.push("/signup")}
+                      className="font-medium text-amber-500 hover:text-amber-600"
+                    >
+                      Create an account
+                    </button>
+                  </p>
+                </div>
+              </TabsContent>
 
-            <TabsContent value="user" className="mt-0">
-              <UserLoginForm />
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600">
-                  New to our platform?{" "}
-                  <button
-                    onClick={() => router.push("/signup")}
-                    className="font-medium text-amber-500 hover:text-amber-600"
-                  >
-                    Create an account
-                  </button>
-                </p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="restaurant" className="mt-0">
-              <RestaurantLoginForm />
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600">
-                  Want to partner with us?{" "}
-                  <Link
-                    href="/registration"
-                    className="font-medium text-amber-500 hover:text-amber-600"
-                  >
-                    Register your restaurant
-                  </Link>
-                </p>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* Footer Links - Outside the card */}
-        <div className="text-center space-y-4 w-full mt-6">
-          <button className="text-sm text-gray-600 hover:text-amber-500">
-            Forgot your password?
-          </button>
-          <div>
-            <button
-              onClick={() => router.push("/")}
-              className="text-sm text-gray-600 hover:text-amber-500 flex items-center justify-center gap-2 mx-auto"
-            >
-              ← Back to home
+              <TabsContent value="restaurant" className="mt-0">
+                <RestaurantLoginForm />
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Want to partner with us?{" "}
+                    <Link
+                      href="/registration"
+                      className="font-medium text-amber-500 hover:text-amber-600"
+                    >
+                      Register your restaurant
+                    </Link>
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <button className="text-sm text-muted-foreground font-medium hover:text-amber-500">
+              Forgot your password?
             </button>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       </div>
 
       {/* Decorative Emojis */}

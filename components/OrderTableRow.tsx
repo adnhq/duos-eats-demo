@@ -1,9 +1,12 @@
 "use client";
 
-import { priceWithDiscount } from "@/lib/helper";
+import { useToast } from "@/hooks/use-toast";
+import { cancelOrder, confirmOrder } from "@/lib/actions";
 import { OrderType } from "@/lib/types";
 import { format } from "date-fns";
 import { CheckCircle, Eye, Loader2, XCircle } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -14,10 +17,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { TableCell, TableRow } from "./ui/table";
-import { Badge } from "./ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { cancelOrder, completeOrder, processOrder } from "@/lib/actions";
-import { useState } from "react";
 
 function OrderTableRow({ order }: { order: OrderType }) {
   const orderCreatingTime = format(
@@ -26,18 +25,18 @@ function OrderTableRow({ order }: { order: OrderType }) {
   );
   const [isLoading1, setIsLoading1] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
-  const [isLoading3, setIsLoading3] = useState(false);
-  const allLoading = isLoading1 || isLoading2 || isLoading3;
+
+  const allLoading = isLoading1 || isLoading2;
   const { toast } = useToast();
 
   async function acceptOrder() {
     try {
       setIsLoading1(true);
-      const res = await processOrder(order.id);
+      const res = await confirmOrder(order.id);
 
       if (res.success) {
         toast({
-          title: `Order status has been set to processing`,
+          title: `Order has been confirmed.`,
           description: "Order status updated",
         });
       } else {
@@ -78,36 +77,20 @@ function OrderTableRow({ order }: { order: OrderType }) {
     }
   }
 
-  async function completeOrderStatus() {
-    try {
-      setIsLoading3(true);
-      const res = await completeOrder(order.id);
-
-      if (res.success) {
-        toast({
-          title: `Order is completed.`,
-          description: "Order status updated",
-        });
-      } else {
-        throw new Error("Some unknown error occured");
-      }
-    } catch (error) {
-      toast({
-        title: "Couldn't update the order status!",
-        description: (error as Error).message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading3(false);
-    }
-  }
-
   return (
     <TableRow key={order.id}>
       <TableCell>#{order.id}</TableCell>
-      <TableCell>{order.Users.name}</TableCell>
-      <TableCell>BDT {order.discountTotal}</TableCell>
-      <TableCell>{orderCreatingTime}</TableCell>
+      <TableCell>{order.discountTotal.toFixed(2)}</TableCell>
+      <TableCell>{order.restaurantEarning.toFixed(2)}</TableCell>
+
+      <TableCell>
+        <Badge variant="secondary" className="bg-green-100 text-green-800">
+          {order.discount}%
+        </Badge>
+      </TableCell>
+
+      <TableCell>{order.platformFee.toFixed(2)}</TableCell>
+
       <TableCell>
         <div className="flex space-x-2">
           <Dialog>
@@ -124,6 +107,23 @@ function OrderTableRow({ order }: { order: OrderType }) {
                   Order #{order.id} • {orderCreatingTime}
                 </DialogDescription>
               </DialogHeader>
+
+              <div>
+                <h2 className="font-semibold">Customer Details</h2>
+                <p className="text-sm text-muted-foreground">
+                  Name:{" "}
+                  <span className="text-primary-foreground">
+                    {order.Users.name}
+                  </span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Contact no.:
+                  <span className="text-primary-foreground">
+                    0{order.Users.phoneNumber}
+                  </span>
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {order.OrderItems.map((item, idx) => (
                   <div
@@ -139,20 +139,11 @@ function OrderTableRow({ order }: { order: OrderType }) {
                           } - ${extraParam.split(":")[1]}`}</p>
                         ))}
                       <p className="text-sm text-muted-foreground">
-                        BDT{" "}
-                        {priceWithDiscount(
-                          item.actualCurrentPrice,
-                          order.discount
-                        )}{" "}
-                        × {item.quantity}
+                        BDT {item.actualCurrentPrice} × {item.quantity}
                       </p>
                     </div>
                     <p className="font-medium">
-                      BDT{" "}
-                      {priceWithDiscount(
-                        item.actualCurrentPrice,
-                        order.discount
-                      ) * item.quantity}
+                      BDT {item.actualCurrentPrice * item.quantity}
                     </p>
                   </div>
                 ))}
@@ -174,12 +165,12 @@ function OrderTableRow({ order }: { order: OrderType }) {
                 {isLoading1 ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Accepting
+                    Confirming
                   </>
                 ) : (
                   <>
                     <CheckCircle className="mr-2 h-4 w-4" />
-                    Accept
+                    Confirm
                   </>
                 )}
               </Button>
@@ -203,38 +194,15 @@ function OrderTableRow({ order }: { order: OrderType }) {
               </Button>
             </>
           )}
-
-          {order.status === "processing" && (
-            <Button
-              variant="default"
-              size="sm"
-              disabled={allLoading}
-              onClick={completeOrderStatus}
-            >
-              {isLoading3 ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Completing
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Complete
-                </>
-              )}
-            </Button>
-          )}
         </div>
       </TableCell>
       <TableCell>
         {order.status === "pending" && <Badge>{order.status}</Badge>}
-        {order.status === "processing" && (
-          <Badge variant={"outline"}>{order.status}</Badge>
-        )}
+
         {order.status === "cancelled" && (
           <Badge variant={"destructive"}>{order.status}</Badge>
         )}
-        {order.status === "completed" && (
+        {order.status === "confirmed" && (
           <Badge variant={"secondary"} className="bg-green-100 text-green-800">
             {order.status}
           </Badge>

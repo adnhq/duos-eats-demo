@@ -6,7 +6,7 @@ import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { priceWithDiscount } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { MenuItem } from "@/lib/types";
+import { Cart, CartItemType, MenuItem } from "@/lib/types";
 import { Check, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -38,15 +38,16 @@ export function MenuItemCard({ item }: MenuItemProps) {
       return;
     }
 
-    const itemToBeAdded = {
-      actualId: item.id,
+    const itemToBeAdded: CartItemType & Partial<Cart> = {
       id: item.id,
+      identifier: `${item.id}`,
       name: item.name,
       image: item.image,
-      price: Number(item.price),
-      discount: Number(item.discount),
+      actualPrice: Number(item.price),
+      priceAfterDiscount: priceWithDiscount(item.price, Number(item.discount)),
       quantity,
       restaurantId: item.restaurantId,
+      discount: Number(item.discount),
     };
 
     dispatch(addItem(itemToBeAdded));

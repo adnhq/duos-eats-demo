@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -8,23 +9,41 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { registerUser } from "@/lib/actions";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Users } from "lucide-react";
+import { Eye, EyeOff, Loader2, Users } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-// Form validation schema
 const signupSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
-    phoneNumber: z.string().min(10, "Phone number must be 10 digits"),
+    phoneNumber: z
+      .string()
+      .length(10, "Phone number must be exactly 10 digits")
+      .regex(/^\d{10}$/, "Phone number must contain only digits")
+      .refine((value) => value !== "0000000000", {
+        message: "Phone number cannot be all zeros",
+      }),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -32,7 +51,12 @@ const signupSchema = z
     path: ["confirmPassword"],
   });
 
+const verificationSchema = z.object({
+  otp: z.string(),
+});
+
 type SignupFormData = z.infer<typeof signupSchema>;
+type VerificationFormData = z.infer<typeof verificationSchema>;
 
 const BackgroundSVG = () => (
   <svg
@@ -62,9 +86,13 @@ const BackgroundSVG = () => (
 const SignupPage = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [isVerifying, setIsVerifying] = React.useState(true);
+  const [formData, setFormData] = React.useState<SignupFormData | null>(null);
+  const [generatedOTP, setGeneratedOTP] = React.useState<string>("");
+  const [otpValue, setOtpValue] = React.useState("");
   const { toast } = useToast();
 
-  const form = useForm<SignupFormData>({
+  const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
@@ -75,39 +103,140 @@ const SignupPage = () => {
     },
   });
 
-  const onSubmit = async (values: SignupFormData) => {
-    // Handle signup logic here
-    console.log(values);
+  const verificationForm = useForm<VerificationFormData>({
+    resolver: zodResolver(verificationSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
+  const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const onSignupSubmit = async (values: SignupFormData) => {
     try {
-      const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        if (value !== null) {
-          formData.append(key, value);
+      const otp = generateOTP();
+      setGeneratedOTP(otp);
+      setFormData(values);
+
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: values.email,
+          name: values.name,
+          otp: otp,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send verification email");
+      }
+
+      setIsVerifying(true);
+      toast({
+        title: "Verification Code Sent",
+        description: "Please check your email for the verification code.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send verification email. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onVerificationSubmit = async (values: { otp: string }) => {
+    try {
+      console.log(values);
+
+      if (otpValue !== generatedOTP) {
+        toast({
+          title: "Error",
+          description: "Invalid verification code. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData) {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const submitFormData = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && key !== "confirmPassword") {
+          submitFormData.append(key, value);
         }
       });
 
-      const result = await registerUser(formData);
+      const result = await registerUser(submitFormData);
 
       if (result.success) {
         toast({
           title: "Registration Successful!",
           description: "Your account has been created successfully.",
         });
+
+        setIsVerifying(false);
+        setFormData(null);
+        setGeneratedOTP("");
+        setOtpValue("");
+        signupForm.reset();
+        verificationForm.reset();
+      } else {
+        throw new Error("Failed to create account. Please try again.");
       }
     } catch (error) {
       toast({
-        title: "Registration Failed",
+        title: "Error",
         description: (error as Error).message,
         variant: "destructive",
       });
-    } finally {
-      form.reset({
-        name: "",
-        email: "",
-        password: "",
-        phoneNumber: "",
-        confirmPassword: "",
+    }
+  };
+
+  const resendVerificationCode = async () => {
+    if (!formData) return;
+
+    try {
+      const newOTP = generateOTP();
+      setGeneratedOTP(newOTP);
+
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          otp: newOTP,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to resend verification code");
+      }
+
+      toast({
+        title: "Verification Code Resent",
+        description: "Please check your email for the new verification code.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to resend verification code. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -117,180 +246,259 @@ const SignupPage = () => {
       <BackgroundSVG />
 
       <div className="relative z-10 w-full max-w-md mx-auto px-4 mt-20">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8 w-full">
-          <div className="text-center mb-6 md:mb-8">
+        <Card className="backdrop-blur-sm shadow-xl">
+          <CardHeader>
             <div className="flex justify-center mb-4">
               <div className="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
                 <Users className="h-6 w-6 text-amber-600" />
               </div>
             </div>
-            <h1 className={`text-2xl md:text-3xl font-bold text-gray-900 mb-2`}>
-              Create Account
-            </h1>
-            <p className="text-gray-600">Join us for a delicious journey</p>
-          </div>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <div className="flex">
-                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                          +880
-                        </span>
-                        <Input
-                          placeholder="123456789"
-                          {...field}
-                          type="tel"
-                          className="flex-1 rounded-l-none"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="you@example.com"
-                        {...field}
-                        type="email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          placeholder="••••••••"
-                          {...field}
-                          type={showPassword ? "text" : "password"}
-                          className="pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        >
-                          {showPassword ? (
-                            <Eye className="h-5 w-5" />
-                          ) : (
-                            <EyeOff className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          placeholder="••••••••"
-                          {...field}
-                          type={showConfirmPassword ? "text" : "password"}
-                          className="pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        >
-                          {showConfirmPassword ? (
-                            <Eye className="h-5 w-5" />
-                          ) : (
-                            <EyeOff className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting
-                  ? "Creating Account..."
-                  : "Create Account"}
-              </Button>
-            </form>
-          </Form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-amber-500 hover:text-amber-600"
-              >
-                Sign in
-              </Link>
+            <CardTitle className="text-2xl md:text-3xl font-bold text-center mb-2">
+              {isVerifying ? "Verify Email" : "Create Account"}
+            </CardTitle>
+            <p className="text-gray-600 text-center">
+              {isVerifying
+                ? "Enter the verification code sent to your email"
+                : "Join us for a delicious journey"}
             </p>
-          </div>
-        </div>
+          </CardHeader>
+          <CardContent>
+            {!isVerifying ? (
+              <Form {...signupForm}>
+                <form
+                  onSubmit={signupForm.handleSubmit(onSignupSubmit)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={signupForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-        {/* Footer Links */}
-        <div className="text-center space-y-4 w-full mt-6">
-          <Link
-            href="/"
-            className="text-sm text-gray-600 hover:text-amber-500 flex items-center justify-center gap-2 mx-auto"
-          >
-            ← Back to home
-          </Link>
-        </div>
+                  <FormField
+                    control={signupForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                              +880
+                            </span>
+                            <Input
+                              placeholder="123456789"
+                              {...field}
+                              type="tel"
+                              className="flex-1 rounded-l-none"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={signupForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="you@example.com"
+                            {...field}
+                            type="email"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={signupForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              placeholder="••••••••"
+                              {...field}
+                              type={showPassword ? "text" : "password"}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                              {showPassword ? (
+                                <Eye className="h-5 w-5" />
+                              ) : (
+                                <EyeOff className="h-5 w-5" />
+                              )}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={signupForm.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              placeholder="••••••••"
+                              {...field}
+                              type={showConfirmPassword ? "text" : "password"}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                              {showConfirmPassword ? (
+                                <Eye className="h-5 w-5" />
+                              ) : (
+                                <EyeOff className="h-5 w-5" />
+                              )}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={signupForm.formState.isSubmitting}
+                  >
+                    {signupForm.formState.isSubmitting ? (
+                      <>
+                        <span>Sending otp</span>
+                        <span className="animate-spin">
+                          <Loader2 className="h-4 w-4" />
+                        </span>
+                      </>
+                    ) : (
+                      "Continue"
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            ) : (
+              <Form {...verificationForm}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    onVerificationSubmit({ otp: otpValue });
+                  }}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={verificationForm.control}
+                    name="otp"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Verification Code</FormLabel>
+                        <FormControl>
+                          <InputOTP
+                            maxLength={6}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              setOtpValue(value);
+                            }}
+                          >
+                            <InputOTPGroup>
+                              <InputOTPSlot index={0} />
+                              <InputOTPSlot index={1} />
+                              <InputOTPSlot index={2} />
+                              <InputOTPSlot index={3} />
+                              <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                          </InputOTP>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={verificationForm.formState.isSubmitting}
+                  >
+                    {verificationForm.formState.isSubmitting ? (
+                      <>
+                        <span className="">Verifying</span>
+                        <span className="animate-spin">
+                          <Loader2 className="h-4 w-4" />
+                        </span>
+                      </>
+                    ) : (
+                      "Verify and Create Account"
+                    )}
+                  </Button>
+
+                  <div className="text-center mt-4">
+                    <button
+                      type="button"
+                      onClick={resendVerificationCode}
+                      className="text-sm text-amber-600 hover:text-amber-700"
+                    >
+                      Resend verification code
+                    </button>
+                  </div>
+                </form>
+              </Form>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="font-medium text-amber-500 hover:text-amber-600"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="text-sm text-gray-600 hover:text-amber-500 flex items-center justify-center gap-2 mx-auto"
+            >
+              ← Back to home
+            </Link>
+          </CardFooter>
+        </Card>
       </div>
 
-      {/* Decorative Emojis */}
       <div className="absolute bottom-8 left-0 right-0 flex justify-around">
         {["🍔", "🍕", "🍣", "🥗", "🍰"].map((emoji, index) => (
           <span

@@ -27,7 +27,7 @@ import { addItem, prevResturantId } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { priceWithDiscount } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { MenuItem } from "@/lib/types";
+import { Cart, CartItemType, MenuItem } from "@/lib/types";
 
 type Props = {
   item: MenuItem;
@@ -98,12 +98,16 @@ export default function ItemExtraParamForm({
       ([key, value]) => `${key}:${value}`
     );
 
-    const itemToBeAdded = {
-      actualId: item.id,
-      id: item.id + ":" + selectedOptions.join(","),
+    const itemToBeAdded: CartItemType & Partial<Cart> = {
+      id: item.id,
+      identifier: item.id + ":" + selectedOptions.join(","),
       name: item.name,
       image: item.image,
-      price: currentPrice,
+      actualPrice: currentPrice,
+      priceAfterDiscount: priceWithDiscount(
+        currentPrice,
+        Number(item.discount)
+      ),
       discount: Number(item.discount),
       quantity,
       restaurantId: item.restaurantId,

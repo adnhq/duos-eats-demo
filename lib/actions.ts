@@ -652,8 +652,10 @@ export async function placeOrder(orderData: OrderData) {
     rating: 0,
     restaurantId: orderData.restaurantId,
     actualTotal: orderData.actualTotal,
-    discount: orderData.discount,
     discountTotal: orderData.discountTotal,
+    restaurantEarning: orderData.restaurantEarning,
+    platformFee: orderData.platformFee,
+    discount: orderData.discount,
     status: "pending",
   };
 
@@ -706,7 +708,9 @@ export async function getOrder(orderId: number | unknown) {
 export async function getOrdersByRestaurant(restaurantId: number | unknown) {
   const { data: Orders, error } = await supabase
     .from("Orders")
-    .select("*, OrderItems(*, Menu(*)), Users(name), Restaurants(name)")
+    .select(
+      "*, OrderItems(*, Menu(*)), Users(name,phoneNumber), Restaurants(name)"
+    )
     .eq("restaurantId", restaurantId)
     .order("id", {
       ascending: false,
@@ -731,10 +735,10 @@ export async function getOrdersByUser(userId: number | unknown) {
   return Orders;
 }
 
-export async function processOrder(orderId: number) {
+export async function confirmOrder(orderId: number) {
   const { error } = await supabase
     .from("Orders")
-    .update({ status: "processing" })
+    .update({ status: "confirmed" })
     .eq("id", orderId);
 
   if (error) throw error;
@@ -747,18 +751,6 @@ export async function cancelOrder(orderId: number) {
   const { error } = await supabase
     .from("Orders")
     .update({ status: "cancelled" })
-    .eq("id", orderId);
-
-  if (error) throw error;
-
-  revalidatePath("/restaurant/OrderStats");
-  return { success: true };
-}
-
-export async function completeOrder(orderId: number) {
-  const { error } = await supabase
-    .from("Orders")
-    .update({ status: "completed" })
     .eq("id", orderId);
 
   if (error) throw error;

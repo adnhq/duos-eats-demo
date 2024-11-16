@@ -2,13 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  currentDiscount,
   decreaseItemQuantity,
   deleteItem,
   increaseItemQuantity,
 } from "@/features/cart/cartSlice";
-import { priceWithDiscount } from "@/lib/helper";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import { CartItemType } from "@/lib/types";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -20,7 +18,6 @@ type CartItemProps = {
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const dispatch = useAppDispatch();
-  const discount = useAppSelector(currentDiscount);
 
   return (
     <div className="flex justify-between items-center py-4 border-b">
@@ -45,7 +42,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
               ))}
             </div>
             <p className="text-sm text-gray-500">
-              Tk {priceWithDiscount(item.price, discount)} x {item.quantity}
+              Tk {item.priceAfterDiscount} x {item.quantity}
             </p>
           </div>
         </div>
@@ -54,7 +51,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => dispatch(decreaseItemQuantity(item.id))}
+          onClick={() => dispatch(decreaseItemQuantity(`${item.id}`))}
         >
           <Minus className="h-4 w-4" />
         </Button>
@@ -62,14 +59,14 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => dispatch(increaseItemQuantity(item.id))}
+          onClick={() => dispatch(increaseItemQuantity(`${item.id}`))}
         >
           <Plus className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => dispatch(deleteItem(item.id))}
+          onClick={() => dispatch(deleteItem(`${item.id}`))}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

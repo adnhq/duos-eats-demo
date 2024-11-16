@@ -44,6 +44,8 @@ export type OrderData = {
   actualTotal: number;
   discount: number;
   discountTotal: number;
+  restaurantEarning: number;
+  platformFee: number;
   items: {
     id: number;
     name: string;
@@ -55,21 +57,20 @@ export type OrderData = {
 
 export type CartItemType = {
   id: number;
+  identifier: string;
   name: string;
-  price: number;
+  actualPrice: number;
+  priceAfterDiscount: number;
   image: string;
   extraParams?: string[];
   quantity: number;
-  actualId: number;
 };
 
 export type Cart = {
   items: CartItemType[];
-  totalPrice: number;
   rating: number;
   restaurantId: null | number;
   discount: number;
-  totalPriceAfterDiscount: number;
 };
 
 export type CartInfoState = {
@@ -94,6 +95,8 @@ export type OrderType = {
   id: number;
   actualTotal: number;
   discountTotal: number;
+  restaurantEarning: number;
+  platformFee: number;
   created_at: string;
   rating: 0;
   discount: number;
@@ -112,4 +115,5 @@ export type OrderItemType = {
 
 export type UserType = {
   name: string;
+  phoneNumber: string;
 };

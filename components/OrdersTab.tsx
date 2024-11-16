@@ -301,9 +301,7 @@ export function OrdersTab({
       <TabsContent value="orders" className="space-y-6">
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Pending Orders
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">Orders</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Mobile view */}
@@ -319,9 +317,10 @@ export function OrdersTab({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Total Amount</TableHead>
-                    <TableHead>Order Time</TableHead>
+                    <TableHead>Paid Amount(TK)</TableHead>
+                    <TableHead>Final Earnings(TK)</TableHead>
+                    <TableHead>Discount Applied(%)</TableHead>
+                    <TableHead>Platform Fee(TK)</TableHead>
                     <TableHead>Actions</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>

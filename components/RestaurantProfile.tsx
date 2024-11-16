@@ -43,9 +43,13 @@ const updateFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  phoneNumber: z.string().min(10, {
-    message: "Please enter a valid phone number.",
-  }),
+  phoneNumber: z
+    .string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d{10}$/, "Phone number must contain only digits")
+    .refine((value) => value !== "0000000000", {
+      message: "Phone number cannot be all zeros",
+    }),
   cuisine: z.string(),
   address: z.string().min(10, {
     message: "Address must be at least 10 characters.",

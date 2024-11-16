@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Search, Star, Utensils, Zap } from "lucide-react";
-import { Permanent_Marker } from "next/font/google";
+import { Bebas_Neue } from "next/font/google";
 
-const permanent_marker = Permanent_Marker({
+const bebas_neue = Bebas_Neue({
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -14,9 +14,9 @@ export default function AboutPage() {
         {/* Hero Section */}
         <section className="text-center space-y-6 max-w-4xl mx-auto">
           <h1 className="space-y-2">
-            <span className={`block text-4xl font-bold`}>Welcome to</span>
+            <span className={`block text-6xl font-semibold`}>Welcome to</span>
             <span
-              className={`block text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${permanent_marker.className}`}
+              className={`block text-7xl bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${bebas_neue.className}`}
             >
               Duos Eats
             </span>

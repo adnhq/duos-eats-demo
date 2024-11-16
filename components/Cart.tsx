@@ -19,26 +19,35 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import { useState } from "react";
 
 export default function Cart() {
   const cart = useAppSelector(getCart);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   async function handleCheckout() {
     const session = await getSession();
+    setIsOpen(false);
+
     if (session === null) return router.push("/login");
 
     if (session.role === "user") {
-      return router.push("/users/checkout");
+      router.push("/users/checkout");
     } else {
-      return router.push("/login");
+      router.push("/login");
     }
   }
 
+  function handleClearCart() {
+    dispatch(clearCart());
+    setIsOpen(false);
+  }
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <div className="fixed bottom-4 right-4">
           <Button className="rounded-full w-16 h-16 shadow-lg relative">
@@ -89,7 +98,7 @@ export default function Cart() {
               <Button
                 className="w-full"
                 variant={"destructive"}
-                onClick={() => dispatch(clearCart())}
+                onClick={handleClearCart}
               >
                 <Trash className="h-4 w-4" /> Clear Cart
               </Button>

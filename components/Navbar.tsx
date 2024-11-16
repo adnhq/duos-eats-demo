@@ -6,32 +6,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { getSession, logout } from "@/lib/actions";
 import { JWTPayload } from "jose";
-import { Menu, User } from "lucide-react";
-import { Permanent_Marker } from "next/font/google";
+import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import duosLogo from "../duos-lg.png";
+import MobileNavbar from "./MobileNavbar";
 import { Button } from "./ui/button";
-
-const permanent_marker = Permanent_Marker({
-  subsets: ["latin"],
-  weight: ["400"],
-});
 
 export default async function Navbar() {
   const session = await getSession();
 
-  const gradientTextClass = `bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 hover:from-yellow-500 hover:to-amber-600 transition-all duration-300 ${permanent_marker.className}`;
+  const gradientTextClass = `bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 hover:from-yellow-500 hover:to-amber-600 transition-all duration-300`;
 
   const navLinks = [
     { href: "/", label: "Restaurants" },
@@ -62,7 +50,7 @@ export default async function Navbar() {
               {!session && (
                 <Link
                   href="/registration"
-                  className={`${gradientTextClass} relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-yellow-500 after:to-amber-500 after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100`}
+                  className={`${gradientTextClass} relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-yellow-500 after:to-amber-500 after:transform after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 font-semibold`}
                 >
                   Partner With Us
                 </Link>
@@ -148,102 +136,7 @@ export default async function Navbar() {
           {/* <div className="hidden md:flex items-center space-x-6"></div> */}
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  // className="hover:bg-orange-200"
-                >
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col space-y-3 mt-6">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`text-base tracking-wider hover:text-primary transition-colors duration-300`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                  {!session && (
-                    <Link
-                      href="/registration"
-                      className={`${gradientTextClass} text-lg`}
-                    >
-                      Partner With Us
-                    </Link>
-                  )}
-                  {session ? (
-                    <div className="space-y-3 pt-4 border-t">
-                      <div className="flex justify-center gap-2 items-center mb-4">
-                        <User className="h-5 w-5" />
-                        <p className="font-semibold">
-                          {(session as JWTPayload).name as string}
-                        </p>
-                      </div>
-                      {session?.role === "admin" && (
-                        <Link
-                          href="/admin/Dashboard"
-                          className="block hover:text-primary text-base text-muted-foreground"
-                        >
-                          Dashboard
-                        </Link>
-                      )}
-                      {session?.role === "restaurant" && (
-                        <>
-                          <Link
-                            href="/restaurant/OrderStats"
-                            className="block hover:text-primary text-sm text-muted-foreground"
-                          >
-                            Dashboard
-                          </Link>
-                          <Link
-                            href="/restaurant/Settings"
-                            className="block hover:text-primary text-sm text-muted-foreground"
-                          >
-                            Account Settings
-                          </Link>
-                        </>
-                      )}
-                      <form
-                        action={async () => {
-                          "use server";
-                          await logout();
-                          redirect("/");
-                        }}
-                      >
-                        <Button className="w-full" variant="destructive">
-                          Log out
-                        </Button>
-                      </form>
-                    </div>
-                  ) : (
-                    <>
-                      <Button
-                        asChild
-                        variant={"secondary"}
-                        // className="w-full md:w-auto bg-transparent hover:bg-transparent border-amber-500 hover:shadow-inner"
-                      >
-                        <Link href="/login">Log in</Link>
-                      </Button>
-
-                      <Button asChild className="w-full md:w-auto">
-                        <Link href="/signup">Sign up</Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+          <MobileNavbar session={session as JWTPayload} />
         </div>
       </div>
     </nav>

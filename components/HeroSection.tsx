@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Permanent_Marker } from "next/font/google";
+import { Bebas_Neue } from "next/font/google";
 import Link from "next/link";
 import { useEffect } from "react";
 import HeroBackgroundSVG from "./HeroBackgroundSVG";
 
-const permanent_marker = Permanent_Marker({
+const bebas_neue = Bebas_Neue({
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -47,7 +47,7 @@ export default function HeroSection() {
           >
             Enhance Your Dine-In Experience With <br />
             <span
-              className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${permanent_marker.className}`}
+              className={`text-6xl md:text-7xl lg:text-8xl tracking-wide font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500 ${bebas_neue.className}`}
             >
               Duos Eats
             </span>

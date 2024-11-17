@@ -18,6 +18,7 @@ export type Restaurant = {
   cuisine: string;
   location: string;
   discount: string;
+  vat: number;
 };
 
 export type MenuItem = {

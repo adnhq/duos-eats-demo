@@ -21,6 +21,7 @@ import {
   calcPlatformFee,
   DUOS_PERCENTAGE,
   priceWithDiscount,
+  vatExtraPrice,
 } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CartItemType, Restaurant, User } from "@/lib/types";
@@ -64,6 +65,7 @@ export default function Checkout() {
   const discount = useAppSelector(currentDiscount);
   const cartTotalPrice = useAppSelector(getTotalCartActualPrice);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
+
   // const cartTotalQuantity = useAppSelector(getTotalCartQuantity);
 
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurant | null>(null);
@@ -73,6 +75,10 @@ export default function Checkout() {
   const { toast } = useToast();
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  const discountPriceWithVat =
+    cartTotalDiscountPrice +
+    vatExtraPrice(cartTotalDiscountPrice, (restaurantInfo as Restaurant)?.vat);
 
   useEffect(() => {
     async function getInfo() {
@@ -94,7 +100,7 @@ export default function Checkout() {
   }, [restaurantId, router, cart.items.length]);
 
   async function handleCheckout() {
-    if (!userInfo) {
+    if (!userInfo || !restaurantInfo) {
       toast({
         title: "Error",
         description: "User information is missing. Please try again.",
@@ -103,15 +109,19 @@ export default function Checkout() {
       return;
     }
 
+    if (restaurantInfo === null) return;
+
     const orderData = {
       userId: userInfo.id,
       restaurantId: restaurantId as number,
       actualTotal: cartTotalPrice,
-      discountTotal: cartTotalDiscountPrice,
-      restaurantEarning: priceWithDiscount(
-        cartTotalPrice,
-        discount + DUOS_PERCENTAGE
-      ),
+      discountTotal:
+        restaurantInfo.vat > 0 ? discountPriceWithVat : cartTotalDiscountPrice,
+      restaurantEarning:
+        restaurantInfo.vat > 0
+          ? priceWithDiscount(cartTotalPrice, discount + DUOS_PERCENTAGE) +
+            vatExtraPrice(cartTotalDiscountPrice, restaurantInfo.vat)
+          : priceWithDiscount(cartTotalPrice, discount + DUOS_PERCENTAGE),
       platformFee: calcPlatformFee(cartTotalPrice),
       discount: discount,
       items: cart.items.map((item) => ({
@@ -147,6 +157,8 @@ export default function Checkout() {
       }
     });
   }
+
+  if (!restaurantInfo) return null;
 
   return (
     <div className="bg-orange-50 relative overflow-hidden min-h-screen">
@@ -210,7 +222,9 @@ export default function Checkout() {
                       </span>
                       <span>
                         Tk -{" "}
-                        {(item.priceAfterDiscount * item.quantity).toFixed(2)}
+                        {(
+                          item.priceAfterDiscount * item.quantity
+                        ).toLocaleString()}
                       </span>
                     </div>
                   ))}
@@ -221,7 +235,7 @@ export default function Checkout() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
-                    <span>Tk {cartTotalPrice.toFixed(2)}</span>
+                    <span>Tk {cartTotalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Discount</span>
@@ -229,13 +243,27 @@ export default function Checkout() {
                       variant="secondary"
                       className="bg-green-100 text-green-800"
                     >
-                      {discount}% OFF
+                      {discount}%
                     </Badge>
                   </div>
+
+                  {restaurantInfo.vat > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span>VAT</span>
+
+                      <Badge variant="destructive" className="bg-red-400">
+                        {restaurantInfo.vat}%
+                      </Badge>
+                    </div>
+                  )}
+
                   <div className="flex justify-between font-semibold text-lg">
                     <span>Total</span>
                     <span className="text-green-600">
-                      Tk {cartTotalDiscountPrice.toFixed(2)}
+                      Tk{" "}
+                      {restaurantInfo?.vat > 0
+                        ? discountPriceWithVat.toLocaleString()
+                        : cartTotalDiscountPrice.toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground text-right">
@@ -245,17 +273,32 @@ export default function Checkout() {
 
                 <div className="mt-4">
                   <p className="text-sm font-medium mb-1">Savings</p>
-                  <Progress
-                    value={
-                      ((cartTotalPrice - cartTotalDiscountPrice) /
-                        cartTotalPrice) *
-                      100
-                    }
-                    className="h-2"
-                  />
+                  {restaurantInfo.vat > 0 ? (
+                    <Progress
+                      value={
+                        ((cartTotalPrice - discountPriceWithVat) /
+                          cartTotalPrice) *
+                        100
+                      }
+                      className="h-2"
+                    />
+                  ) : (
+                    <Progress
+                      value={
+                        ((cartTotalPrice - cartTotalDiscountPrice) /
+                          cartTotalPrice) *
+                        100
+                      }
+                      className="h-2"
+                    />
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">
                     You saved Tk{" "}
-                    {(cartTotalPrice - cartTotalDiscountPrice).toFixed(2)}
+                    {restaurantInfo.vat
+                      ? (cartTotalPrice - discountPriceWithVat).toLocaleString()
+                      : (
+                          cartTotalPrice - cartTotalDiscountPrice
+                        ).toLocaleString()}
                   </p>
                 </div>
               </CardContent>

@@ -8,11 +8,19 @@ async function UserOrders() {
   const restaurantOrders = await getOrdersByUser((session as JWTPayload).id);
 
   return (
-    <div className="grid grid-cols-1 gap-4 mt-4">
-      {restaurantOrders?.map((restaurantOrder) => (
-        <UserOrderCard key={restaurantOrder.id} order={restaurantOrder} />
-      ))}
-    </div>
+    <>
+      {restaurantOrders.length === 0 ? (
+        <p className="text-muted-foreground text-center">
+          You haven&apos;t ordered anything yet
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 mt-4">
+          {restaurantOrders?.map((restaurantOrder) => (
+            <UserOrderCard key={restaurantOrder.id} order={restaurantOrder} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 

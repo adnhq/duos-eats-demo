@@ -54,8 +54,11 @@ const cartSlice = createSlice({
         state.cart.items = state.cart.items.filter(
           (item) => item.identifier !== existingItem.identifier
         );
-        state.cart.restaurantId = null;
-        state.cart.discount = 0;
+
+        if (state.cart.items.length === 0) {
+          state.cart.restaurantId = null;
+          state.cart.discount = 0;
+        }
         return;
       }
 

@@ -13,7 +13,6 @@ import {
   getCart,
   getTotalCartActualPrice,
   getTotalCartPriceAfterDiscount,
-  getTotalCartQuantity,
   prevResturantId,
 } from "@/features/cart/cartSlice";
 import { useToast } from "@/hooks/use-toast";
@@ -29,10 +28,10 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import CartItem from "./CartItem";
+import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
-import Spinner from "./Spinner";
 
 const BackgroundSVG = () => (
   <svg
@@ -65,7 +64,7 @@ export default function Checkout() {
   const discount = useAppSelector(currentDiscount);
   const cartTotalPrice = useAppSelector(getTotalCartActualPrice);
   const cartTotalDiscountPrice = useAppSelector(getTotalCartPriceAfterDiscount);
-  const cartTotalQuantity = useAppSelector(getTotalCartQuantity);
+  // const cartTotalQuantity = useAppSelector(getTotalCartQuantity);
 
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurant | null>(null);
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -155,7 +154,7 @@ export default function Checkout() {
       <div className="max-w-7xl mx-auto px-8 py-8 relative z-10 mt-32">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
-        {isFetching || cartTotalQuantity === 0 ? (
+        {isFetching ? (
           <Spinner />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[0.65fr_0.35fr] gap-8">

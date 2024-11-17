@@ -5,11 +5,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { name, otp } = await request.json();
+    const { email, name, otp } = await request.json();
 
     const { data, error } = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
-      to: "cryptojobsboard@gmail.com",
+      from: "Duos Eats <noreply@duoseats.com>",
+      to: [email],
       subject: "Verify your email address",
       react: EmailTemplate({ firstName: name.split(" ")[0], otp }),
     });

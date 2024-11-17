@@ -1,6 +1,7 @@
-import RestaurantMenu from "@/components/RestaurantMenu";
+import RestaurantView from "@/components/RestaurantView";
+import Spinner from "@/components/Spinner";
 import { getRestaurant } from "@/lib/actions";
-import React from "react";
+import { Suspense } from "react";
 
 export default async function Page({
   params,
@@ -14,7 +15,9 @@ export default async function Page({
 
   return (
     <main className="max-w-7xl mx-auto pt-24">
-      <RestaurantMenu restaurantData={restaurant[0]} />;
+      <Suspense fallback={<Spinner />}>
+        <RestaurantView restaurantId={restaurantId} />
+      </Suspense>
     </main>
   );
 }

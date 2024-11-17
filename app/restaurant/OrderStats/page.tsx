@@ -1,3 +1,4 @@
+import OrdersRealtimeUpdate from "@/components/OrdersRealtimeUpdate";
 import RestaurantStats from "@/components/RestaurantStats";
 import { getRestaurant, getSession } from "@/lib/actions";
 import { JWTPayload } from "jose";
@@ -18,6 +19,7 @@ export default async function Page() {
         discount={restaurants[0].discount}
         id={(session as JWTPayload).id}
       />
+      <OrdersRealtimeUpdate />
     </>
   );
 }

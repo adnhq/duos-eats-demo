@@ -29,6 +29,7 @@ export type MenuItem = {
   popular: boolean;
   discount: string;
   restaurantId: number;
+  category: string;
   MenuParameters: {
     name: string;
     options: {

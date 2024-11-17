@@ -51,7 +51,7 @@ export default function Cart() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <div className="fixed bottom-4 right-4">
+        <div className="fixed bottom-4 right-4 z-50">
           <Button className="rounded-full w-16 h-16 shadow-lg relative">
             {cartCurrentQuantity !== 0 && (
               <p className="absolute bg-amber-400 -top-1 -right-1  h-6 w-6 rounded-md text-xs font-medium flex items-center justify-center border border-zinc-500">
@@ -62,7 +62,7 @@ export default function Cart() {
           </Button>
         </div>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="md:w-full sm:w-[380px] flex flex-col">
         <SheetHeader>
           <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>

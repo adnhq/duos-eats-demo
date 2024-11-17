@@ -86,7 +86,7 @@ const BackgroundSVG = () => (
 const SignupPage = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-  const [isVerifying, setIsVerifying] = React.useState(true);
+  const [isVerifying, setIsVerifying] = React.useState(false);
   const [formData, setFormData] = React.useState<SignupFormData | null>(null);
   const [generatedOTP, setGeneratedOTP] = React.useState<string>("");
   const [otpValue, setOtpValue] = React.useState("");

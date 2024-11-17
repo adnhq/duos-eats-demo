@@ -312,6 +312,10 @@ export async function getAllRestaurants() {
     .from("Restaurants")
     .select("*")
     .neq("email", process.env.ADMIN_EMAIL)
+    .neq("id", 10)
+    .neq("id", 11)
+    .neq("id", 13)
+    .neq("id", 16)
     .eq("approved", true);
 
   if (error) throw error;
@@ -769,4 +773,29 @@ export async function getUserName(userId: number | unknown) {
   if (error) throw error;
 
   return user.name;
+}
+
+export async function getRestaurantEarnings(restaurantId: number | unknown) {
+  const { data: Orders, error } = await supabase
+    .from("Orders")
+    .select("actualTotal, discountTotal, platformFee, restaurantEarning")
+    .eq("restaurantId", restaurantId)
+    .eq("status", "confirmed")
+    .order("id", {
+      ascending: false,
+    });
+
+  if (error) throw error;
+
+  const totalEarnings = Orders.reduce(
+    (acc, item) => acc + item.restaurantEarning,
+    0
+  );
+
+  const totalPlatformFee = Orders.reduce(
+    (acc, item) => acc + item.platformFee,
+    0
+  );
+
+  return { totalEarnings, totalPlatformFee };
 }

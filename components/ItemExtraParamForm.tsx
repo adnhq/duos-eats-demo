@@ -5,7 +5,7 @@ import { Check, Minus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
+import duosLogo from "../duos-lg.png";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -102,7 +102,7 @@ export default function ItemExtraParamForm({
       id: item.id,
       identifier: item.id + ":" + selectedOptions.join(","),
       name: item.name,
-      image: item.image,
+      image: item.image === "undefined" ? duosLogo.src : item.image,
       actualPrice: currentPrice,
       priceAfterDiscount: priceWithDiscount(
         currentPrice,

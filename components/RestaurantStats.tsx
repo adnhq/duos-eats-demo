@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Receipt, Utensils } from "lucide-react";
+import { getOrdersByRestaurant, getRestaurantEarnings } from "@/lib/actions";
+import { DollarSign, Utensils } from "lucide-react";
 import { OrdersTab } from "./OrdersTab";
-import { getOrdersByRestaurant } from "@/lib/actions";
 
 const todayStats = {
   earnings: 0,
@@ -107,21 +107,23 @@ export default async function RestaurantStats({
   discount: string;
   id: string | unknown;
 }) {
+  const { totalEarnings, totalPlatformFee } =
+    (await getRestaurantEarnings(id)) || {};
   const restaurantOrders = await getOrdersByRestaurant(id);
   return (
     <>
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 pb-4">
         <Card className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white">
-              Today&apos;s Earnings
+              Total Earnings
             </CardTitle>
             <DollarSign className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              BDT {todayStats.earnings.toLocaleString()}
+              Tk {totalEarnings.toLocaleString()}
             </div>
           </CardContent>
         </Card>
@@ -129,18 +131,18 @@ export default async function RestaurantStats({
         <Card className="shadow-lg bg-gradient-to-br from-green-500 to-green-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white">
-              Today&apos;s Orders
+              Pending Dues
             </CardTitle>
             <Utensils className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {todayStats.orders}
+              Tk {totalPlatformFee.toLocaleString()}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
+        {/* <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white">
               Avg. Order Value
@@ -152,7 +154,7 @@ export default async function RestaurantStats({
               BDT {todayStats.averageOrderValue}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <OrdersTab

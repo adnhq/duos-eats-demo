@@ -42,7 +42,7 @@ export function MenuItemCard({ item }: MenuItemProps) {
       id: item.id,
       identifier: `${item.id}`,
       name: item.name,
-      image: item.image,
+      image: item.image === "undefined" ? duosLogo.src : item.image,
       actualPrice: Number(item.price),
       priceAfterDiscount: priceWithDiscount(item.price, Number(item.discount)),
       quantity,

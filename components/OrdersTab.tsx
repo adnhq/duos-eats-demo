@@ -3,14 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,10 +15,11 @@ import { useToast } from "@/hooks/use-toast";
 import { editRestaurantDiscount } from "@/lib/actions";
 import { OrderType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChefHat, Loader2, Pencil, Receipt, Utensils } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Pencil } from "lucide-react";
+// import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import OrderCard from "./OrderCard";
 import OrderTableRow from "./OrderTableRow";
 import {
   Form,
@@ -36,7 +29,6 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import OrderCard from "./OrderCard";
 
 // interface OrderItem {
 //   name: string;
@@ -100,12 +92,12 @@ export function OrdersTab({
   // historicalData,
   restaurantOrders,
   todayStats,
-  weeklyMonthlyStats,
+  // weeklyMonthlyStats,
   discount,
   restaurantId,
 }: OrdersTabProps) {
   const { toast } = useToast();
-  const [dateRange, setDateRange] = useState("This Week");
+  // const [dateRange, setDateRange] = useState("This Week");
 
   const discountForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -113,6 +105,7 @@ export function OrdersTab({
       discount,
     },
   });
+  console.log(todayStats);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -339,7 +332,7 @@ export function OrdersTab({
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        {/* <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
               Order Analytics
@@ -363,7 +356,7 @@ export function OrdersTab({
                     <p className="text-sm font-medium text-muted-foreground">
                       Pending Orders
                     </p>
-                    {/* <p className="text-2xl font-bold">{activeOrders.length}</p> */}
+                     <p className="text-2xl font-bold">{activeOrders.length}</p> 
                   </div>
                 </div>
               </div>
@@ -373,11 +366,11 @@ export function OrdersTab({
                 </h4>
                 <ol className="space-y-2">
                   {[
-                    // "Margherita Pizza",
-                    // "Chicken Tikka Masala",
-                    // "Vegetable Biryani",
-                    // "Chocolate Brownie",
-                    // "Mango Lassi",
+                    "Margherita Pizza",
+                    "Chicken Tikka Masala",
+                    "Vegetable Biryani",
+                    "Chocolate Brownie",
+                    "Mango Lassi",
                   ].map((item: string, index: number) => (
                     <li key={index} className="flex items-center">
                       <span className="w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground rounded-full mr-2 text-xs">
@@ -390,11 +383,11 @@ export function OrdersTab({
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </TabsContent>
 
       <TabsContent value="revenue" className="space-y-6">
-        <Card className="shadow-md">
+        {/* <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
               Revenue Overview
@@ -436,7 +429,7 @@ export function OrdersTab({
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="shadow-md">
           <CardHeader>
@@ -510,7 +503,7 @@ export function OrdersTab({
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        {/* <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Receipt className="h-5 w-5" />
@@ -546,8 +539,8 @@ export function OrdersTab({
             </div>
           </CardHeader>
           <CardContent>
-            {/* Mobile view */}
-            {/* <div className="md:hidden space-y-4">
+            
+            <div className="md:hidden space-y-4">
               {historicalData.length > 0 ? (
                 historicalData.map((order) => (
                   <HistoricalOrderCard key={order.orderId} order={order} />
@@ -557,9 +550,9 @@ export function OrdersTab({
                   No pending orders
                 </p>
               )}
-            </div> */}
+            </div>
 
-            {/* Desktop view */}
+           
             <div className="hidden md:block">
               <Table>
                 <TableHeader>
@@ -573,7 +566,7 @@ export function OrdersTab({
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                {/* <TableBody>
+                <TableBody>
                   {historicalData.map((order) => (
                     <TableRow key={order.orderId}>
                       <TableCell>{order.date}</TableCell>
@@ -644,11 +637,11 @@ export function OrdersTab({
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody> */}
+                </TableBody>
               </Table>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </TabsContent>
     </Tabs>
   );

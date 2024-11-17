@@ -1,9 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getRestaurantMenu } from "@/lib/actions";
 import { MenuItem, Restaurant } from "@/lib/types";
 import { Instagram, Search, Sparkles } from "lucide-react";
 import { Kalam } from "next/font/google";
@@ -17,12 +18,14 @@ type MenuItemsGrouped = {
   [category: string]: MenuItem[];
 };
 
-export default async function RestaurantMenu({
+export default function RestaurantMenu({
   restaurantData,
+  menuItems,
 }: {
   restaurantData: Restaurant;
+  menuItems: MenuItem[];
 }) {
-  const menuItems = await getRestaurantMenu(restaurantData.id);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // First, create a copy of the menuItems to avoid mutation
   const menuItemsCopy = menuItems ? [...menuItems] : [];
@@ -66,6 +69,11 @@ export default async function RestaurantMenu({
       categories.unshift("Popular");
     }
   }
+
+  // Filter menu items based on search term
+  const filteredMenuItems = menuItemsCopy.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -153,6 +161,8 @@ export default async function RestaurantMenu({
           type="text"
           placeholder="Search in menu"
           className="w-full pl-10 pr-4 py-2 rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-md focus:shadow-md"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
       </div>
@@ -176,20 +186,19 @@ export default async function RestaurantMenu({
               </TabsTrigger>
             ))}
           </TabsList>
-          <ScrollBar
-            orientation="horizontal"
-            // className="invisible md:visible"
-          />
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
         {/* All Items View - Shows all items grouped by category */}
         <TabsContent value="all" className="mt-6">
           <div className="space-y-8">
-            {categories.map((category) => (
-              <div key={category}>
-                <h3 className="text-2xl font-semibold mb-3 pl-4">{category}</h3>
+            {searchTerm ? (
+              <div>
+                <h3 className="text-2xl font-semibold mb-3 pl-4">
+                  Search Results
+                </h3>
                 <div className="space-y-4">
-                  {groupedMenuItems[category].map((item: MenuItem) => (
+                  {filteredMenuItems.map((item: MenuItem) => (
                     <MenuItemCard
                       key={item.id}
                       item={{ ...item, discount: restaurantData.discount }}
@@ -197,7 +206,23 @@ export default async function RestaurantMenu({
                   ))}
                 </div>
               </div>
-            ))}
+            ) : (
+              categories.map((category) => (
+                <div key={category}>
+                  <h3 className="text-2xl font-semibold mb-3 pl-4">
+                    {category}
+                  </h3>
+                  <div className="space-y-4">
+                    {groupedMenuItems[category].map((item: MenuItem) => (
+                      <MenuItemCard
+                        key={item.id}
+                        item={{ ...item, discount: restaurantData.discount }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </TabsContent>
 
@@ -205,12 +230,16 @@ export default async function RestaurantMenu({
         {categories.map((category) => (
           <TabsContent key={category} value={category} className="mt-6">
             <div className="space-y-4">
-              {groupedMenuItems[category].map((item) => (
-                <MenuItemCard
-                  key={item.id}
-                  item={{ ...item, discount: restaurantData.discount }}
-                />
-              ))}
+              {groupedMenuItems[category]
+                .filter((item) =>
+                  item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((item) => (
+                  <MenuItemCard
+                    key={item.id}
+                    item={{ ...item, discount: restaurantData.discount }}
+                  />
+                ))}
             </div>
           </TabsContent>
         ))}
